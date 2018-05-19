@@ -27,44 +27,64 @@
 		<div class="row">
 			<div class="col-md-2" style="background: #F0FFF0; padding-left: 10px; padding-bottom: 50px">
 				<form action="FrontController" method="post">
+				
+					<!-- --------------------------------select parking ------------------------------------ -->
 					<div>
 						<label style="margin-left:10px; margin-top: 20px">${parkingLabel}:</label>
 						<select	name="parkingId"  class="form-control">
-							<option selected value="0"><c:out value="${chooseParkingLabel}"></c:out></option>
+							<c:if test="${parkingId==null || parkingId == 0}">
+								<option selected value="0"><c:out value="${chooseParkingLabel}"></c:out></option>
+							</c:if>
+							<c:if test="${parkingId != null && parkingId != '0'}">
+								<option value="0"><c:out value="${chooseParkingLabel}"></c:out></option>
+							</c:if>
 							<c:forEach items="${parkingList}" var="item">
-								<option value="${item.id}"><c:out value="${item.address}"></c:out></option>
+								<option <c:if test="${parkingId==item.id}">selected</c:if> value="${item.id}"><c:out value="${item.address}"></c:out></option>
 							</c:forEach> 
 						</select>				
 					</div>
 
+					<!-- --------------------------------select brand -------------------------------------- -->
 					<div>
 						<label style="margin-left:10px; margin-top: 20px"><c:out value="${brandLabel}"></c:out>:</label>
 						<select	name="brandId"  class="form-control">
-							<option selected value="0"><c:out value="${chooseBarndLabel}"></c:out></option>
+							<c:if test="${brandId==null || brandId == 0}">
+								<option selected value="0"><c:out value="${chooseBarndLabel}"></c:out></option>
+							</c:if>
+							<c:if test="${brandId != null && brandId != '0'}">
+								<option value="0"><c:out value="${chooseBarndLabel}"></c:out></option>
+							</c:if>
 							<c:forEach items="${brandList}" var="item">
-								<option value="${item.id}">${item.brand}</option>
+								<option <c:if test="${brandId==item.id}">selected</c:if> value="${item.id}">${item.brand}</option>
 							</c:forEach> 
 						</select>				
 					</div>
-										
+					
+					<!-- ----------------------------------input model ------------------------------------ -->					
 					<div>
 						<label style="margin-left:10px; margin-top: 20px"><c:out value="${modelLabel}"></c:out>:</label>
 						<input 	type="text"	
 							name="model"
 							class="form-control"
-							value="${bike.model}" 
+							value="${model}" 
 							placeholder="${modelPlaceholder}"
 							pattern="[\w\-\sа-яА-ЯёЁ]{1,15}"
 							oninvalid="setCustomValidity('${modelWarnLabel}')"
 							oninput="setCustomValidity('')">					
 					</div>
 					
+					<!-- --------------------------------select bikeType ------------------------------------ -->
 					<div>
-						<label style="margin-left:10px; margin-top: 20px"><c:out value="${bikeTypeLabel}"></c:out>:</label>
-						<select	name="bikeTypeId"  class="form-control">
-							<option selected value="0"><c:out value="${chooseBikeTypeLabel}"></c:out></option>
+						<label style="margin-left:10px; margin-top: 20px"><c:out value="${bikeTypeLabel}"></c:out>:</label>						
+						<select	name="bikeTypeId"  class="form-control">						
+							<c:if test="${bikeTypeId == null || bikeTypeId == 0}">
+								<option selected value="0"><c:out value="${chooseBikeTypeLabel}"></c:out></option>
+							</c:if>
+							<c:if test="${bikeTypeId != null && bikeTypeId != 0}">
+								<option value="0"><c:out value="${chooseBikeTypeLabel}"></c:out></option>
+							</c:if>
 							<c:forEach items="${bikeTypeList}" var="item">
-								<option value="${item.id}"><c:out value="${item.bikeType}"></c:out></option>
+								<option <c:if test="${bikeTypeId==item.id}">selected</c:if> value="${item.id}"><c:out value="${item.bikeType}"></c:out></option>
 							</c:forEach> 
 						</select>				
 					</div>
@@ -76,6 +96,7 @@
 				</form>
 			</div>
 			
+			<!-- --------------------------------search results ------------------------------------ -->
 			<c:if test="${bikeProductList!=null}">	
 				<div class="col-md-10" style="background: #F5F5DC">
 					<div class="row" style="font-size: 20px; font-weight: bold; padding-top: 5px; padding-left: 5px; color: #000080	">

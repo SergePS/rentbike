@@ -15,6 +15,7 @@ import by.postnikov.rentbike.command.util.RequestParameterHandler;
 import by.postnikov.rentbike.controller.RouteType;
 import by.postnikov.rentbike.controller.Router;
 import by.postnikov.rentbike.entity.User;
+import by.postnikov.rentbike.exception.ConvertPrintStackTraceToString;
 import by.postnikov.rentbike.exception.ServiceException;
 import by.postnikov.rentbike.service.ServiceFactory;
 import by.postnikov.rentbike.service.UserService;
@@ -58,7 +59,7 @@ public class RegisterUserCommand implements Command {
 			router.setPagePath(PageConstant.REDIRECT_TO_LOGIN_PAGE);
 			
 		} catch (ServiceException e) {
-			logger.log(Level.ERROR, "An error occured while the user was creating, " + e);
+			logger.log(Level.ERROR, "An error occured while the user was creating, " + ConvertPrintStackTraceToString.convert(e));
 			router.setPagePath(PageConstant.ERROR_PAGE);
 		}
 		

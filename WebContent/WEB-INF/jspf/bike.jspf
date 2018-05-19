@@ -39,6 +39,8 @@
 							id="model"
 							name="model"
 							class="form-control"
+							<c:if test="${bike!=null}">value="${bike.model}"</c:if>
+							<c:if test="${model!=null}">value="${model}"</c:if>
 							value="${bike.model}" 
 							placeholder="${modelPlaceholder}"
 							pattern="[\w\-\s\.\dа-яА-ЯёЁ]{1,50}"
@@ -55,7 +57,8 @@
 							id="wheelSize"
 							name="wheelSize"
 							class="form-control"
-							value="${bike.wheelSize}" 
+							<c:if test="${bike!=null}">value="${bike.wheelSize}"</c:if>
+							<c:if test="${model!=null}">value="${wheelSize}"</c:if>
 							placeholder="${wheelSizePlaceholder}"
 							pattern="[0-9]{1,2}"
 							oninvalid="setCustomValidity('${wheelSizeWarn}')"
@@ -70,8 +73,9 @@
 					<input 	type="text" 
 							id="speedCount"
 							name="speedCount"
-							class="form-control" 
-							value="${bike.speedCount}"
+							class="form-control"
+							<c:if test="${bike!=null}">value="${bike.speedCount}"</c:if>
+							<c:if test="${model!=null}">value="${speedCount}"</c:if>
 							placeholder="${speedCountPlaceholder}"
 							pattern="[0-9]{1,2}"
 							oninvalid="setCustomValidity('${speedCountWarn}')"

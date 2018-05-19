@@ -54,7 +54,7 @@
 	
 	<!-- --------------------------- user order ------------------------------- -->
 	<c:if test="${bikeOrder!=null}">
-		<form action="FrontController" method="post">
+		<form action="FrontController" method="post" id="bikeOrder" onsubmit="checkParkingChoice(); return false">
 			<div class="container" style="margin-top: 15px">
 				<div align="center" style="border-bottom: 1px solid blue; font-size: 25px; padding-bottom: 5px">
 					<c:out value="${currentOrderLabel}"></c:out>:				
@@ -146,8 +146,8 @@
 					<div class="col-md-1"></div>
 					<div class="col-md-3"><label style="margin-left:10px"><c:out value="${returnParkingLabel}"></c:out>:</label></div>
 					<div class="col-md-4">
-						<select	name="finishParkingId"  class="form-control">
-							<option value="0"></option>
+						<select	name="finishParkingId"  class="form-control" id="finishParkingId">
+							<option value="0"><c:out value="${chooseParkingLabel}"></c:out></option>
 							<c:forEach items="${parkingList}" var="item">
 								<option value="${item.id}"><c:out value="${item.address}"></c:out></option>
 							</c:forEach> 

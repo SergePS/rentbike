@@ -36,3 +36,12 @@ function tick(){
     document.getElementById("hours").childNodes[0].nodeValue = hrPrint;
     document.getElementById("days").childNodes[0].nodeValue = day;    
 }
+
+function checkParkingChoice(){
+	if(document.getElementById("finishParkingId").value==0){
+		errorMessageShow('<c:out value="${parkingNotSelectedWarn}"></c:out>');
+		return false;
+	}else{
+		document.getElementById("bikeOrder").submit();
+	}
+}

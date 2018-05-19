@@ -36,8 +36,9 @@ public class BikeParameterValidator {
 			return false;
 		}
 
-		BigDecimal amountNumger = new BigDecimal(amount);
-		if (amountNumger.compareTo(BigDecimal.ZERO) == 0) {
+		BigDecimal amountNumber = new BigDecimal(amount);
+
+		if (amountNumber.compareTo(BigDecimal.ZERO) == 0) {
 			return false;
 		}
 		return true;

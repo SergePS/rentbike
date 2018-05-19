@@ -1,7 +1,6 @@
 package by.postnikov.rentbike.service.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +33,8 @@ public class BikeServiceImpl implements BikeService {
 
 	private final static int MAX_SPEED_COUNT = 99;
 	private final static String ZERO_PARAM = "0";
+	private final static String COMMA = ",";
+	private final static String DOT = ".";
 
 	public BikeServiceImpl() {
 	}
@@ -259,8 +260,9 @@ public class BikeServiceImpl implements BikeService {
 			return MessagePage.VALIDATION_ERROR.message();
 		}
 		int bikeCount = Integer.parseInt(countString);
-
+		
 		String valueString = requestParameters.get(RequestParameter.BIKE_VALUE.parameter());
+		valueString = valueString.replace(COMMA, DOT);
 		if (!BikeParameterValidator.amountValidate(valueString)) {
 			logger.log(Level.ERROR, "value - " + valueString + " is wrong");
 			return MessagePage.VALIDATION_ERROR.message();
@@ -268,6 +270,7 @@ public class BikeServiceImpl implements BikeService {
 		BigDecimal bikeValue = new BigDecimal(valueString);
 
 		String rentPriceString = requestParameters.get(RequestParameter.BIKE_RENT_PRICE.parameter());
+		rentPriceString = rentPriceString.replace(COMMA, DOT);
 		if (!BikeParameterValidator.amountValidate(rentPriceString)) {
 			logger.log(Level.ERROR, "Rent ptice has not been verified");
 			return null;
@@ -300,12 +303,11 @@ public class BikeServiceImpl implements BikeService {
 			bikeProduct.setValue(bikeValue);
 			bikeProduct.setRentPrice(rentPrice);
 
-			bikeProductList = new ArrayList<>();
 			for (int i = 0; i < bikeCount; i++) {
 				bikeProductList.add(cloneRentBikeObject.clone(bikeProduct));
 			}
 
-			bikeProductList = bikeDAO.addBikeProduct(bikeProductList);
+			bikeDAO.addBikeProduct(bikeProductList);
 
 		} catch (NumberFormatException | DAOException e) {
 			throw new ServiceException("Get bike by id error", e);

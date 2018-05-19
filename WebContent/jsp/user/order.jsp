@@ -112,11 +112,12 @@
 				</div>
 				
 				<div align="center" style="margin-top:20px">
+					<input type="hidden" name="bikeProductId" value="${bikeProduct.id}"/>
 					<input type="hidden" name="command" value="create_order"/>					
 					<input type="submit" class="btn btn-primary" style="background-color: green" value="${goLabel}">
 				</div>
 			</form>
-	
+		
 	</c:if>
 
 </body>

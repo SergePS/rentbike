@@ -46,10 +46,12 @@ public class FindBikeProductCommand implements Command {
 		try {
 			List<BikeProduct> bikeProductList = new ArrayList<>();
 			String errorMessage = bikeService.findBikeProduct(requestParameters, bikeProductList, pageInfo);
-			if(!errorMessage.isEmpty()) {
+			if(errorMessage.isEmpty()) {
+				request.setAttribute(RequestParameter.BIKE_PRODUCT_LIST.parameter(), bikeProductList);
+				RequestParameterHandler.addParamToReques(request);
+			}else {
 				request.setAttribute(RequestParameter.ERROR.parameter(), errorMessage);
 			}
-			request.setAttribute(RequestParameter.BIKE_PRODUCT_LIST.parameter(), bikeProductList);
 			
 			List<Parking> parkingList = parkingService.takeAllParking();
 			List<BikeType> bikeTypeList = bikeService.takeAllBikeType();

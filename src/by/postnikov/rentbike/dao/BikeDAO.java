@@ -44,7 +44,7 @@ public interface BikeDAO {
 	 * @param bikeProductList
 	 * @return
 	 */
-	List<BikeProduct> addBikeProduct(List<BikeProduct> bikeProductList) throws DAOException;
+	void addBikeProduct(List<BikeProduct> bikeProductList) throws DAOException;
 	
 	
 	/**

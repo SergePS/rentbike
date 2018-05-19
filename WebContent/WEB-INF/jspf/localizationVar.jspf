@@ -117,11 +117,13 @@
 <fmt:message bundle="${loc}" key="parkingLabel" var="parkingLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="pcLabel" var="pcLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="parkingsLabel" var="parkingsLabel"></fmt:message>
+<fmt:message bundle="${loc}" key="parkingNotSelectedWarn" var="parkingNotSelectedWarn"></fmt:message>
 <fmt:message bundle="${loc}" key="parkingCapacityLabel" var="parkingCapacityLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="pageLabel" var="pageLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="passwordNotMatchLabel" var="passwordNotMatchLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="previousLabel" var="previousLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="paidOrderNotice" var="paidOrderNotice"></fmt:message>
+<fmt:message bundle="${loc}" key="productsCatalog" var="productsCatalog"></fmt:message>
 
 <fmt:message bundle="${loc}" key="registrationButton" var="registrationButton"></fmt:message>
 <fmt:message bundle="${loc}" key="registrationLabel" var="registrationLabel"></fmt:message>

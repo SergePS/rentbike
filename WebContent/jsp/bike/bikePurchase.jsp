@@ -26,7 +26,7 @@
 	
 <br>	
 	<div class="container">
-		<form action="FrontController" method="post" id="addBikeProductForm" onsubmit="check();return false">
+		<form action="FrontController" method="post" id="addBikeProductForm" onsubmit="checkPurchaseForm();return false">
 		
 			<!-- ----------------------------------select or replace bike link ----------------------------------------- -->
 			<div class="row">
@@ -46,10 +46,12 @@
 			<div class="row">
 				<div class="col-md-4"><label><c:out value="${parkingLabel}">:</c:out></label></div>
 				<div class="col-md-4">
-					<select	name="parkingId"  class="form-control">
-						<option selected value="0"><c:out value="${chooseParkingLabel}">:</c:out></option>
+						<select	name="parkingId" id="parkingId" class="form-control">
+						<c:if test="${parkingId==null}">
+							<option selected value="0"><c:out value="${chooseParkingLabel}">:</c:out></option>
+						</c:if>
 						<c:forEach items="${parkingList}" var="item">
-							<option value="${item.id}"><c:out value="${item.address}">:</c:out></option>
+							<option  <c:if test="${item.id eq parkingId}">selected</c:if>  value="${item.id}"><c:out value="${item.address}">:</c:out></option>
 						</c:forEach> 
 					</select>			
 				</div>
@@ -66,6 +68,8 @@
 						name="bikeCount"
 						class="form-control"
 						placeholder="${pcLabel}"
+						required
+						value = '<c:out value="${bikeCount}"></c:out>'
 						pattern="[1-9]"
 						oninvalid="setCustomValidity('${countWarnLabel}')"
 						oninput="setCustomValidity('')">
@@ -82,6 +86,8 @@
 						name="value"
 						class="form-control"
 						placeholder="${enterAmountLabel}"
+						required
+						value = '<c:out value="${value}"></c:out>'
 						pattern="(\d{1}|[1-9]{1}\d{1,5})((\.|,){1}\d{1,2})?"
 						oninvalid="setCustomValidity('${amountWarnLabel}')"
 						oninput="setCustomValidity('')">
@@ -98,6 +104,8 @@
 						id="rentPrice"
 						class="form-control"
 						placeholder="${enterAmountLabel}"
+						value = '<c:out value="${rentPrice}"></c:out>'
+						required
 						pattern="(\d{1}|[1-9]{1}\d{1,5})((\.|,){1}\d{1,2})?"
 						oninvalid="setCustomValidity('${amountWarnLabel}')"
 						oninput="setCustomValidity('')">
@@ -145,12 +153,12 @@
 					</table>
 				</div>		
 			</div>
-		</div>		
+		</div>
+		<c:remove var="bikeProductList" scope="session" />		
 	</c:if>
 	
 	<%@ include file="../../WEB-INF/jspf/message.jspf" %>	
 
-			
 	<script>
 		<%@include file="/js/bikePurchase.js"%>
 	</script>

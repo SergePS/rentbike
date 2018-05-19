@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
+import by.postnikov.rentbike.command.MessagePage;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.util.RequestParameterHandler;
@@ -85,10 +86,14 @@ public class UpdateBikeCommand implements Command{
 			
 			router.setPagePath(PageConstant.ADD_BIKE_PAGE);
 			
-			if(errorMessage.isEmpty() && filePart!=null) {
-				filePart.write(filePath);				
+			if(errorMessage.isEmpty()) {
+				if(filePart!=null) {
+					filePart.write(filePath);
+				}
+				request.setAttribute(RequestParameter.MESSAGE.parameter(), MessagePage.BIKE_CHANGED.message());
 			}else {
 				request.setAttribute(RequestParameter.ERROR.parameter(), errorMessage);
+				RequestParameterHandler.addParamToReques(request);
 			}
 			
 		} catch (ServiceException e) {

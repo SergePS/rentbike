@@ -338,7 +338,7 @@ public class SqlBikeDAO implements BikeDAO {
 	}
 
 	@Override
-	public List<BikeProduct> addBikeProduct(List<BikeProduct> bikeProductList) throws DAOException {
+	public void addBikeProduct(List<BikeProduct> bikeProductList) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -362,8 +362,6 @@ public class SqlBikeDAO implements BikeDAO {
 			wrapperConnection.closeStatement(preparedStatement);
 			connectionPool.returnWrapperConnection(wrapperConnection);
 		}
-
-		return bikeProductList;
 
 	}
 

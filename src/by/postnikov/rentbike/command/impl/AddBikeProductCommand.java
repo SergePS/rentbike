@@ -18,9 +18,11 @@ import by.postnikov.rentbike.command.util.RequestParameterHandler;
 import by.postnikov.rentbike.controller.RouteType;
 import by.postnikov.rentbike.controller.Router;
 import by.postnikov.rentbike.entity.BikeProduct;
+import by.postnikov.rentbike.entity.Parking;
 import by.postnikov.rentbike.exception.ConvertPrintStackTraceToString;
 import by.postnikov.rentbike.exception.ServiceException;
 import by.postnikov.rentbike.service.BikeService;
+import by.postnikov.rentbike.service.ParkingService;
 import by.postnikov.rentbike.service.ServiceFactory;
 
 public class AddBikeProductCommand implements Command {
@@ -34,17 +36,28 @@ public class AddBikeProductCommand implements Command {
 		BikeService bikeService = serviceFactory.getBikeService();
 
 		Router router = new Router();
-		router.setRoute(RouteType.REDIRECT);
-
+		
 		Map<String, String> requestParameters = RequestParameterHandler.requestParamToMap(request);
 
 		try {
 			List<BikeProduct> bikeProductList = new ArrayList<>();
-			bikeService.addBikeProduct(requestParameters, bikeProductList);
-
-			HttpSession session = request.getSession(false);
-			session.setAttribute(RequestParameter.BIKE_PRODUCT_LIST.parameter(), bikeProductList);
-			router.setPagePath(PageConstant.REDIRECT_TO_BIKE_PURCHASE_PAGE);
+			String errorMessage = bikeService.addBikeProduct(requestParameters, bikeProductList);
+			if(errorMessage.isEmpty()) {
+				HttpSession session = request.getSession(false);
+				session.setAttribute(RequestParameter.BIKE_PRODUCT_LIST.parameter(), bikeProductList);
+				router.setRoute(RouteType.REDIRECT);
+				router.setPagePath(PageConstant.REDIRECT_TO_BIKE_PURCHASE_PAGE);
+			}else {
+				request.setAttribute(RequestParameter.ERROR.parameter(), errorMessage);
+				RequestParameterHandler.addParamToReques(request);
+				
+				ParkingService parkingService = serviceFactory.getParkingService();
+				List<Parking> parkingList = parkingService.takeAllParking();
+				request.setAttribute(RequestParameter.PARKING_LIST.parameter(), parkingList);
+				
+				router.setRoute(RouteType.FORWARD);
+				router.setPagePath(PageConstant.BIKE_PURCHASE_PAGE);
+			}
 		} catch (ServiceException e) {
 			logger.log(Level.ERROR, "Add bike product error" + ConvertPrintStackTraceToString.convert(e));
 			router.setPagePath(PageConstant.ERROR_PAGE);

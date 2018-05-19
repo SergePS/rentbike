@@ -34,9 +34,9 @@ public class SqlUserDAO implements UserDAO {
 
 	private static Logger logger = LogManager.getLogger();
 
-	private final static String FIND_USER_BY_LOGIN_PASSW = "SELECT id, login, name, surname, email, birthday, registrationDate, role, state, creditCard FROM users WHERE login = ? and password = MD5(?)";
+	private final static String FIND_USER_BY_LOGIN_PASSW = "SELECT id, login, name, surname, email, birthday, registrationDate, role, state, creditCard FROM users WHERE login = ? and password = sha1(?)";
 
-	private final static String CREATE_USER_CU = "INSERT INTO users (login, password, name, surname, email, birthday, registrationDate, creditCard)  VALUES (?, MD5(?), ?, ?, ?, ?, ?, ?)";
+	private final static String CREATE_USER_CU = "INSERT INTO users (login, password, name, surname, email, birthday, registrationDate, creditCard)  VALUES (?, sha1(?), ?, ?, ?, ?, ?, ?)";
 	private final static int CU_LOGIN = 1; // CU - Create User
 	private final static int CU_PASSWORD = 2;
 	private final static int CU_NAME = 3;

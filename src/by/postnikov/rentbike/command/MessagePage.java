@@ -24,6 +24,7 @@ public enum MessagePage {
 	PARKING_ADDED("parkingAdded"),
 	
 	BIKE_ADDED("bikeAdded"),
+	BIKE_CHANGED("bikeChanged"),
 	
 	PROFILE_CHANGED("profileChanged"),
 	PASSWORD_CHANGED("passwordChanged");

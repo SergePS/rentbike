@@ -34,7 +34,7 @@ public class UserParameterValidator {
 	
 	public static boolean idValidate(String id) {
 		
-		if (id.isEmpty()) {
+		if (id == null || id.isEmpty()) {
 			return false;
 		}
 		
@@ -48,7 +48,7 @@ public class UserParameterValidator {
 
 	public static boolean loginValidate(String login) {
 
-		if (login.isEmpty()) {
+		if (login == null || login.isEmpty()) {
 			return false;
 		}
 
@@ -80,7 +80,7 @@ public class UserParameterValidator {
 
 	public static boolean nameValidate(String name) {
 
-		if (name.isEmpty()) {
+		if (name == null || name.isEmpty()) {
 			return false;
 		}
 
@@ -95,7 +95,7 @@ public class UserParameterValidator {
 
 	public static boolean emailValidate(String email) {
 
-		if (email.isEmpty()) {
+		if (email == null || email.isEmpty()) {
 			return false;
 		}
 
@@ -110,7 +110,7 @@ public class UserParameterValidator {
 
 	public static boolean birthdayValidate(String birthday) {
 
-		if (birthday.isEmpty()) {
+		if (birthday == null || birthday.isEmpty()) {
 			return false;
 		}
 
@@ -142,7 +142,7 @@ public class UserParameterValidator {
 
 	public static boolean craditcardValidate(String creditCard) {
 
-		if (creditCard.isEmpty()) {
+		if (creditCard == null || creditCard.isEmpty()) {
 			return false;
 		}
 

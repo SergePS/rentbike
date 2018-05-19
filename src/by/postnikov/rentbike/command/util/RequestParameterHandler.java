@@ -21,17 +21,12 @@ public class RequestParameterHandler {
 		for (Map.Entry<String, String[]> mapEntry : set) {
 
 			if (!RequestParameter.PASSWORD.parameter().equals(mapEntry.getKey())) {
-				String tempValue = "";
-				for (String item : mapEntry.getValue()) {
-					tempValue = tempValue + item;
+				for (String value : mapEntry.getValue()) {
+					requestParameters.put(mapEntry.getKey(), value);
 				}
-				requestParameters.put(mapEntry.getKey(), tempValue);
 			}
-
 		}
-
 		return requestParameters;
-
 	}
 
 	public static String paramToString(HttpServletRequest request) {
@@ -44,19 +39,32 @@ public class RequestParameterHandler {
 		int countParams = 0;
 		for (Map.Entry<String, String[]> i : set) {
 
-			String tempValue = "";
-			for (String k : i.getValue()) {
-				tempValue = tempValue + k;
-			}
-
-			if (countParams == 0) {
-				urlWithParam = urlWithParam + "?" + i.getKey() + "=" + tempValue;
-				countParams++;
-			} else {
-				urlWithParam = urlWithParam + "&" + i.getKey() + "=" + tempValue;
+			for (String value : i.getValue()) {
+				if (countParams == 0) {
+					urlWithParam = urlWithParam + "?" + i.getKey() + "=" + value;
+					countParams++;
+				} else {
+					urlWithParam = urlWithParam + "&" + i.getKey() + "=" + value;
+				}
 			}
 		}
 		return urlWithParam;
+	}
+	
+
+	public static void addParamToReques(HttpServletRequest request) {
+
+		Map<String, String[]> parametrs = request.getParameterMap();
+		Set<Map.Entry<String, String[]>> set = parametrs.entrySet();
+
+		for (Map.Entry<String, String[]> i : set) {
+
+			for (String value : i.getValue()) {
+				request.setAttribute(i.getKey(), value);
+			}
+
+		}
+
 	}
 
 }
