@@ -1,0 +1,35 @@
+package by.postnikov.rentbike.service;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class CloneRentBikeObject<T> {
+
+	private static Logger logger = LogManager.getLogger();
+
+	@SuppressWarnings("unchecked")
+	public T clone(T originalObject) {
+
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				ObjectOutputStream objOutputStream = new ObjectOutputStream(outputStream);) {
+			objOutputStream.writeObject(originalObject);
+			ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+			ObjectInputStream objInputStream = new ObjectInputStream(inputStream);
+			return (T) objInputStream.readObject();
+
+		} catch (IOException | ClassNotFoundException e) {
+			logger.log(Level.ERROR, "Clone object error, " + e.getMessage());
+		}
+
+		return null;
+
+	}
+
+}
