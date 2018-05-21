@@ -46,7 +46,7 @@ public class FindBikeCommand implements Command {
 			String errorMessage =  bikeService.findBike(requestParameters, bikeList, pageInfo);
 			if(errorMessage.isEmpty()) {
 				request.setAttribute(RequestParameter.BIKE_LIST.parameter(), bikeList);
-				
+				RequestParameterHandler.addParamToReques(request);
 				PageInfoHandler.handleAndAddToSession(pageInfo, request, bikeList);				
 			}else {
 				request.setAttribute(RequestParameter.ERROR.parameter(), errorMessage);

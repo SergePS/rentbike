@@ -39,9 +39,14 @@
 					<div style="margin-top: 10px">
 						<label style="margin-left:10px"><c:out value="${brandLabel}">:</c:out></label>
 						<select name="brandId"  class="form-control">
-							<option selected value="0"><c:out value="${chooseBarndLabel}"></c:out></option>
+							<c:if test="${brandId==null || brandId == 0}">
+								<option selected value="0"><c:out value="${chooseBarndLabel}"></c:out></option>
+							</c:if>
+							<c:if test="${brandId != null && brandId != '0'}">
+								<option value="0"><c:out value="${chooseBarndLabel}"></c:out></option>
+							</c:if>
 							<c:forEach items="${brandList}" var="item">
-								<option value=<c:out value="${item.id}"></c:out>><c:out value="${item.brand}"></c:out></option>
+								<option <c:if test="${brandId==item.id}">selected</c:if> value=<c:out value="${item.id}"></c:out>><c:out value="${item.brand}"></c:out></option>
 							</c:forEach>
 						</select>				
 					</div>
@@ -53,7 +58,7 @@
 						<input 	type="text"	
 							name="model"
 							class="form-control"
-							value="${bike.model}"
+							value="${model}"
 							placeholder="${modelPlaceholder}"
 							pattern="[\w\-\s\.\dа-яА-ЯёЁ]{1,15}"
 							oninvalid="setCustomValidity('${modelWarnLabel}')"
@@ -65,9 +70,14 @@
 					<div>
 						<label style="margin-left:10px"><c:out value="${bikeTypeLabel}">:</c:out></label>
 						<select name="bikeTypeId"  class="form-control">
-							<option selected value="0"><c:out value="${chooseBikeTypeLabel}"></c:out></option>
+							<c:if test="${bikeTypeId == null || bikeTypeId == 0}">
+								<option selected value="0"><c:out value="${chooseBikeTypeLabel}"></c:out></option>
+							</c:if>
+							<c:if test="${bikeTypeId != null && bikeTypeId != 0}">
+								<option value="0"><c:out value="${chooseBikeTypeLabel}"></c:out></option>
+							</c:if>
 							<c:forEach items="${bikeTypeList}" var="item">
-								<option value="${item.id}"><c:out value="${item.bikeType}"></c:out></option>
+								<option <c:if test="${bikeTypeId==item.id}">selected</c:if> value="${item.id}"><c:out value="${item.bikeType}"></c:out></option>
 							</c:forEach> 
 						</select>				
 					</div>
@@ -83,7 +93,7 @@
 								<input 	type="text" 
 									name="minSpeedCount"
 									class="form-control" 
-									value="${bike.speedCount}"
+									value="${minSpeedCount}"
 									placeholder="${fromLabel}"
 									pattern="[1-9]{1}\d{0,1}"
 									oninvalid="setCustomValidity('${speedCountWarn}')"
@@ -94,7 +104,7 @@
 								<input 	type="text" 
 									name="maxSpeedCount"
 									class="form-control" 
-									value="${bike.speedCount}"
+									value="${maxSpeedCount}"
 									placeholder="${toLabel}"
 									pattern="[1-9]{1}\d{0,1}"
 									oninvalid="setCustomValidity('${speedCountWarn}')"

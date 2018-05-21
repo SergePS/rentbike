@@ -49,6 +49,7 @@ public class FindBikeProductCommand implements Command {
 			if(errorMessage.isEmpty()) {
 				request.setAttribute(RequestParameter.BIKE_PRODUCT_LIST.parameter(), bikeProductList);
 				RequestParameterHandler.addParamToReques(request);
+				PageInfoHandler.handleAndAddToSession(pageInfo, request, bikeProductList);
 			}else {
 				request.setAttribute(RequestParameter.ERROR.parameter(), errorMessage);
 			}
@@ -61,8 +62,6 @@ public class FindBikeProductCommand implements Command {
 			request.setAttribute(RequestParameter.BRAND_LIST.parameter(), brandList);
 			
 			router.setPagePath(PageConstant.BIKE_PRODUCT_CATALOG_PAGE);
-			
-			PageInfoHandler.handleAndAddToSession(pageInfo, request, bikeProductList);
 			
 		} catch (ServiceException e) {
 			logger.log(Level.ERROR, "Get data error, " + e.getMessage());
