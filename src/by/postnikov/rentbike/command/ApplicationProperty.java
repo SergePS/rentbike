@@ -10,12 +10,21 @@ import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.exception.ConvertPrintStackTraceToString;
 
+/**
+ * @author Sergey Postnikov
+ *
+ */
 public class ApplicationProperty {
 
 	private static Logger logger = LogManager.getLogger();
 
 	private static final String PROPERTIES = "application_properties";
 
+	/**
+	 * Returns Properties object, that contains application properties.
+	 * 
+	 * @return Properties
+	 */
 	public static Properties takeProperty() {
 		
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

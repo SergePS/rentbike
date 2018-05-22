@@ -74,7 +74,7 @@ public class FrontController extends HttpServlet {
 	
 	@Override
 	public void destroy() {
-		ConnectionPool.getInstance().closeAllConnection();
+		ConnectionPool.getInstance().closeAllWrapperConnection();
 		logger.log(Level.DEBUG, "Servlet is closing");
 		super.destroy();
 	}

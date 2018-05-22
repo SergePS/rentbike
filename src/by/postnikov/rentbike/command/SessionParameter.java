@@ -3,7 +3,7 @@ package by.postnikov.rentbike.command;
 /**
  * @author Sergey Postnikov
  * 
- * Parameters to add to the session.
+ * Parameters received and sent to the session.
  */
 public enum SessionParameter {
 

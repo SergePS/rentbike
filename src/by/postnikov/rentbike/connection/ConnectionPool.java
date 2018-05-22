@@ -16,11 +16,14 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import by.postnikov.rentbike.exception.ConvertPrintStackTraceToString;
+import by.postnikov.rentbike.exception.DAOException;
+
 public class ConnectionPool {
 
 	private static Logger logger = LogManager.getLogger();
-	
-	private ConnectionPoolSlaveDeamon connectionPoolSlaveDeamon;
+
+	private static ConnectionPoolSlave connectionPoolSlave = new ConnectionPoolSlave();;
 
 	private static AtomicBoolean isPoolCreated = new AtomicBoolean(false);
 	private static Lock lock = new ReentrantLock();
@@ -47,8 +50,7 @@ public class ConnectionPool {
 	private static BlockingQueue<WrapperConnection> wrapperConnectionQueue;
 
 	private ConnectionPool() {
-		connectionPoolSlaveDeamon = new ConnectionPoolSlaveDeamon();
-		connectionPoolSlaveDeamon.start();
+		connectionPoolSlave.start();
 	}
 
 	/**
@@ -70,31 +72,38 @@ public class ConnectionPool {
 	}
 
 	/**
-	 * Method gives out wrapperConnection
+	 * Gives out wrapperConnection
 	 * 
 	 * @return WrapperConnection wrapperConnection
+	 * @throws DAOException
 	 */
-	public WrapperConnection getWrapperConnection() {
+	public WrapperConnection getWrapperConnection() throws DAOException {
 		WrapperConnection wrapperConnection;
+
+		if (!isConnectionPoolWork) {
+			throw new DAOException("Connection pool was stopped");
+		}
 
 		try {
 			wrapperConnection = wrapperConnectionQueue.poll(WAIT_TIME_CONNECTTION, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			logger.log(Level.ERROR, "Get connection error, " + e.getMessage());
-			throw new RuntimeException(); // stub
-		}
 
-		if (!wrapperConnection.isValidConnection()) {
-			logger.log(Level.ERROR,
-					"When the connection was issued, was found that it was bad, so old connection terminated and new connection created");
-			wrapperConnection.closeConnection();
-			wrapperConnection = createConnection();
+			if (!wrapperConnection.isValidConnection()) {
+				logger.log(Level.ERROR,
+						"When the connection was issued, was found that it was bad, so old connection terminated and new connection created");
+				wrapperConnection.closeConnection();
+				wrapperConnection = createConnection();
+			}
+
+			return wrapperConnection;
+
+		} catch (InterruptedException e) {
+			logger.log(Level.ERROR, "Get connection error, " + ConvertPrintStackTraceToString.convert(e));
+			throw new DAOException("Failed to get WrapperConnection", e);
 		}
-		return wrapperConnection;
 	}
 
 	/**
-	 * Method takes back wrapperConnection.
+	 * Takes back wrapperConnection.
 	 * 
 	 * @param wrapperConnection
 	 *            - returned WrapperConnection
@@ -111,32 +120,44 @@ public class ConnectionPool {
 				wrapperConnection.setAutoCommit(true);
 				wrapperConnectionQueue.put(wrapperConnection);
 			} catch (InterruptedException e) {
-				logger.log(Level.ERROR, "Cannot add wraperConnection in Pool, " + e.getMessage());
+				logger.log(Level.ERROR,
+						"Cannot add wraperConnection in Pool, " + ConvertPrintStackTraceToString.convert(e));
 			}
 		}
 	}
 
 	/**
-	 * Method close all connection from connection pool.
+	 * Closes all connection from connection pool.
 	 */
-	public void closeAllConnection() {
-		int availableConnection = wrapperConnectionQueue.size();
-		for (int i = 0; i < availableConnection; i++) {
-			try {
-				wrapperConnectionQueue.poll(WAIT_TIME_CONNECTTION, TimeUnit.MILLISECONDS).closeConnection();
-			} catch (InterruptedException e) {
-				logger.log(Level.ERROR, "Close connection error, " + e.getMessage());
-			}
-		}
-
-		if (availableConnection == currentWrapperConnectionCount) {
-			logger.log(Level.DEBUG, "All connection were closed");
-		} else {
-			logger.log(Level.ERROR, "Not all connection were closed");
-		}
+	public void closeAllWrapperConnection() {
 
 		isConnectionPoolWork = false;
+		
+		connectionPoolSlave.setStopWorkThread();
 
+		try {
+			int availableConnection = wrapperConnectionQueue.size();
+
+			closeAllConnections();
+
+			if (availableConnection == currentWrapperConnectionCount) {
+				logger.log(Level.DEBUG, "All connection were closed");
+			} else {
+
+				TimeUnit.MILLISECONDS.sleep(WAIT_TIME_CONNECTTION);
+
+				if (wrapperConnectionQueue.size() > 0) {
+					closeAllConnections();
+				} else {
+					logger.log(Level.ERROR, "Not all connection were closed");
+				}
+			}
+
+		} catch (InterruptedException e) {
+			logger.log(Level.ERROR, "Close connection error, " + ConvertPrintStackTraceToString.convert(e));
+		}
+
+		//unloading drivers
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		while (drivers.hasMoreElements()) {
 			Driver driver = drivers.nextElement();
@@ -147,38 +168,46 @@ public class ConnectionPool {
 				logger.log(Level.ERROR, "Drivers deregister error");
 			}
 		}
-		
-		connectionPoolSlaveDeamon.setStopWorkThread();
-
 	}
 
 	boolean isConnectionPoolWork() {
 		return isConnectionPoolWork;
 	}
 
+	/**
+	 * @return available connection count
+	 */
 	int getAvailableConnectionCount() {
 		return wrapperConnectionQueue.size();
 	}
 
-	void increaseWripperConnectionCount() {
+	/**
+	 * @return all wrapperConnection count
+	 */
+	int getCurrentWrapperConnectionCount() {
+		return currentWrapperConnectionCount;
+	}
+
+	void addAdditionalWripperConnection() {
 		if (currentWrapperConnectionCount < MAX_WRAPPER_CONNECTION_COUNT) {
 			try {
 				WrapperConnection wrapperConnection = new WrapperConnection(properties);
 				wrapperConnectionQueue.put(wrapperConnection);
 				logger.log(Level.DEBUG, "One wrapperConnection added");
 			} catch (InterruptedException e) {
-				logger.log(Level.ERROR, "WrapperConnection didn't create, " + e.getMessage());
+				logger.log(Level.ERROR,
+						"WrapperConnection didn't create, " + ConvertPrintStackTraceToString.convert(e));
 			}
 		}
 	}
 
-	void decreaseWripperConnectionCount() {
+	void closeAdditionalWripperConnection() {
 		if (currentWrapperConnectionCount > DEFAULT_WRAPPER_CONNECTION_COUNT) {
 			try {
 				wrapperConnectionQueue.poll(WAIT_TIME_CONNECTTION, TimeUnit.MILLISECONDS).closeConnection();
 				logger.log(Level.DEBUG, "One wrapperConnection closed");
 			} catch (InterruptedException e) {
-				logger.log(Level.ERROR, "WrapperConnection didn't close" + e.getMessage());
+				logger.log(Level.ERROR, "WrapperConnection didn't close" + ConvertPrintStackTraceToString.convert(e));
 			}
 		}
 	}
@@ -200,7 +229,8 @@ public class ConnectionPool {
 			logger.log(Level.FATAL, "JDBC Drive didn't found, " + e.getMessage());
 			throw new RuntimeException();
 		} catch (InterruptedException e) {
-			logger.log(Level.ERROR, "Cannot add wraperConnection in Pool, " + e.getMessage());
+			logger.log(Level.ERROR,
+					"Cannot add wraperConnection in Pool, " + ConvertPrintStackTraceToString.convert(e));
 		}
 
 		isConnectionPoolWork = true;
@@ -208,6 +238,12 @@ public class ConnectionPool {
 
 	private WrapperConnection createConnection() {
 		return new WrapperConnection(properties);
+	}
+
+	private void closeAllConnections() throws InterruptedException {
+		for (int i = 0; i < wrapperConnectionQueue.size(); i++) {
+			wrapperConnectionQueue.poll(WAIT_TIME_CONNECTTION, TimeUnit.MILLISECONDS).closeConnection();
+		}
 	}
 
 }

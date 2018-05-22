@@ -4,4 +4,4 @@ login=root
 password=qwerty123456
 connectionCount=2
 maxConnectionCount=4
-waitTimeConnection=500
+waitTimeConnection=1000

@@ -18,14 +18,13 @@ public class PageInfoHandler {
 	 * Creates and initializes or reinitializes PageInfo object.
 	 * 
 	 * @param request
-	 * @return pageInfo
+	 * @return new or changed pageInfo object 
 	 */
 	public static PageInfo pageInfoInit(HttpServletRequest request) {
 
 		HttpSession session = request.getSession(false);
 		PageInfo pageInfo = (PageInfo) session.getAttribute(SessionParameter.PAGE_INFO.parameter());
 		
-		//if pageInfo == null or 
 		if (pageInfo == null || !pageInfo.isChangePageFlag()) {
 			pageInfo = new PageInfo();
 		} else {
@@ -37,7 +36,10 @@ public class PageInfoHandler {
 	}
 
 	/**
-	 * Modifies pageInfo object. If incoming itemList if empty,
+	 * Modifies pageInfo object:
+	 * 	set lastPage flag,
+	 * 	if received itemList not empty adds the ID of the last item in the itemList.
+	 * Finally adds pageInfo object to session.
 	 * 
 	 * @param pageInfo
 	 * @param request

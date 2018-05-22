@@ -31,6 +31,14 @@ import by.postnikov.rentbike.command.impl.UpdateUserCommand;
 import by.postnikov.rentbike.command.impl.RegisterUserCommand;
 import by.postnikov.rentbike.command.impl.FindUserOrdersCommand;
 
+/**
+ * @author Sergey Postnikov
+ *
+ */
+/**
+ * @author SergeWork
+ *
+ */
 public enum CommandType {
 	
 	LOGIN(new LoginCommand(), AccessLevel.USER),
@@ -70,7 +78,11 @@ public enum CommandType {
 	
 	PAGINATION(new PagingCommand(), AccessLevel.USER);
 	
+	
+	/** Command object */
 	private Command command;
+	
+	/** Access level for page */
 	private AccessLevel accessLevel;
 	
 	CommandType(Command command, AccessLevel accessLevel){
