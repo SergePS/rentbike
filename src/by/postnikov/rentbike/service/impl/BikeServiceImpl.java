@@ -94,18 +94,18 @@ public class BikeServiceImpl implements BikeService {
 	}
 
 	@Override
-	public String addBrand(Map<String, String> requestParameters, Brand brand) throws ServiceException {
+	public String addBrand(String brandName) throws ServiceException {
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		BikeDAO bikeDao = daoFactory.getBikeDAO();
 
-		String brandName = requestParameters.get(RequestParameter.BRAND.parameter());
 		if (!BikeParameterValidator.brandValidate(brandName)) {
 			logger.log(Level.ERROR, "brandName - " + brandName + " is wrong");
 			return MessagePage.VALIDATION_ERROR.message();
 		}
+		
+		Brand brand = new Brand();
 		brand.setBrand(brandName);
 
-		brand.setBrand(requestParameters.get(RequestParameter.BRAND.parameter()));
 		try {
 			return bikeDao.addBrand(brand);
 		} catch (DAOException e) {
@@ -260,7 +260,7 @@ public class BikeServiceImpl implements BikeService {
 			return MessagePage.VALIDATION_ERROR.message();
 		}
 		int bikeCount = Integer.parseInt(countString);
-		
+
 		String valueString = requestParameters.get(RequestParameter.BIKE_VALUE.parameter());
 		valueString = valueString.replace(COMMA, DOT);
 		if (!BikeParameterValidator.amountValidate(valueString)) {

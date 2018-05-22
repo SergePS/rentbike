@@ -8,10 +8,25 @@ import by.postnikov.rentbike.exception.ServiceException;
 
 public interface ParkingService {
 	
+	/**
+	 * @param requestParameters
+	 * @return
+	 * @throws ServiceException
+	 */
 	String addParking(Map<String, String> requestParameters) throws ServiceException;
 	
+	/**
+	 * @return
+	 * @throws ServiceException
+	 */
 	List<Parking> takeAllParking() throws ServiceException;
 	
+	/**
+	 * @param pakingId
+	 * @param parking
+	 * @return
+	 * @throws ServiceException
+	 */
 	String findParkingById(String pakingId, Parking parking) throws ServiceException;
 
 }

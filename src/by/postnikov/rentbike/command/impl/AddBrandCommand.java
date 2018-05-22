@@ -1,7 +1,6 @@
 package by.postnikov.rentbike.command.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import by.postnikov.rentbike.command.Command;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
-import by.postnikov.rentbike.command.util.RequestParameterHandler;
 import by.postnikov.rentbike.controller.Router;
 import by.postnikov.rentbike.entity.BikeType;
 import by.postnikov.rentbike.entity.Brand;
@@ -41,11 +39,10 @@ public class AddBrandCommand implements Command {
 			return router;
 		}
 		
-		Map<String, String> requestParameters = RequestParameterHandler.requestParamToMap(request);
-		Brand brand = new Brand();
+		String brandName = request.getParameter(RequestParameter.BRAND.parameter());
 
 		try {
-			String errorMessage = bikeService.addBrand(requestParameters, brand);
+			String errorMessage = bikeService.addBrand(brandName);
 			if (errorMessage.isEmpty()) {
 				List<Brand> brandList = bikeService.takeAllBrand();
 				request.setAttribute(RequestParameter.BRAND_LIST.parameter(), brandList);

@@ -17,7 +17,7 @@ public interface BikeDAO {
 	 * Add new Bike to DB
 	 * 
 	 * @param bike BIke object that should be added to database
-	 * @return error message if Bike with current Brand and Model already exist
+	 * @return notice if bike with such combination of the brand and model already exist
 	 * @throws DAOException if occurred SQL exception 
 	 */
 	String addBike(Bike bike) throws DAOException;
@@ -89,7 +89,7 @@ public interface BikeDAO {
 	void findBike(List<Bike> bikeList, long brandId, long bikeTypeId, String model, int minSpeedCount, int maxSpeedCount, PageInfo pageInfo) throws DAOException;
 	
 	/**
-	 * Method looks for a bike products from the received parameters. If bike products was found, fills the received empty collection with the found bike products.
+	 * Looks for a bike products according to the received parameters. If bike products were found, fills in the received empty collection with the found bike products.
 	 * 
 	 * @param parkingId
 	 * @param brandId
@@ -103,7 +103,7 @@ public interface BikeDAO {
 	void findBikeProduct(long parkingId, long brandId, long bikeTypeId, String model, BikeProductState state, List<BikeProduct> bikeProductList, PageInfo pageInfo) throws DAOException;
 	
 	/**
-	 * Method looks for bike product by received id and fills in bike product fields if it was found.
+	 * Looks for bike product by received id and fills in bike product fields if it was found.
 	 * 
 	 * @param bikeId
 	 * @param bikeProduct - empty object of BikeProduct

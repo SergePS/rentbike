@@ -35,7 +35,7 @@ public class SqlParkingDAO implements ParkingDAO {
 	private final static String CAPACITY_PARKING = "capacity";
 	private final static String BIKE_COUNT = "bikeCount";
 
-	private final static String FIND_PARKING_BY_ID_FPBI = " WHERE id=?";
+	private final static String FIND_PARKING_BY_ID_FPBI = "SELECT pk.id, pk.address, pk.capacity, bp.bikeCount FROM parkings pk LEFT JOIN (SELECT parkingId, COUNT(id) as bikeCount FROM bikeProduct WHERE state = 'available' GROUP BY parkingId) bp ON pk.id = bp.parkingId WHERE id=?";
 	private final static int FPBI_ID = 1; //FPBI - Find Parking By Id
 
 	public SqlParkingDAO() {
@@ -83,7 +83,7 @@ public class SqlParkingDAO implements ParkingDAO {
 		try {
 			wrapperConnection = connectionPool.getWrapperConnection();
 			prearedStatement = wrapperConnection
-					.getPreparedStatement(TAKE_ALL_PARKING_TAP + FIND_PARKING_BY_ID_FPBI);
+					.getPreparedStatement(FIND_PARKING_BY_ID_FPBI);
 
 			prearedStatement.setLong(FPBI_ID, parkingId);
 

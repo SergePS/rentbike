@@ -21,7 +21,7 @@ public interface UserDAO {
 	 *
 	 * @param user - object User with only login field that should be extracted from database
 	 * @param password - password, which must be compared with the password from the database
-	 * @throws DAOException if any SQL exception occurred
+	 * @throws DAOException if occurred SQL exception
 	 */
 	void login(User user, char[] password) throws DAOException;
 
@@ -31,7 +31,7 @@ public interface UserDAO {
 	 * @param user - User object that should be added in database
 	 * @param password as char[]
 	 * @return string notice if user with such login or e-mail already exists
-	 * @throws DAOException if any SQL exception occurred
+	 * @throws DAOException if occurred SQL exception
 	 */
 	String register(User user, char[] password) throws DAOException;
 
@@ -40,7 +40,7 @@ public interface UserDAO {
 	 *
 	 * @param order - BikeOrder object with empty id field, that should be added to database
 	 * @return BikeOrder object from DB with auto generated bikeOrder ID
-	 * @throws DAOException if any SQL exception occurred
+	 * @throws DAOException if occurred SQL exception
 	 */
 	BikeOrder createOrder(BikeOrder order) throws DAOException;
 	
@@ -52,7 +52,7 @@ public interface UserDAO {
 	 * @param finishParkingId - finish parking id
 	 * @param finishTime - order closing time
 	 * @param payment - BigDecimal order's payment
-	 * @throws DAOException if any SQL exception occurred
+	 * @throws DAOException if occurred SQL exception
 	 */	
 	void closeOrder(long orderId, long finishParkingId, String finishTime, BigDecimal payment) throws DAOException;
 	
@@ -62,7 +62,7 @@ public interface UserDAO {
 	 *
 	 * @param user - User whose order will be searched
 	 * @return object of BikeOrder, that was found for current user
-	 * @throws DAOException if any SQL exception occurred
+	 * @throws DAOException if occurred SQL exception
 	 */	
 	BikeOrder findOpenOrder(User user) throws DAOException;
 	
@@ -72,7 +72,7 @@ public interface UserDAO {
 	 * 
 	 * @param orderId
 	 * @param bikeOrder - is empty object of BikeOrder
-	 * @throws DAOException if any SQL exception occurred
+	 * @throws DAOException if occurred SQL exception
 	 */
 	void findOpenOrderById(long orderId, BikeOrder bikeOrder) throws DAOException; 
 	
@@ -80,7 +80,7 @@ public interface UserDAO {
 	 * The method returns a list of all users.
 	 * 
 	 * @return List<UserOrder> orderUserList
-	 * @throws DAOException if any SQL exception occurred
+	 * @throws DAOException if occurred SQL exception
 	 */
 	List<UserOrder> takeAllUsers() throws DAOException;
 	
@@ -89,7 +89,7 @@ public interface UserDAO {
 	 * 
 	 * @param user - object of the User with new data
 	 * @return String notice if new user login or e-mail already exist with other users
-	 * @throws DAOException if any SQL exception occurred
+	 * @throws DAOException if occurred SQL exception
 	 */
 	String updateUser (User user) throws DAOException;
 	
@@ -98,7 +98,7 @@ public interface UserDAO {
 	 * 
 	 * @param password
 	 * @param user
-	 * @throws DAOException if any SQL exception occurred
+	 * @throws DAOException if occurred SQL exception
 	 */
 	void updatePassword(char[] password, User user) throws DAOException;
 	
@@ -108,7 +108,7 @@ public interface UserDAO {
 	 * 
 	 * @param userId
 	 * @return List<BikeOrder> bikeOrderList
-	 * @throws DAOException if any SQL exception occurred
+	 * @throws DAOException if occurred SQL exception
 	 */
 	List<BikeOrder> findAllOrderByUser(long userId) throws DAOException;
 	
