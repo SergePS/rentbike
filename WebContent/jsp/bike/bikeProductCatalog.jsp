@@ -133,7 +133,7 @@
 							<div class="col-md-3" style="background: white">
 								<c:if test="${item.bike.picturePath!=null}">
 									<img src="${pageContext.request.contextPath}/images/bikes/${item.bike.picturePath}" 
-										alt="${item.bike.model}" style= "width: 250px; height: 152px; border: none">
+										alt="${item.bike.model}" style= "height: 152px; border: none">
 								</c:if>
 							</div>
 							<div class="col-md-3"  style="background: white">

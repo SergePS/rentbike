@@ -1,5 +1,10 @@
 package by.postnikov.rentbike.command;
 
+/**
+ * @author Sergey Postnikov
+ * 
+ * Parameters that are transmitted through the request.
+ */
 public enum RequestParameter {
 	
 	ADDRESS("address"),
@@ -85,6 +90,9 @@ public enum RequestParameter {
 		this.parameter = parameter;
 	}
 
+	/**
+	 * @return String representation of the parameter.
+	 */
 	public String parameter() {
 		return parameter;
 	}

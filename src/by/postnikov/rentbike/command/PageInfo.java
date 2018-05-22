@@ -3,6 +3,10 @@ package by.postnikov.rentbike.command;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+/**
+ * @author Sergey Postnikov
+ * Pagination parameters
+ */
 public class PageInfo {
 	
 	private final static int FIRST_PAGE = 1;
@@ -10,12 +14,24 @@ public class PageInfo {
 	private final static String DEFAULT_ELEMENT_ON_PAGE_KEY = "default_element_on_page";
 	private final static int DEFAULT_ELEMENTS_COUNT_ON_PAGE = Integer.parseInt(ApplicationProperty.takeProperty().getProperty(DEFAULT_ELEMENT_ON_PAGE_KEY));
 
+	/** Default element count on the page. */
 	private int defaultElementOnPage;
 	private int currentPage;
+	
+	/** Last page flag. */
 	private boolean lastPage;
+	
+	/** If emptyList flag true, then pagination menu on JSP is not available. */
 	private boolean emptyList;
+	
+	/** request to previous page with searching parameters*/
 	private String previousUrlWithParam;
+	
+	/** if changePageFlag if true, pageInfo is not initialized when redirect by a previous request  */
 	private boolean changePageFlag;
+	
+	/** storage for id of the last element on the page.
+	 *  Used to set the first id of the range of the SQL SELECT query*/
 	private Deque<Long> pagePoint;
 
 	public PageInfo() {

@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
 import by.postnikov.rentbike.command.PageConstant;
-import by.postnikov.rentbike.command.PageInfo;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.SessionParameter;
 import by.postnikov.rentbike.controller.Router;
@@ -34,9 +33,7 @@ public class GoToBikeCatalogPageCommand implements Command {
 		BikeService bikeService = serviceFactory.getBikeService();
 		
 		HttpSession session = request.getSession(false);
-		session.removeAttribute(SessionParameter.PAGE_INFO.parameter());
-		PageInfo pageInfo = new PageInfo();
-		session.setAttribute(SessionParameter.PAGE_INFO.parameter(), pageInfo);
+		
 		session.setAttribute(SessionParameter.BIKE_CATALOG_WITH_CHOICE.parameter(), request.getParameter(RequestParameter.BIKE_CATALOG_WITH_CHOICE.parameter()));
 
 		try {

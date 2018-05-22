@@ -36,7 +36,7 @@ public class AddBikeCommand implements Command {
 	private static final String UPLOAD_DIR = ApplicationProperty.takeProperty().getProperty(UPLOAD_DIR_PROP_KEY);
 	
 	private final static String DOT_SEPARATOR = "\\.";
-
+	
 	@Override
 	public Router execute(HttpServletRequest request) {
 

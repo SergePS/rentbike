@@ -8,12 +8,24 @@ import javax.servlet.http.HttpSession;
 import by.postnikov.rentbike.command.util.RequestParameterHandler;
 import by.postnikov.rentbike.entity.AbstractEntity;
 
+/**
+ * @author Sergey Postnikov
+ *
+ */
 public class PageInfoHandler {
 
+	/**
+	 * Creates and initializes or reinitializes PageInfo object.
+	 * 
+	 * @param request
+	 * @return pageInfo
+	 */
 	public static PageInfo pageInfoInit(HttpServletRequest request) {
 
 		HttpSession session = request.getSession(false);
 		PageInfo pageInfo = (PageInfo) session.getAttribute(SessionParameter.PAGE_INFO.parameter());
+		
+		//if pageInfo == null or 
 		if (pageInfo == null || !pageInfo.isChangePageFlag()) {
 			pageInfo = new PageInfo();
 		} else {
@@ -24,6 +36,13 @@ public class PageInfoHandler {
 		return pageInfo;
 	}
 
+	/**
+	 * Modifies pageInfo object. If incoming itemList if empty,
+	 * 
+	 * @param pageInfo
+	 * @param request
+	 * @param itemList
+	 */
 	public static void handleAndAddToSession(PageInfo pageInfo, HttpServletRequest request,
 			List<? extends AbstractEntity> itemList) {
 
@@ -33,6 +52,9 @@ public class PageInfoHandler {
 			pageInfo.setLastPage(true);
 			pageInfo.addPagePoint(pageInfo.getLastPagePoint());
 
+			// If current page number = 1 and incoming itemList is empty, then result of
+			// searching no contains items. So set emptyList flag - true.
+			// If emptyList flag true, then pagination menu on JSP is not available.
 			if (pageInfo.getCurrentPage() == 1) {
 				pageInfo.setEmptyList(true);
 			}
