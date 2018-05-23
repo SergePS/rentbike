@@ -59,11 +59,13 @@
 				<div class="col-md-4"></div>
 				<div class="col-md-4" align="center">
 					<br>		
-					<input type="hidden" name="command" value="add_parking">
 					<c:if test="${parking==null}">
+						<input type="hidden" name="command" value="add_parking">
 						<input type="submit" class="btn btn-primary" value="${addLabel}">
 					</c:if>
 					<c:if test="${parking!=null}">
+						<input type="hidden" name="parkingId" value="${parking.id}">
+						<input type="hidden" name="command" value="update_parking">
 						<input type="submit" class="btn btn-primary" value="${changeLabel}">
 					</c:if>
 					

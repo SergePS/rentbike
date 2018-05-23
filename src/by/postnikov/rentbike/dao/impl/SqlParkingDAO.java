@@ -37,6 +37,11 @@ public class SqlParkingDAO implements ParkingDAO {
 
 	private final static String FIND_PARKING_BY_ID_FPBI = "SELECT pk.id, pk.address, pk.capacity, bp.bikeCount FROM parkings pk LEFT JOIN (SELECT parkingId, COUNT(id) as bikeCount FROM bikeProduct WHERE state = 'available' GROUP BY parkingId) bp ON pk.id = bp.parkingId WHERE id=?";
 	private final static int FPBI_ID = 1; //FPBI - Find Parking By Id
+	
+	private final static String UPDATE_PARKING_UP = "UPDATE parkings SET address = ?, capacity = ? WHERE id = ?";
+	private final static int UP_ADDRESS = 1; //UP - Update Parking
+	private final static int UP_CAPACITY = 2;
+	private final static int UP_ID = 3;
 
 	public SqlParkingDAO() {
 
@@ -46,23 +51,43 @@ public class SqlParkingDAO implements ParkingDAO {
 	public String addParking(Parking parking) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
-		WrapperConnection wrapperConnection = null;
-		PreparedStatement preparedStatement = null;
+		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
+		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(ADD_PARKING_AP);
 
-		try {
-			wrapperConnection = connectionPool.getWrapperConnection();
-			preparedStatement = wrapperConnection.getPreparedStatement(ADD_PARKING_AP);
-
+		try { 
 			preparedStatement.setString(AP_ADDRESS, parking.getAddress());
 			preparedStatement.setInt(AP_PARKING_CAPACITY, parking.getCapacity());
-
 			preparedStatement.executeUpdate();
 			
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			logger.log(Level.ERROR, "this parking already exist, " + e);
+			logger.log(Level.ERROR, "this parking already exists, " + e);
 			return MessagePage.PARKING_DUBLICATE_ERROR.message();
 		} catch (SQLException e) {
 			throw new DAOException("An error occurred while adding the parking", e);
+		} finally {
+			wrapperConnection.closeStatement(preparedStatement);
+			connectionPool.returnWrapperConnection(wrapperConnection);
+		}
+
+		return "";
+	}
+	
+	public String updateParking(Parking parking) throws DAOException{
+		ConnectionPool connectionPool = ConnectionPool.getInstance();
+		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
+		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(UPDATE_PARKING_UP);
+		
+		try { 
+			preparedStatement.setString(UP_ADDRESS, parking.getAddress());
+			preparedStatement.setInt(UP_CAPACITY, parking.getCapacity());
+			preparedStatement.setLong(UP_ID, parking.getId());
+			preparedStatement.executeUpdate();
+			
+		} catch (MySQLIntegrityConstraintViolationException e) {
+			logger.log(Level.ERROR, "Parking with same address already exists");
+			return MessagePage.PARKING_DUBLICATE_ERROR.message();
+		} catch (SQLException e) {
+			throw new DAOException("An error occurred while updating the parking", e);
 		} finally {
 			wrapperConnection.closeStatement(preparedStatement);
 			connectionPool.returnWrapperConnection(wrapperConnection);
@@ -137,5 +162,6 @@ public class SqlParkingDAO implements ParkingDAO {
 
 		return parkingList;
 	}
+	
 
 }

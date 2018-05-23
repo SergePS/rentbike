@@ -28,5 +28,6 @@ public class PageConstant {
 	public static final String REDIRECT_TO_BIKE_PURCHASE_PAGE = "/FrontController?command=go_to_bike_purchase";
 	public static final String REDIRECT_TO_PARKING_PAGE = "/FrontController?command=go_to_parking_page";
 	public static final String REDIRECT_TO_LOGIN_PAGE = "/index.jsp";
+	
 
 }

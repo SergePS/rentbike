@@ -41,7 +41,7 @@ public class AddParkingCommand implements Command{
 			
 			if(errorMessage.isEmpty()) {
 				router.setPagePath(PageConstant.REDIRECT_TO_PARKING_PAGE);
-				HttpSession session = request.getSession(false);
+				HttpSession session = request.getSession(true);
 				session.setAttribute(RequestParameter.MESSAGE.parameter(), MessagePage.PARKING_ADDED.message());
 			}else {
 				router.setRoute(RouteType.FORWARD);

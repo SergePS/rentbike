@@ -3,6 +3,7 @@ package by.postnikov.rentbike.command.impl;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import by.postnikov.rentbike.command.Command;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
+import by.postnikov.rentbike.command.SessionParameter;
 import by.postnikov.rentbike.controller.Router;
 import by.postnikov.rentbike.entity.BikeType;
 import by.postnikov.rentbike.entity.Brand;
@@ -32,6 +34,9 @@ public class GoToBikeProductCatalogPageCommand implements Command {
 		ServiceFactory serviceFactory = ServiceFactory.getInstance();
 		ParkingService parkingService = serviceFactory.getParkingService();
 		BikeService bikeService = serviceFactory.getBikeService();
+		
+		HttpSession session = request.getSession(true);
+		session.removeAttribute(SessionParameter.PAGE_INFO.parameter());
 
 		try {
 			List<Parking> parkingList = parkingService.takeAllParking();

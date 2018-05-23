@@ -33,7 +33,7 @@ public class GoToBikeCatalogPageCommand implements Command {
 		BikeService bikeService = serviceFactory.getBikeService();
 		
 		HttpSession session = request.getSession(false);
-		
+		session.removeAttribute(SessionParameter.PAGE_INFO.parameter());
 		session.setAttribute(SessionParameter.BIKE_CATALOG_WITH_CHOICE.parameter(), request.getParameter(RequestParameter.BIKE_CATALOG_WITH_CHOICE.parameter()));
 
 		try {

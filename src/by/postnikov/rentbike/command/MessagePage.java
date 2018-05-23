@@ -22,6 +22,7 @@ public enum MessagePage {
 	
 	//notice
 	PARKING_ADDED("parkingAdded"),
+	PARKING_CHANGED("parkingChanged"),
 	
 	BIKE_ADDED("bikeAdded"),
 	BIKE_CHANGED("bikeChanged"),

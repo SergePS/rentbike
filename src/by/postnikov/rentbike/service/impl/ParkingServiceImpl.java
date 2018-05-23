@@ -62,6 +62,42 @@ public class ParkingServiceImpl implements ParkingService {
 		}
 
 	}
+	
+	@Override
+	public String updateParking(Map<String, String> requestParameters) throws ServiceException {
+		
+		Parking parking = new Parking();
+		
+		String parkingIdString = requestParameters.get(RequestParameter.PARKING_ID.parameter());
+		if(!UserParameterValidator.idValidate(parkingIdString)) {
+			logger.log(Level.ERROR, "pakingIdString - " + parkingIdString + " is wrong");
+			return MessagePage.VALIDATION_ERROR.message();
+		}
+		long parkingId = Long.parseLong(parkingIdString);
+		parking.setId(parkingId);
+		
+		
+		String address = requestParameters.get(RequestParameter.ADDRESS.parameter());
+		if(!ParkingParameterValidator.addressValidate(address)) {
+			return MessagePage.VALIDATION_ERROR.message();
+		}
+		parking.setAddress(address);
+		
+		String capacityString = requestParameters.get(RequestParameter.CAPACITY.parameter());
+		if(!ParkingParameterValidator.capacityValidate(capacityString)) {
+			return MessagePage.VALIDATION_ERROR.message();
+		}	
+		parking.setCapacity(Integer.parseInt(capacityString));
+
+		DAOFactory daoFactory = DAOFactory.getInstance();
+		ParkingDAO parkingDAO = daoFactory.getParkingDAO();
+
+		try {
+			return parkingDAO.updateParking(parking);
+		} catch (DAOException e) {
+			throw new ServiceException("An error occurred while updating the parking", e);
+		}
+	}
 
 	@Override
 	public String findParkingById(String pakingIdString, Parking parking) throws ServiceException {
