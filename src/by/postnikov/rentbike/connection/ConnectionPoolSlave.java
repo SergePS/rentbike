@@ -23,6 +23,10 @@ public class ConnectionPoolSlave extends Thread {
 	private final static String DEFAULT_CONNECTION_COUNT_KEY = "connectionCount";
 	private final static int DEFAULT_CONNECTION_COUNT = Integer
 			.parseInt(properties.getProperty(DEFAULT_CONNECTION_COUNT_KEY));
+	
+	private final static String WAIT_TIME_CONNECTTION_KEY = "waitTimeConnection";
+	private final static int WAIT_TIME_CONNECTTION = Integer
+			.parseInt(properties.getProperty(WAIT_TIME_CONNECTTION_KEY));
 
 	ConnectionPoolSlave() {
 		this.setDaemon(true);
@@ -34,14 +38,12 @@ public class ConnectionPoolSlave extends Thread {
 	public void run() {
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 
-		int counter = 0;
+		int workingConnectionCount = DEFAULT_CONNECTION_COUNT;
+		int timeGap = WAIT_TIME_CONNECTTION / (TIME_STEP_MILLISECONDS * 2);
+		int lackConnectionTimer = 0;
+		int excessConnectionTimer = 0;
 
 		while (workThread) {
-
-			int workingConnectionCount = DEFAULT_CONNECTION_COUNT;
-			int timeGap = TIME_STEP_MILLISECONDS / (TIME_STEP_MILLISECONDS * 2);
-			int lackConnectionTimer = 0;
-			int excessConnectionTimer = 0;
 			
 			int minConectionCount = DEFAULT_CONNECTION_COUNT / 2;
 			if(minConectionCount < 1) {
@@ -55,11 +57,12 @@ public class ConnectionPoolSlave extends Thread {
 			}
 
 			int connectionCount = connectionPool.getAvailableConnectionCount();
+			
 			if (connectionCount < minConectionCount) {
 				lackConnectionTimer++;
 				excessConnectionTimer = 0;
 			}
-
+		
 			if (connectionCount > DEFAULT_CONNECTION_COUNT) {
 				excessConnectionTimer++;
 				lackConnectionTimer = 0;
@@ -73,6 +76,7 @@ public class ConnectionPoolSlave extends Thread {
 			if (lackConnectionTimer > timeGap && connectionPool.isConnectionPoolWork()) {
 				connectionPool.addAdditionalWripperConnection();
 				workingConnectionCount++;
+				lackConnectionTimer = 0;
 				logger.log(Level.DEBUG, "Lack of connections, added 1 connection, number of working connections = "
 						+ workingConnectionCount);
 			}
@@ -80,15 +84,11 @@ public class ConnectionPoolSlave extends Thread {
 			if (excessConnectionTimer > timeGap && connectionPool.isConnectionPoolWork()) {
 				connectionPool.closeAdditionalWripperConnection();
 				workingConnectionCount--;
-				logger.log(Level.DEBUG, "Lack of connections, added 1 connection, number of working connections = "
+				excessConnectionTimer = 0;
+				logger.log(Level.DEBUG, "Excess of connections, closed 1 connection, number of working connections = "
 						+ workingConnectionCount);
 			}
-
-			if (counter != 0 & counter % 100 == 0 & connectionPool.isConnectionPoolWork()) {
-				connectionPool.addAdditionalWripperConnection();
-				logger.log(Level.DEBUG, "Available connection count = " + connectionPool.getAvailableConnectionCount());
-			}
-
+			
 		}
 
 		logger.log(Level.DEBUG, "GhostThread stopped");

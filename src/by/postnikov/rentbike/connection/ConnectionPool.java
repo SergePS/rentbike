@@ -141,13 +141,14 @@ public class ConnectionPool {
 			closeAllConnections();
 
 			if (availableConnection == currentWrapperConnectionCount) {
-				logger.log(Level.DEBUG, "All connection were closed");
+				logger.log(Level.DEBUG, "All connection - " + currentWrapperConnectionCount + " were closed");
 			} else {
 
 				TimeUnit.MILLISECONDS.sleep(WAIT_TIME_CONNECTTION);
 
 				if (wrapperConnectionQueue.size() > 0) {
 					closeAllConnections();
+					logger.log(Level.DEBUG, "All connection - " + currentWrapperConnectionCount + " were closed");
 				} else {
 					logger.log(Level.ERROR, "Not all connection were closed");
 				}
@@ -193,6 +194,7 @@ public class ConnectionPool {
 			try {
 				WrapperConnection wrapperConnection = new WrapperConnection(properties);
 				wrapperConnectionQueue.put(wrapperConnection);
+				currentWrapperConnectionCount++; 
 				logger.log(Level.DEBUG, "One wrapperConnection added");
 			} catch (InterruptedException e) {
 				logger.log(Level.ERROR,
@@ -205,6 +207,7 @@ public class ConnectionPool {
 		if (currentWrapperConnectionCount > DEFAULT_WRAPPER_CONNECTION_COUNT) {
 			try {
 				wrapperConnectionQueue.poll(WAIT_TIME_CONNECTTION, TimeUnit.MILLISECONDS).closeConnection();
+				currentWrapperConnectionCount--;
 				logger.log(Level.DEBUG, "One wrapperConnection closed");
 			} catch (InterruptedException e) {
 				logger.log(Level.ERROR, "WrapperConnection didn't close" + ConvertPrintStackTraceToString.convert(e));

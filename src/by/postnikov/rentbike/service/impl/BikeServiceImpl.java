@@ -294,7 +294,7 @@ public class BikeServiceImpl implements BikeService {
 		try {
 			Bike bike = new Bike();
 			bikeDAO.takeBikeById(bikeId, bike);
-			parking = parkingDAO.findParkingById(parkingId); // TODO ???
+			parking = parkingDAO.findParkingById(parkingId);
 
 			BikeProduct bikeProduct = new BikeProduct();
 
