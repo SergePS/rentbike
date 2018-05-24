@@ -15,7 +15,6 @@ import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.util.RequestParameterHandler;
 import by.postnikov.rentbike.controller.RouteType;
 import by.postnikov.rentbike.controller.Router;
-import by.postnikov.rentbike.entity.User;
 import by.postnikov.rentbike.exception.ConvertPrintStackTraceToString;
 import by.postnikov.rentbike.exception.ServiceException;
 import by.postnikov.rentbike.service.ServiceFactory;

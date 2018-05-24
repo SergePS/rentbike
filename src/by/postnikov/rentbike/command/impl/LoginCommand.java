@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
 import by.postnikov.rentbike.command.CommandExceptionHandler;
-import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.SessionParameter;
@@ -24,6 +23,7 @@ import by.postnikov.rentbike.entity.Parking;
 import by.postnikov.rentbike.entity.User;
 import by.postnikov.rentbike.entity.UserRole;
 import by.postnikov.rentbike.exception.ConvertPrintStackTraceToString;
+import by.postnikov.rentbike.exception.ExceptionMessage;
 import by.postnikov.rentbike.exception.ServiceException;
 import by.postnikov.rentbike.service.ParkingService;
 import by.postnikov.rentbike.service.ServiceFactory;
@@ -54,9 +54,9 @@ public class LoginCommand implements Command {
 				password[i] = 0;
 			}
 
-			if (user.getId() == 0) {
-				request.setAttribute(RequestParameter.ERROR.parameter(), PageMessage.LOGIN_PASSW.message());
-				request.setAttribute(RequestParameter.USER_WRONG.parameter(), user);
+			if (user == null) {
+				request.setAttribute(RequestParameter.ERROR.parameter(), ExceptionMessage.LOGIN_PASSW.message());
+				RequestParameterHandler.addParamToReques(request);
 				router.setPagePath(PageConstant.LOGIN_PAGE);
 				return router;
 			}

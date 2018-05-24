@@ -67,7 +67,7 @@
 							class="form-control"
 							placeholder="${loginPlaceholder}"
 							pattern="[a-zA-Z]{1}[a-zA-Z0-9]{1,14}"
-							value="${userWrong.login}"
+							value="${login}"
 							required
 							oninvalid="setCustomValidity('${login_warn}')"
 							oninput="setCustomValidity('')">

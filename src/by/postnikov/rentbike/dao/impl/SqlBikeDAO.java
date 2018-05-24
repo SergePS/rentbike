@@ -502,7 +502,7 @@ public class SqlBikeDAO implements BikeDAO {
 			return bike;
 
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			throw new DAOException(ExceptionMessage.BIKE_DUBLICATE_ERROR.message());
+			throw new DAOException(ExceptionMessage.BIKE_DUBLICATE_ERROR.toString());
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while updating bike", e);
 		} finally {

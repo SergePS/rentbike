@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
+import by.postnikov.rentbike.command.CommandExceptionHandler;
 import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
@@ -34,35 +35,19 @@ public class UpdateUserCommand implements Command {
 	public Router execute(HttpServletRequest request) {
 
 		Router router = new Router();
-		
+
 		ServiceFactory serviceFactory = ServiceFactory.getInstance();
 		UserService userService = serviceFactory.getUserService();
-		
+
 		HttpSession session = request.getSession();
-		
-		User user = (User)session.getAttribute(SessionParameter.USER.parameter());
+
+		User currentUser = (User) session.getAttribute(SessionParameter.USER.parameter());
+		router.setPagePath(currentUser.getRole().getHomePage());
 
 		Map<String, String> requestParameters = RequestParameterHandler.requestParamToMap(request);
-		
-		String errorParameterName;
+
 		try {
-			errorParameterName = userService.userUpdate(requestParameters, user);
-			
-			if (errorParameterName.isEmpty()) {
-				request.setAttribute(RequestParameter.MESSAGE.parameter(), PageMessage.PROFILE_CHANGED.message());
-				session.setAttribute(SessionParameter.USER.parameter(), user);
-			}else {
-				if (PageMessage.VALIDATION_ERROR.message().equals(errorParameterName)) {
-					request.setAttribute(RequestParameter.ERROR.parameter(), PageMessage.VALIDATION_ERROR.message());
-				}
-				if (PageMessage.USER_DUBLICATE_ERROR.message().equals(errorParameterName)) {
-					request.setAttribute(RequestParameter.ERROR.parameter(), PageMessage.USER_DUBLICATE_ERROR.message());
-				}
-				request.setAttribute(RequestParameter.LOGIN_MENU.parameter(), false);
-			}
-			router.setPagePath(user.getRole().getHomePage());	
-			
-			BikeOrder bikeOrder = userService.findOpenOrder(user);
+			BikeOrder bikeOrder = userService.findOpenOrder(currentUser);
 			request.setAttribute(RequestParameter.BIKE_ORDER.parameter(), bikeOrder);
 			if (bikeOrder != null) {
 				AddTimeParameterToRequest.addParam(request, bikeOrder.getStartTime());
@@ -72,9 +57,21 @@ public class UpdateUserCommand implements Command {
 				request.setAttribute(RequestParameter.PARKING_LIST.parameter(), parkingList);
 			}
 			
+			User user = userService.userUpdate(requestParameters, currentUser);
+
+			request.setAttribute(RequestParameter.MESSAGE.parameter(), PageMessage.PROFILE_CHANGED.message());
+			session.setAttribute(SessionParameter.USER.parameter(), user);
 		} catch (ServiceException e) {
-			logger.log(Level.ERROR, "Update user error, " + e);
-			router.setPagePath(PageConstant.ERROR_PAGE);
+			if (CommandExceptionHandler.takeLogicExceptionMessage(e).isEmpty()) {
+				logger.log(Level.ERROR, "Update user error, " + e);
+				router.setPagePath(PageConstant.ERROR_PAGE);
+			} else {
+				request.setAttribute(RequestParameter.ERROR.parameter(),
+						CommandExceptionHandler.takeLogicExceptionMessage(e));
+				RequestParameterHandler.addParamToReques(request);
+				request.setAttribute(RequestParameter.LOGIN_MENU.parameter(), false);
+			}
+
 		}
 
 		return router;

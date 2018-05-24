@@ -1,5 +1,6 @@
 package by.postnikov.rentbike.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public interface UserService {
 	
 	
 	/**
-	 * Validates incoming data and return the filled object of {@link User} if login and password are valid.
+	 * Validates incoming data and return {@link User} if login and password are valid or null if not.
 	 * 
 	 * @param requestParameters - all parameters from request (without password).
 	 * @param password - char array object.
@@ -61,14 +62,13 @@ public interface UserService {
 	
 	
 	/**
-	 * Method validates incoming data and fills the received empty BikeOrder object if it is found by orderId
+	 * Validates incoming data and returns {@link BikeOrder}. If bike order wasn't found - returns <code>null</code>.
 	 * 
-	 * @param Stirng orderId
-	 * @param bikeOrder - empty object or the BikeOrder
-	 * @return empty String if the action succeeds or String message of the MessagePage if something wrong
-	 * @throws ServiceException
+	 * @param Stirng orderId.
+	 * @return {@link BikeOrder}.
+	 * @throws ServiceException if any Exception occured.
 	 */
-	String findOpenOrderById(String orderId, BikeOrder bikeOrder) throws ServiceException;
+	BikeOrder findOpenOrderById(String orderId) throws ServiceException;	//TODO delete method
 	
 	/**
 	 * Close an open order
@@ -76,45 +76,44 @@ public interface UserService {
 	 * @return empty String if the action succeeds or String message of the MessagePage if something wrong
 	 * @throws ServiceException
 	 */
-	String closeOrder(Map<String, String> requestParameters) throws ServiceException;
+	BigDecimal closeOrder(Map<String, String> requestParameters) throws ServiceException;
 	
 	
 	/**
 	 * Return all UserOrder that contain User and BikeOrder 
 	 * 
 	 * @return List<UserOrder> whit orders if they exist and empty List if not 
-	 * @throws ServiceException
+	 * @throws ServiceException if any Exception occurred.
 	 */
 	List<UserOrder> takeAllUsers() throws ServiceException; 
 	
 	/**
-	 * Method validates incoming data and updates userData without password
+	 * Validates incoming data and updates user personal data except password.
 	 * 
-	 * @param requestParameters - all parameters from request (without password)
-	 * @param user with new data
-	 * @return empty String if the action succeeds or String message of the MessagePage if something wrong
-	 * @throws ServiceException
+	 * @param requestParameters - all parameters from request (without password).
+	 * @param user {@link User} with current personal data.
+	 * @return {@link User}
+	 * @throws ServiceException if any Exception occurred.
 	 */
-	String userUpdate(Map<String, String> requestParameters, User user) throws ServiceException;
+	User userUpdate(Map<String, String> requestParameters, User user) throws ServiceException;
 	
 	
 	/**
-	 * Method validates incoming data, checks old password and updates it 
+	 * Validates incoming data, checks old password and updates it.
 	 * 
-	 * @param currentPassword - current user password
-	 * @param currentPassword - new password
-	 * @param user
-	 * @return empty String if the action succeeds or String message of the MessagePage if something wrong
-	 * @throws ServiceException
+	 * @param currentPassword - current user password.
+	 * @param currentPassword - new password.
+	 * @param user {@link User}.
+	 * @throws ServiceException if any Exception occurred.
 	 */
-	String updatePassword(char[] currentPassword, char[] password, User user) throws ServiceException;
+	void updatePassword(char[] currentPassword, char[] password, User user) throws ServiceException;
 	
 	/**
-	 * Method returns a list of orders if they exist and null if not
+	 * Returns a list of user orders.
 	 * 
-	 * @param user
-	 * @return List<BikeOrder> with BikeOrders if order exists for 
-	 * @throws ServiceException
+	 * @param user {@link User}.
+	 * @return List<BikeOrder>. 
+	 * @throws ServiceException if any Exception occurred.
 	 */
 	List<BikeOrder> findAllOrderByUser (User user) throws ServiceException; 
 	

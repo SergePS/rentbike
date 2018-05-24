@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
-import by.postnikov.rentbike.command.PageMessage;
+import by.postnikov.rentbike.command.CommandExceptionHandler;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.controller.Router;
@@ -23,30 +23,28 @@ public class GoToAddParkingPageCommand implements Command {
 
 	@Override
 	public Router execute(HttpServletRequest request) {
-		
+
 		Router router = new Router();
 
 		ServiceFactory serviceFactory = ServiceFactory.getInstance();
 		ParkingService parkingService = serviceFactory.getParkingService();
 
-		Parking parking = new Parking();
-
 		String parkingId = request.getParameter(RequestParameter.PARKING_ID.parameter());
 		if (parkingId != null) {
 			try {
-				String errorParameterName = parkingService.findParkingById(parkingId, parking);
-				if (PageMessage.VALIDATION_ERROR.message().equals(errorParameterName)) {
-					router.setPagePath(PageConstant.ERROR_PAGE);
-					return router;
-				}
+				Parking parking = parkingService.findParkingById(parkingId);
+
 				request.setAttribute(RequestParameter.PARKING.parameter(), parking);
 			} catch (ServiceException e) {
-				logger.log(Level.ERROR, "Take pakring by id error" + ConvertPrintStackTraceToString.convert(e));
-				router.setPagePath(PageConstant.ERROR_PAGE);
-				return router;
+				if (CommandExceptionHandler.takeLogicExceptionMessage(e).isEmpty()) {
+					logger.log(Level.ERROR, "Take pakring by id error" + ConvertPrintStackTraceToString.convert(e));
+					router.setPagePath(PageConstant.ERROR_PAGE);
+				} else {
+					router.setPagePath(PageConstant.ERROR_PAGE);
+				}
 			}
 		}
-		
+
 		router.setPagePath(PageConstant.ADD_PARKING_PAGE);
 		return router;
 	}

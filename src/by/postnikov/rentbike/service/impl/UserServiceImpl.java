@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.ApplicationProperty;
-import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.dao.DAOFactory;
 import by.postnikov.rentbike.dao.DateFormatting;
@@ -30,8 +29,6 @@ import by.postnikov.rentbike.validator.UserParameterValidator;
 public class UserServiceImpl implements UserService {
 
 	private static Logger logger = LogManager.getLogger();
-
-	private static final long EMPTY_Id = 0;
 
 	private final static String FREE_RENT_TIME_PROP_KEY = "free_rent_time";
 	private final static int FREE_RENT_TIME_PERIOD_PER_MINUTE = Integer
@@ -56,11 +53,9 @@ public class UserServiceImpl implements UserService {
 			logger.log(Level.DEBUG, "password validatation error");
 			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
-		User user = new User();
-		user.setLogin(login);
 
 		try {
-			return userDAO.login(user, password);
+			return userDAO.login(login, password);
 		} catch (DAOException e) {
 			throw new ServiceException("An exeption occured in the layer Service while getting user data", e);
 		}
@@ -168,27 +163,25 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String findOpenOrderById(String orderIdString, BikeOrder bikeOrder) throws ServiceException {
+	public BikeOrder findOpenOrderById(String orderIdString) throws ServiceException {
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		UserDAO userDAO = daoFactory.getUserDAO();
 
 		if (!UserParameterValidator.idValidate(orderIdString)) {
 			logger.log(Level.DEBUG, "Id validatation error, id = " + orderIdString);
-			return PageMessage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long orderId = Long.parseLong(orderIdString);
 
 		try {
-			userDAO.findOpenOrderById(orderId, bikeOrder);
+			return userDAO.findOpenOrderById(orderId);
 		} catch (DAOException e) {
 			throw new ServiceException("Find open order by id error", e);
 		}
-		
-		return "";
 	}
 
 	@Override
-	public String closeOrder(Map<String, String> requestParameters) throws ServiceException {
+	public BigDecimal closeOrder(Map<String, String> requestParameters) throws ServiceException {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		UserDAO userDAO = daoFactory.getUserDAO();
@@ -197,39 +190,40 @@ public class UserServiceImpl implements UserService {
 		// orderId validation
 		String orderIdString = requestParameters.get(RequestParameter.ORDER_ID.parameter());
 		if (!UserParameterValidator.idValidate(orderIdString)) {
-			logger.log(Level.DEBUG, "orderId validatation error");
-			return PageMessage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "orderId = " + orderIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long orderId = Long.parseLong(orderIdString);
-
+		
+		//checking the existence of bikeOrder
+		BikeOrder bikeOrder = null;
 		try {
-			BikeOrder bikeOrder = new BikeOrder();
-			userDAO.findOpenOrderById(orderId, bikeOrder);
-			
-			if (bikeOrder.getId() == 0) {
-				logger.log(Level.DEBUG, "order not exist");
-				return PageMessage.ORDER_NOT_EXIST.message();
-			}
+			 bikeOrder = userDAO.findOpenOrderById(orderId);
 		} catch (DAOException e) {
 			throw new ServiceException("Find open order by id error", e);
+		}
+		if (bikeOrder == null) {
+			logger.log(Level.DEBUG, "order not exist");
+			throw new ServiceException(ExceptionMessage.ORDER_NOT_EXIST.toString());
 		}
 
 		// parkingId validation
 		String finishParkingIdString = requestParameters.get(RequestParameter.FINISH_PARKING_ID.parameter());
 		if (!UserParameterValidator.idValidate(finishParkingIdString)) {
-			logger.log(Level.DEBUG, "parkingId validatation error");
-			return PageMessage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "parkingId  = " + finishParkingIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long finishParkingId = Long.parseLong(finishParkingIdString);
 
+		Parking parking = null;
 		try {
-			Parking parking = parkingDAO.findParkingById(finishParkingId);
-			if (parking == null) {
-				logger.log(Level.DEBUG, "parking validation error: parking not exist");
-				return PageMessage.VALIDATION_ERROR.message();
-			}
+			parking = parkingDAO.findParkingById(finishParkingId);
 		} catch (DAOException e) {
 			throw new ServiceException("Find parking by id error", e);
+		}
+		if (parking == null) {
+			logger.log(Level.DEBUG, "parking validation error: parking not exist");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 
 		// finish time validation
@@ -239,8 +233,8 @@ public class UserServiceImpl implements UserService {
 		long rentMinutes = DateFormatter.takeMinutesBetweenDates(startTime, finishTime);
 
 		if (rentMinutes < 0) {
-			logger.log(Level.DEBUG, "finish time validatation error");
-			return PageMessage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "start time - " + startTime + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 
 		// calculate payment end close order
@@ -259,7 +253,7 @@ public class UserServiceImpl implements UserService {
 			throw new ServiceException("Close order error", e);
 		}
 
-		return BigDecimal.ZERO.equals(payment) ? "" : payment.toString();
+		return BigDecimal.ZERO.equals(payment) ? BigDecimal.ZERO : payment;
 
 	}
 
@@ -277,50 +271,50 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String userUpdate(Map<String, String> requestParameters, User user) throws ServiceException {
+	public User userUpdate(Map<String, String> requestParameters, User user) throws ServiceException {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		UserDAO userDAO = daoFactory.getUserDAO();
-
+		
 		String login = requestParameters.get(RequestParameter.LOGIN.parameter());
 		if (!UserParameterValidator.loginValidate(login)) {
 			logger.log(Level.DEBUG, "login validatation error, login = " + login);
-			return PageMessage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setLogin(login);
 
 		String name = requestParameters.get(RequestParameter.NAME.parameter());
 		if (!UserParameterValidator.nameValidate(name)) {
 			logger.log(Level.DEBUG, "name validatation error, name = " + name);
-			return PageMessage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setName(name);
 
 		String surname = requestParameters.get(RequestParameter.SURNAME.parameter());
 		if (!UserParameterValidator.nameValidate(surname)) {
 			logger.log(Level.DEBUG, "surname validatation error, surname = " + surname);
-			return PageMessage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setSurname(surname);
 
 		String email = requestParameters.get(RequestParameter.EMAIL.parameter());
 		if (!UserParameterValidator.emailValidate(email)) {
 			logger.log(Level.DEBUG, "email validatation error, email = " + email);
-			return PageMessage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setEmail(email);
 
 		String birthday = requestParameters.get(RequestParameter.BIRTHDAY.parameter());
 		if (!UserParameterValidator.birthdayValidate(birthday)) {
 			logger.log(Level.DEBUG, "birthday validatation error, birthday = " + birthday);
-			return PageMessage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setBirthday(birthday);
 
 		String creditCard = requestParameters.get(RequestParameter.CRADIT_CARD.parameter());
 		if (!UserParameterValidator.craditcardValidate(creditCard)) {
 			logger.log(Level.DEBUG, "creditCard validatation error, creditCard = " + creditCard);
-			return PageMessage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setCreditCard(creditCard);
 
@@ -333,27 +327,23 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String updatePassword(char[] currentPassword, char[] password, User user) throws ServiceException {
+	public void updatePassword(char[] currentPassword, char[] password, User currentUser) throws ServiceException {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		UserDAO userDAO = daoFactory.getUserDAO();
 
 		if (!UserParameterValidator.passwordValidate(password)) {
-			return PageMessage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 
-		user.setId(EMPTY_Id);
 		try {
-			userDAO.login(user, currentPassword);
-
-			if (user.getId() == EMPTY_Id) {
-				logger.log(Level.DEBUG, "current password wrong for user - " + user.getLogin() + "passw - "
-						+ String.valueOf(currentPassword));
-				return PageMessage.CURRENT_PASSW_WRONG.message();
+			User user = userDAO.login(currentUser.getLogin(), currentPassword);
+			if (user == null) {
+				throw new ServiceException(ExceptionMessage.CURRENT_PASSW_WRONG.toString());
 			}
 
 			if (!UserParameterValidator.passwordValidate(password)) {
-				return PageMessage.VALIDATION_ERROR.message();
+				throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 			}
 
 			userDAO.updatePassword(password, user);
@@ -361,8 +351,6 @@ public class UserServiceImpl implements UserService {
 		} catch (DAOException e) {
 			throw new ServiceException("An exeption occured in the layer Service while update password of user", e);
 		}
-
-		return "";
 	}
 
 	@Override

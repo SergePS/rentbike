@@ -10,8 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
-import by.postnikov.rentbike.command.PageMessage;
+import by.postnikov.rentbike.command.CommandExceptionHandler;
 import by.postnikov.rentbike.command.PageConstant;
+import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.SessionParameter;
 import by.postnikov.rentbike.command.util.AddTimeParameterToRequest;
@@ -38,30 +39,12 @@ public class UpdatePasswordCommand implements Command {
 
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute(SessionParameter.USER.parameter());
+		router.setPagePath(user.getRole().getHomePage());
 
 		char[] currentPassword = request.getParameter(RequestParameter.CURRENT_PASSWORD.parameter()).toCharArray();
 		char[] password = request.getParameter(RequestParameter.PASSWORD.parameter()).toCharArray();
 
-		String errorParameterName;
 		try {
-			errorParameterName = userService.updatePassword(currentPassword, password, user);
-			
-			for (int i = 0; i < currentPassword.length; i++) {
-				currentPassword[i] = 0;
-			}
-			
-			for (int i = 0; i < password.length; i++) {
-				password[i] = 0;
-			}
-
-			if (errorParameterName.isEmpty()) {
-				request.setAttribute(RequestParameter.MESSAGE.parameter(), PageMessage.PASSWORD_CHANGED.message());
-			} else {
-				request.setAttribute(RequestParameter.ERROR.parameter(), errorParameterName);
-			}
-			request.setAttribute(RequestParameter.LOGIN_MENU.parameter(), false);
-			router.setPagePath(user.getRole().getHomePage());
-
 			BikeOrder bikeOrder = userService.findOpenOrder(user);
 			request.setAttribute(RequestParameter.BIKE_ORDER.parameter(), bikeOrder);
 			if (bikeOrder != null) {
@@ -71,9 +54,29 @@ public class UpdatePasswordCommand implements Command {
 				List<Parking> parkingList = parkingService.takeAllParking();
 				request.setAttribute(RequestParameter.PARKING_LIST.parameter(), parkingList);
 			}
+			
+			userService.updatePassword(currentPassword, password, user);
+
+			for (int i = 0; i < currentPassword.length; i++) {
+				currentPassword[i] = 0;
+			}
+
+			for (int i = 0; i < password.length; i++) {
+				password[i] = 0;
+			}
+
+			request.setAttribute(RequestParameter.MESSAGE.parameter(), PageMessage.PASSWORD_CHANGED.message());
+
+			request.setAttribute(RequestParameter.LOGIN_MENU.parameter(), false);
 		} catch (ServiceException e) {
-			logger.log(Level.ERROR, "Update password error, " + e);
-			router.setPagePath(PageConstant.ERROR_PAGE);
+			if (CommandExceptionHandler.takeLogicExceptionMessage(e).isEmpty()) {
+				logger.log(Level.ERROR, "Update password error, " + e);
+				router.setPagePath(PageConstant.ERROR_PAGE);
+			} else {
+				request.setAttribute(RequestParameter.ERROR.parameter(),
+						CommandExceptionHandler.takeLogicExceptionMessage(e));
+				request.setAttribute(RequestParameter.LOGIN_MENU.parameter(), false);
+			}
 		}
 
 		return router;

@@ -17,67 +17,67 @@ import by.postnikov.rentbike.exception.DAOException;
 public interface UserDAO {
 
 	/**
-	 * Search user in DB. 
+	 * Searches user in DB. 
 	 *
-	 * @param user - object User with only login field that should be extracted from database
-	 * @param password - password, which must be compared with the password from the database
+	 * @param login String.
+	 * @param password - password, which must be compared with the password from the database.
 	 * @return {@link User}.
-	 * @throws DAOException if occurred SQL exception
+	 * @throws DAOException if occurred SQL exception.
 	 */
-	User login(User user, char[] password) throws DAOException;
+	User login(String login, char[] password) throws DAOException;
 
 	/**
-	 * Add User to DB
+	 * Adds User to DB.
 	 *
-	 * @param user - User object that should be added in database
-	 * @param password as char[]
-	 * @throws DAOException if occurred SQL exception
+	 * @param user - User object that should be added in database.
+	 * @param password as char[].
+	 * @throws DAOException if occurred SQL exception.
 	 */
 	void register(User user, char[] password) throws DAOException;
 
 	/**
-	 * Create bike order in DB
+	 * Creates bike order in DB.
 	 *
-	 * @param order - BikeOrder object with empty id field, that should be added to database
-	 * @return BikeOrder object from DB with auto generated bikeOrder ID
-	 * @throws DAOException if occurred SQL exception
+	 * @param order - BikeOrder object with empty id field, that should be added to database.
+	 * @return BikeOrder object from DB with auto generated bikeOrder ID.
+	 * @throws DAOException if occurred SQL exception.
 	 */
 	BikeOrder createOrder(BikeOrder order) throws DAOException;
 	
 	
 	/**
-	 * Update bike order (close order) in DB
+	 * Updates bike order (close order) in DB.
 	 *
-	 * @param orderId - order id, which will be closed
-	 * @param finishParkingId - finish parking id
-	 * @param finishTime - order closing time
-	 * @param payment - BigDecimal order's payment
-	 * @throws DAOException if occurred SQL exception
+	 * @param orderId - order id, which will be closed.
+	 * @param finishParkingId - finish parking id.
+	 * @param finishTime - order closing time.
+	 * @param payment - BigDecimal order's payment.
+	 * @throws DAOException if occurred SQL exception.
 	 */	
 	void closeOrder(long orderId, long finishParkingId, String finishTime, BigDecimal payment) throws DAOException;
 	
 	
 	/**
-	 * Find open user's order in DB
+	 * Finds open user's order in DB.
 	 *
-	 * @param user - User whose order will be searched
-	 * @return object of BikeOrder, that was found for current user
-	 * @throws DAOException if occurred SQL exception
+	 * @param user - User whose order will be searched.
+	 * @return object of BikeOrder, that was found for current user.
+	 * @throws DAOException if occurred SQL exception.
 	 */	
 	BikeOrder findOpenOrder(User user) throws DAOException;
 	
 	
 	/**
-	 * Search for an open order by order id. If order is found, than fields of the received object of BikeOrder will be filled.
+	 * Searches for an open order by order id.
 	 * 
-	 * @param orderId
-	 * @param bikeOrder - is empty object of BikeOrder
-	 * @throws DAOException if occurred SQL exception
+	 * @param orderId.
+	 * @return {@link BikeOrder} if order was found and null if not.
+	 * @throws DAOException if occurred SQL exception.
 	 */
-	void findOpenOrderById(long orderId, BikeOrder bikeOrder) throws DAOException; 
+	BikeOrder findOpenOrderById(long orderId) throws DAOException; 
 	
 	/**
-	 * The method returns a list of all users.
+	 * Returns a list of all users.
 	 * 
 	 * @return List<UserOrder> orderUserList
 	 * @throws DAOException if occurred SQL exception
@@ -85,30 +85,30 @@ public interface UserDAO {
 	List<UserOrder> takeAllUsers() throws DAOException;
 	
 	/**
-	 * Update user fields except password
+	 * Updates user personal data except password.
 	 * 
-	 * @param user - object of the User with new data
-	 * @return String notice if new user login or e-mail already exist with other users
+	 * @param user - {@link User} with new personal data.
+	 * @return {@link User}
 	 * @throws DAOException if occurred SQL exception
 	 */
-	String updateUser (User user) throws DAOException;
+	User updateUser (User user) throws DAOException;
 	
 	/**
-	 * Update user password
+	 * Updates user password.
 	 * 
-	 * @param password
-	 * @param user
+	 * @param password.
+	 * @param user {@link User}.
 	 * @throws DAOException if occurred SQL exception
 	 */
 	void updatePassword(char[] password, User user) throws DAOException;
 	
 	
 	/**
-	 * The method returns all orders of the user
+	 * Returns all orders of the user.
 	 * 
-	 * @param userId
-	 * @return List<BikeOrder> bikeOrderList
-	 * @throws DAOException if occurred SQL exception
+	 * @param userId.
+	 * @return List<BikeOrder> bikeOrderList.
+	 * @throws DAOException if occurred SQL exception.
 	 */
 	List<BikeOrder> findAllOrderByUser(long userId) throws DAOException;
 	

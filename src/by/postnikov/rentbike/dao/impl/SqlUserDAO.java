@@ -8,13 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
-import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.connection.ConnectionPool;
 import by.postnikov.rentbike.connection.WrapperConnection;
 import by.postnikov.rentbike.dao.DateFormatting;
@@ -32,8 +27,6 @@ import by.postnikov.rentbike.exception.DAOException;
 import by.postnikov.rentbike.exception.ExceptionMessage;
 
 public class SqlUserDAO implements UserDAO {
-
-	private static Logger logger = LogManager.getLogger();
 
 	private final static String FIND_USER_BY_LOGIN_PASSW = "SELECT id, login, name, surname, email, birthday, registrationDate, role, state, creditCard FROM users WHERE login = ? and password = sha1(?)";
 
@@ -113,7 +106,7 @@ public class SqlUserDAO implements UserDAO {
 	private final static int UU_CREDIT_CARD = 6;
 	private final static int UU_ID = 7;
 
-	private final static String UPDATE_PASSWORD_UP = "UPDATE users SET password = MD5(?) where id = ?";
+	private final static String UPDATE_PASSWORD_UP = "UPDATE users SET password = sha1(?) where id = ?";
 	private final static int UP_PASSWORD = 1; // UP - Update Password
 	private final static int UP_ID = 2;
 
@@ -144,7 +137,7 @@ public class SqlUserDAO implements UserDAO {
 			preparedStatement.executeUpdate();
 
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			throw new DAOException(ExceptionMessage.USER_DUBLICATE_ERROR.message());
+			throw new DAOException(ExceptionMessage.USER_DUBLICATE_ERROR.toString());
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while user adding to the DB", e);
 		} finally {
@@ -154,19 +147,21 @@ public class SqlUserDAO implements UserDAO {
 	}
 
 	@Override
-	public User login(User user, char[] password) throws DAOException {
+	public User login(String login, char[] password) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
 		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(FIND_USER_BY_LOGIN_PASSW);
 
 		try {
-			preparedStatement.setString(CU_LOGIN, user.getLogin());
+			preparedStatement.setString(CU_LOGIN, login);
 			preparedStatement.setString(CU_PASSWORD, String.valueOf(password));
 
 			ResultSet resultSet = preparedStatement.executeQuery();
 
+			User user = null;
 			if (resultSet.next()) {
+				user = new User();
 				user.setId(resultSet.getLong(ID));
 				user.setLogin(resultSet.getString(LOGIN));
 				user.setName(resultSet.getString(NAME));
@@ -190,7 +185,7 @@ public class SqlUserDAO implements UserDAO {
 	}
 
 	@Override
-	public String updateUser(User user) throws DAOException {
+	public User updateUser(User user) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -206,18 +201,16 @@ public class SqlUserDAO implements UserDAO {
 			preparedStatement.setLong(UU_ID, user.getId());
 
 			preparedStatement.executeUpdate();
-
+			
+			return user;
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			logger.log(Level.ERROR, "user with such login or e-mail already exists" + e);
-			return PageMessage.USER_DUBLICATE_ERROR.message();
+			throw new DAOException(ExceptionMessage.USER_DUBLICATE_ERROR.toString());
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while updating the user", e);
 		} finally {
 			wrapperConnection.closeStatement(preparedStatement);
 			connectionPool.returnWrapperConnection(wrapperConnection);
 		}
-
-		return "";
 	}
 
 	@Override
@@ -319,7 +312,7 @@ public class SqlUserDAO implements UserDAO {
 	}
 
 	@Override
-	public void findOpenOrderById(long orderId, BikeOrder bikeOrder) throws DAOException {
+	public BikeOrder findOpenOrderById(long orderId) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -329,7 +322,9 @@ public class SqlUserDAO implements UserDAO {
 			preparedStatement.setLong(FOOBI_ORDER_ID, orderId);
 			ResultSet resultSet = preparedStatement.executeQuery();
 
+			BikeOrder bikeOrder = null;
 			if (resultSet.next()) {
+				bikeOrder = new BikeOrder();
 				bikeOrder.setId(orderId);
 				bikeOrder.setBikeProductId(resultSet.getLong(BIKE_PRODUCT_ID));
 
@@ -362,6 +357,8 @@ public class SqlUserDAO implements UserDAO {
 				User user = new User();
 				user.setId(resultSet.getLong(USER_ID));
 			}
+			
+			return bikeOrder;
 
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while finding open order", e);
@@ -369,7 +366,6 @@ public class SqlUserDAO implements UserDAO {
 			wrapperConnection.closeStatement(preparedStatement);
 			connectionPool.returnWrapperConnection(wrapperConnection);
 		}
-
 	}
 
 	@Override

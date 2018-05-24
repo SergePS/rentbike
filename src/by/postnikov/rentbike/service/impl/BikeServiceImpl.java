@@ -359,7 +359,7 @@ public class BikeServiceImpl implements BikeService {
 		try {
 			if (!UserParameterValidator.idValidate(bikeProductIdString)) {
 				logger.log(Level.DEBUG, "bikeProductId - " + bikeProductIdString + " is wrong");
-				throw new DAOException(ExceptionMessage.VALIDATION_ERROR.message());
+				throw new DAOException(ExceptionMessage.VALIDATION_ERROR.toString());
 			}
 			long bikeProductId = Long.parseLong(bikeProductIdString);
 

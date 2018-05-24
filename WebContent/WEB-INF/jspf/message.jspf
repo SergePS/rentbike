@@ -14,10 +14,10 @@
 </c:if>
 
 <c:if test="${payment ne null}">
-	<c:if test="${payment eq ''}">
+	<c:if test="${payment eq '0'}">
 		<input type="hidden" id="message" value= "${freeOrderNotice}"/>
 	</c:if>
-	<c:if test="${payment ne ''}">
+	<c:if test="${payment ne '0'}">
 		<input type="hidden" id="message" value="${paidOrderNotice}${payment}" />
 	</c:if>	
 	<c:remove var="payment" scope="session" />

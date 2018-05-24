@@ -34,13 +34,12 @@ public interface ParkingService {
 	List<Parking> takeAllParking() throws ServiceException;
 	
 	/**
-	 * Searches parking by id, and fills received parking object if found it.
+	 * Searches parking by id.
 	 * 
 	 * @param pakingId as String.
-	 * @param parking - empty parking object.
-	 * @return notice if validation failed.
+	 * @return {@link Parking}.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String findParkingById(String pakingId, Parking parking) throws ServiceException;
+	Parking findParkingById(String pakingId) throws ServiceException;
 
 }
