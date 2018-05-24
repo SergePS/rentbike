@@ -60,7 +60,7 @@
 							class="form-control"
 							value="${model}"
 							placeholder="${modelPlaceholder}"
-							pattern="[\w\-\s\.\dа-яА-ЯёЁ]{1,15}"
+							pattern="[\w\-\s\.\dа-яА-ЯёЁ]{1,30}"
 							oninvalid="setCustomValidity('${modelWarnLabel}')"
 							oninput="setCustomValidity('')">					
 					</div>

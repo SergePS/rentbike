@@ -9,6 +9,10 @@ import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.exception.ConvertPrintStackTraceToString;
 
+/**
+ * @author Sergey Postnikov
+ * Changes the number of connections depending on the load on the pool.
+ */
 public class ConnectionPoolSlave extends Thread {
 
 	private static Logger logger = LogManager.getLogger();
@@ -87,15 +91,16 @@ public class ConnectionPoolSlave extends Thread {
 				excessConnectionTimer = 0;
 				logger.log(Level.DEBUG, "Excess of connections, closed 1 connection, number of working connections = "
 						+ workingConnectionCount);
-			}
-			
+			}	
 		}
-
 		logger.log(Level.DEBUG, "GhostThread stopped");
-
 	}
 
-	public void setStopWorkThread() {
+
+	/**
+	 * Stops thread execution
+	 */
+	public void stopThread() {
 		workThread = false;
 	}
 

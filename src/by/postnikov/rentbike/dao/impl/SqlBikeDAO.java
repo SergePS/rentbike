@@ -8,13 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
-import by.postnikov.rentbike.command.MessagePage;
 import by.postnikov.rentbike.command.PageInfo;
 import by.postnikov.rentbike.connection.ConnectionPool;
 import by.postnikov.rentbike.connection.WrapperConnection;
@@ -27,10 +22,9 @@ import by.postnikov.rentbike.entity.BikeType;
 import by.postnikov.rentbike.entity.Brand;
 import by.postnikov.rentbike.entity.Parking;
 import by.postnikov.rentbike.exception.DAOException;
+import by.postnikov.rentbike.exception.ExceptionMessage;
 
 public class SqlBikeDAO implements BikeDAO {
-
-	private static Logger logger = LogManager.getLogger();
 
 	public final static int PARAMETER_1 = 1;
 
@@ -45,7 +39,6 @@ public class SqlBikeDAO implements BikeDAO {
 	private final static int BIKE_SPEED_COUNT_PARAM = 4;
 	private final static int BIKE_BIKE_TYPE_ID_PARAM = 5;
 	private final static int BIKE_PICTURE_PARAM = 6;
-	private final static String DUBLICATE_BIKE_EXCEPTION_MESSAGE = "Bike with currently brand and model already exist";
 
 	private final static String ADD_BRAND = "INSERT INTO brands (brand) VALUES (?)";
 
@@ -164,7 +157,7 @@ public class SqlBikeDAO implements BikeDAO {
 	}
 
 	@Override
-	public String addBike(Bike bike) throws DAOException {
+	public Bike addBike(Bike bike) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -183,11 +176,10 @@ public class SqlBikeDAO implements BikeDAO {
 			long lastId = ((com.mysql.jdbc.PreparedStatement) preparedStatement).getLastInsertID();
 			bike.setId(lastId);
 
-			return "";
+			return bike;
 
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			logger.log(Level.ERROR, DUBLICATE_BIKE_EXCEPTION_MESSAGE + e.getMessage());
-			return MessagePage.USER_DUBLICATE_ERROR.message();
+			throw new DAOException(ExceptionMessage.BIKE_DUBLICATE_ERROR.toString());
 		} catch (SQLException e) {
 			throw new DAOException("Add bike error", e);
 		} finally {
@@ -198,34 +190,28 @@ public class SqlBikeDAO implements BikeDAO {
 	}
 
 	@Override
-	public String addBrand(Brand brand) throws DAOException {
+	public void addBrand(Brand brand) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
 		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(ADD_BRAND);
-
-		String exceptionMessage = "";
 
 		try {
 			preparedStatement.setString(BIKE_BRAND_ID_PARAM, brand.getBrand());
 			preparedStatement.executeUpdate();
 
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			exceptionMessage = MessagePage.BRAND_DUBLICATE_ERROR.message();
-			logger.log(Level.ERROR, "This brand already exist, " + e.getMessage());
+			throw new DAOException(ExceptionMessage.BRAND_DUBLICATE_ERROR.toString());
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while adding brand to the DB", e);
 		} finally {
 			wrapperConnection.closeStatement(preparedStatement);
 			connectionPool.returnWrapperConnection(wrapperConnection);
 		}
-
-		return exceptionMessage;
 	}
 
 	@Override
-	public String addBikeType(BikeType bikeType) throws DAOException {
-		String exceptionMessage = "";
+	public void addBikeType(BikeType bikeType) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -235,21 +221,18 @@ public class SqlBikeDAO implements BikeDAO {
 			preparedStatement.setString(BIKE_TYPE_RS_ADDRESS_BIKE_TYPE_TABLE, bikeType.getBikeType());
 			preparedStatement.executeUpdate();
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			exceptionMessage = MessagePage.BIKE_TYPE_DUBLICATE_ERROR.message();
-			logger.log(Level.ERROR, "This bike type already exist, " + e);
+			throw new DAOException(ExceptionMessage.BIKE_TYPE_DUBLICATE_ERROR.toString());
 		} catch (SQLException e) {
 			throw new DAOException("Exception occured during add bike type to DB", e);
 		} finally {
 			wrapperConnection.closeStatement(preparedStatement);
 			connectionPool.returnWrapperConnection(wrapperConnection);
 		}
-
-		return exceptionMessage;
 	}
 
 	@Override
-	public void findBike(List<Bike> bikeList, long brandId, long bikeTypeId, String model, int minSpeedCount,
-			int maxSpeedCount, PageInfo pageInfo) throws DAOException {
+	public List<Bike> findBike(long brandId, long bikeTypeId, String model, int minSpeedCount, int maxSpeedCount,
+			PageInfo pageInfo) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -265,6 +248,8 @@ public class SqlBikeDAO implements BikeDAO {
 			callableStatement.setInt(FB_COUNT_ELEMENT_ON_PAGE, pageInfo.getDefaultElementOnPage());
 
 			ResultSet resultSet = callableStatement.executeQuery();
+
+			List<Bike> bikeList = new ArrayList<>();
 
 			while (resultSet.next()) {
 				Bike bike = new Bike();
@@ -289,6 +274,8 @@ public class SqlBikeDAO implements BikeDAO {
 				bikeList.add(bike);
 			}
 
+			return bikeList;
+
 		} catch (SQLException e) {
 			throw new DAOException("Exception occured during find bike in DB", e);
 		} finally {
@@ -298,7 +285,7 @@ public class SqlBikeDAO implements BikeDAO {
 	}
 
 	@Override
-	public void takeBikeById(long bikeId, Bike bike) throws DAOException {
+	public Bike takeBikeById(long bikeId) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -309,7 +296,9 @@ public class SqlBikeDAO implements BikeDAO {
 
 			ResultSet resultSet = preparedStatement.executeQuery();
 
+			Bike bike = null;
 			if (resultSet.next()) {
+				bike = new Bike();
 				bike.setId(resultSet.getLong(ID));
 
 				Brand brand = new Brand();
@@ -329,6 +318,7 @@ public class SqlBikeDAO implements BikeDAO {
 				bike.setBikeType(bikeType);
 			}
 
+			return bike;
 		} catch (SQLException e) {
 			throw new DAOException("Get bike by id error", e);
 		} finally {
@@ -338,7 +328,7 @@ public class SqlBikeDAO implements BikeDAO {
 	}
 
 	@Override
-	public void addBikeProduct(List<BikeProduct> bikeProductList) throws DAOException {
+	public List<BikeProduct> addBikeProduct(List<BikeProduct> bikeProductList) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -356,6 +346,7 @@ public class SqlBikeDAO implements BikeDAO {
 				long lastId = ((com.mysql.jdbc.PreparedStatement) preparedStatement).getLastInsertID();
 				bikeProduct.setId(lastId);
 			}
+			return bikeProductList;
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while adding bike product to the DB", e);
 		} finally {
@@ -366,8 +357,8 @@ public class SqlBikeDAO implements BikeDAO {
 	}
 
 	@Override
-	public void findBikeProduct(long parkingId, long brandId, long bikeTypeId, String model, BikeProductState state,
-			List<BikeProduct> bikeProductList, PageInfo pageInfo) throws DAOException {
+	public List<BikeProduct> findBikeProduct(long parkingId, long brandId, long bikeTypeId, String model,
+			BikeProductState state, PageInfo pageInfo) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -384,6 +375,8 @@ public class SqlBikeDAO implements BikeDAO {
 
 			ResultSet resultSet = callableStatement.executeQuery();
 
+			List<BikeProduct> bikeProductList = new ArrayList<>();
+			
 			while (resultSet.next()) {
 				BikeProduct bikeProduct = new BikeProduct();
 
@@ -419,6 +412,8 @@ public class SqlBikeDAO implements BikeDAO {
 
 				bikeProductList.add(bikeProduct);
 			}
+			
+			return bikeProductList;
 
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while finding bikeProduct", e);
@@ -430,7 +425,7 @@ public class SqlBikeDAO implements BikeDAO {
 	}
 
 	@Override
-	public void takeBikeProductById(long bikeId, BikeProduct bikeProduct) throws DAOException {
+	public BikeProduct takeBikeProductById(long bikeId) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -440,7 +435,10 @@ public class SqlBikeDAO implements BikeDAO {
 			preparedStatement.setLong(PARAMETER_1, bikeId);
 			ResultSet resultSet = preparedStatement.executeQuery();
 
+			BikeProduct bikeProduct = null;
+			
 			if (resultSet.next()) {
+				bikeProduct = new BikeProduct();
 				bikeProduct.setId(resultSet.getLong(ID));
 
 				Bike bike = new Bike();
@@ -473,7 +471,8 @@ public class SqlBikeDAO implements BikeDAO {
 				bikeProduct.setParking(parking);
 
 			}
-
+			
+			return bikeProduct;
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while getting bike product by id", e);
 		} finally {
@@ -483,7 +482,7 @@ public class SqlBikeDAO implements BikeDAO {
 	}
 
 	@Override
-	public String updateBike(Bike bike) throws DAOException {
+	public Bike updateBike(Bike bike) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -500,11 +499,10 @@ public class SqlBikeDAO implements BikeDAO {
 
 			preparedStatement.executeUpdate();
 
-			return "";
+			return bike;
 
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			logger.log(Level.ERROR, DUBLICATE_BIKE_EXCEPTION_MESSAGE + e.getMessage());
-			return MessagePage.USER_DUBLICATE_ERROR.message();
+			throw new DAOException(ExceptionMessage.BIKE_DUBLICATE_ERROR.message());
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while updating bike", e);
 		} finally {

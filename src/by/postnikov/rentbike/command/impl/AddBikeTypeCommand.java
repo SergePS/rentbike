@@ -9,8 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
+import by.postnikov.rentbike.command.CommandExceptionHandler;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
+import by.postnikov.rentbike.command.util.RequestParameterHandler;
 import by.postnikov.rentbike.controller.Router;
 import by.postnikov.rentbike.entity.BikeType;
 import by.postnikov.rentbike.entity.Brand;
@@ -40,23 +42,26 @@ public class AddBikeTypeCommand implements Command {
 		String bikeType = request.getParameter(RequestParameter.BIKE_TYPE.parameter());
 
 		try {
-			String errorMessage = bikeService.addBikeType(bikeType);
-			if (errorMessage.isEmpty()) {
-				List<Brand> brandList = bikeService.takeAllBrand();
-				request.setAttribute(RequestParameter.BRAND_LIST.parameter(), brandList);
+			bikeService.addBikeType(bikeType);
 
-				List<BikeType> bikeTypeList = bikeService.takeAllBikeType();
-				request.setAttribute(RequestParameter.BIKE_TYPE_LIST.parameter(), bikeTypeList);
+			List<Brand> brandList = bikeService.takeAllBrand();
+			request.setAttribute(RequestParameter.BRAND_LIST.parameter(), brandList);
 
-				router.setPagePath(PageConstant.ADD_BIKE_PAGE);
-			} else {
-				request.setAttribute(RequestParameter.ERROR.parameter(), errorMessage);
-				router.setPagePath(PageConstant.BIKE_TYPE_PAGE);
-			}
+			List<BikeType> bikeTypeList = bikeService.takeAllBikeType();
+			request.setAttribute(RequestParameter.BIKE_TYPE_LIST.parameter(), bikeTypeList);
+
+			router.setPagePath(PageConstant.ADD_BIKE_PAGE);
 
 		} catch (ServiceException e) {
-			logger.log(Level.ERROR, "Add bike exception, " + ConvertPrintStackTraceToString.convert(e));
-			router.setPagePath(PageConstant.ERROR_PAGE);
+			if (CommandExceptionHandler.takeLogicExceptionMessage(e).isEmpty()) {
+				logger.log(Level.ERROR, "Add bike exception, " + ConvertPrintStackTraceToString.convert(e));
+				router.setPagePath(PageConstant.ERROR_PAGE);
+			} else {
+				request.setAttribute(RequestParameter.ERROR.parameter(),
+						CommandExceptionHandler.takeLogicExceptionMessage(e));
+				router.setPagePath(PageConstant.BIKE_TYPE_PAGE);
+				RequestParameterHandler.addParamToReques(request);
+			}
 		}
 
 		return router;

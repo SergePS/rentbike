@@ -1,6 +1,7 @@
 package by.postnikov.rentbike.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +9,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import by.postnikov.rentbike.command.MessagePage;
 import by.postnikov.rentbike.command.PageInfo;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.dao.BikeDAO;
@@ -21,6 +21,7 @@ import by.postnikov.rentbike.entity.BikeType;
 import by.postnikov.rentbike.entity.Brand;
 import by.postnikov.rentbike.entity.Parking;
 import by.postnikov.rentbike.exception.DAOException;
+import by.postnikov.rentbike.exception.ExceptionMessage;
 import by.postnikov.rentbike.exception.ServiceException;
 import by.postnikov.rentbike.service.BikeService;
 import by.postnikov.rentbike.service.CloneRentBikeObject;
@@ -40,37 +41,38 @@ public class BikeServiceImpl implements BikeService {
 	}
 
 	@Override
-	public String addBike(Map<String, String> requestParameters, Bike bike) throws ServiceException {
+	public Bike addBike(Map<String, String> requestParameters) throws ServiceException {
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		BikeDAO bikeDao = daoFactory.getBikeDAO();
 
+		Bike bike = new Bike();
 		Brand brand = new Brand();
 		String brandIdString = requestParameters.get(RequestParameter.BRAND_ID.parameter());
 		if (!UserParameterValidator.idValidate(brandIdString)) {
-			logger.log(Level.ERROR, "brandId - " + brandIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "brandId - " + brandIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		brand.setId(Long.parseLong(brandIdString));
 		bike.setBrand(brand);
 
 		String model = requestParameters.get(RequestParameter.MODEL.parameter());
 		if (!BikeParameterValidator.modelValidate(model)) {
-			logger.log(Level.ERROR, "model - " + model + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "model - " + model + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		bike.setModel(requestParameters.get(RequestParameter.MODEL.parameter()));
 
 		String wheelSizeString = (requestParameters.get(RequestParameter.WHEEL_SIZE.parameter()));
 		if (!BikeParameterValidator.wheelSizeValidate(wheelSizeString)) {
-			logger.log(Level.ERROR, "wheelSize - " + wheelSizeString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "wheelSize - " + wheelSizeString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		bike.setWheelSize(Integer.parseInt(wheelSizeString));
 
 		String speedCountString = requestParameters.get(RequestParameter.SPEED_COUNT.parameter());
 		if (!BikeParameterValidator.speedCountValidate(speedCountString)) {
-			logger.log(Level.ERROR, "speedCount - " + speedCountString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "speedCount - " + speedCountString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		bike.setSpeedCount(Integer.parseInt(speedCountString));
 
@@ -79,8 +81,8 @@ public class BikeServiceImpl implements BikeService {
 		BikeType bikeType = new BikeType();
 		String bikeTypeIdString = requestParameters.get(RequestParameter.BIKE_TYPE_ID.parameter());
 		if (!UserParameterValidator.idValidate(bikeTypeIdString)) {
-			logger.log(Level.ERROR, "bikeTypeId - " + bikeTypeIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "bikeTypeId - " + bikeTypeIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		bikeType.setId(Long.parseLong(bikeTypeIdString));
 		bike.setBikeType(bikeType);
@@ -94,40 +96,39 @@ public class BikeServiceImpl implements BikeService {
 	}
 
 	@Override
-	public String addBrand(String brandName) throws ServiceException {
+	public void addBrand(String brandName) throws ServiceException {
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		BikeDAO bikeDao = daoFactory.getBikeDAO();
 
 		if (!BikeParameterValidator.brandValidate(brandName)) {
-			logger.log(Level.ERROR, "brandName - " + brandName + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "brandName - " + brandName + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
-		
 		Brand brand = new Brand();
 		brand.setBrand(brandName);
 
 		try {
-			return bikeDao.addBrand(brand);
+			bikeDao.addBrand(brand);
 		} catch (DAOException e) {
 			throw new ServiceException("Add bike brand exception", e);
 		}
-
 	}
 
 	@Override
-	public String addBikeType(String bikeTypeString) throws ServiceException {
+	public void addBikeType(String bikeTypeString) throws ServiceException {
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		BikeDAO bikeDao = daoFactory.getBikeDAO();
 
 		if (!BikeParameterValidator.bikeTypeValidate(bikeTypeString)) {
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "bikeType - " + bikeTypeString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 
 		BikeType bikeType = new BikeType();
 		bikeType.setBikeType(bikeTypeString);
 
 		try {
-			return bikeDao.addBikeType(bikeType);
+			bikeDao.addBikeType(bikeType);
 		} catch (DAOException e) {
 			throw new ServiceException("Add bike type exception", e);
 		}
@@ -162,38 +163,37 @@ public class BikeServiceImpl implements BikeService {
 	}
 
 	@Override
-	public String findBike(Map<String, String> requestParameters, List<Bike> bikeList, PageInfo pageInfo)
-			throws ServiceException {
+	public List<Bike> findBike(Map<String, String> requestParameters, PageInfo pageInfo) throws ServiceException {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		BikeDAO bikeDAO = daoFactory.getBikeDAO();
 
 		String brandIdString = requestParameters.get(RequestParameter.BRAND_ID.parameter());
 		if (!ZERO_PARAM.equals(brandIdString) && !UserParameterValidator.idValidate(brandIdString)) {
-			logger.log(Level.ERROR, "brandId - " + brandIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "brandId - " + brandIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long brandId = Long.parseLong(brandIdString);
 
 		String bikeTypeIdString = requestParameters.get(RequestParameter.BIKE_TYPE_ID.parameter());
 		if (!ZERO_PARAM.equals(bikeTypeIdString) && !UserParameterValidator.idValidate(bikeTypeIdString)) {
-			logger.log(Level.ERROR, "bikeTypeId - " + bikeTypeIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "bikeTypeId - " + bikeTypeIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long bikeTypeId = Long.parseLong(bikeTypeIdString);
 
 		String model = requestParameters.get(RequestParameter.MODEL.parameter());
 		if (!model.isEmpty() && !BikeParameterValidator.modelValidate(model)) {
-			logger.log(Level.ERROR, "model - " + model + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "model - " + model + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 
 		int minSpeedCount = 0;
 		String minSpeedCountString = requestParameters.get(RequestParameter.MIN_SPEED_COUNT.parameter());
 		if (!minSpeedCountString.isEmpty() && !ZERO_PARAM.equals(minSpeedCountString)) {
 			if (!BikeParameterValidator.speedCountValidate(minSpeedCountString)) {
-				logger.log(Level.ERROR, "minSpeedCountString - " + minSpeedCountString + " is wrong");
-				return MessagePage.VALIDATION_ERROR.message();
+				logger.log(Level.DEBUG, "minSpeedCountString - " + minSpeedCountString + " is wrong");
+				throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 			}
 			minSpeedCount = Integer.parseInt(minSpeedCountString);
 		}
@@ -202,8 +202,8 @@ public class BikeServiceImpl implements BikeService {
 		String maxSpeedCountString = requestParameters.get(RequestParameter.MAX_SPEED_COUNT.parameter());
 		if (!maxSpeedCountString.isEmpty() && !ZERO_PARAM.equals(maxSpeedCountString)) {
 			if (!BikeParameterValidator.speedCountValidate(maxSpeedCountString)) {
-				logger.log(Level.ERROR, "maxSpeedCountString - " + maxSpeedCountString + " is wrong");
-				return MessagePage.VALIDATION_ERROR.message();
+				logger.log(Level.DEBUG, "maxSpeedCountString - " + maxSpeedCountString + " is wrong");
+				throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 			}
 			maxSpeedCount = Integer.parseInt(maxSpeedCountString);
 		}
@@ -213,39 +213,33 @@ public class BikeServiceImpl implements BikeService {
 		}
 
 		try {
-			bikeDAO.findBike(bikeList, brandId, bikeTypeId, model, minSpeedCount, maxSpeedCount, pageInfo);
+			return bikeDAO.findBike(brandId, bikeTypeId, model, minSpeedCount, maxSpeedCount, pageInfo);
 		} catch (DAOException e) {
 			throw new ServiceException("Find bike exception", e);
 		}
-
-		return "";
-
 	}
 
 	@Override
-	public String takeBikeByID(String bikeIdString, Bike bike) throws ServiceException {
+	public Bike takeBikeByID(String bikeIdString) throws ServiceException {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		BikeDAO bikeDAO = daoFactory.getBikeDAO();
 
 		if (!UserParameterValidator.idValidate(bikeIdString)) {
-			logger.log(Level.ERROR, "bikeIdString - " + bikeIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "bikeIdString - " + bikeIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long bikeId = Long.parseLong(bikeIdString);
 
 		try {
-			bikeDAO.takeBikeById(bikeId, bike);
+			return bikeDAO.takeBikeById(bikeId);
 		} catch (DAOException e) {
-			throw new ServiceException("Get bike by id error", e);
+			throw new ServiceException("Exception occured while taking bike by id", e);
 		}
-
-		return "";
 	}
 
 	@Override
-	public String addBikeProduct(Map<String, String> requestParameters, List<BikeProduct> bikeProductList)
-			throws ServiceException {
+	public List<BikeProduct> addBikeProduct(Map<String, String> requestParameters) throws ServiceException {
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		BikeDAO bikeDAO = daoFactory.getBikeDAO();
 		ParkingDAO parkingDAO = daoFactory.getParkingDAO();
@@ -256,44 +250,45 @@ public class BikeServiceImpl implements BikeService {
 
 		String countString = requestParameters.get(RequestParameter.BIKE_COUNT.parameter());
 		if (!BikeParameterValidator.countValidate(countString)) {
-			logger.log(Level.ERROR, "count - " + countString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "count - " + countString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		int bikeCount = Integer.parseInt(countString);
 
 		String valueString = requestParameters.get(RequestParameter.BIKE_VALUE.parameter());
 		valueString = valueString.replace(COMMA, DOT);
 		if (!BikeParameterValidator.amountValidate(valueString)) {
-			logger.log(Level.ERROR, "value - " + valueString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "value - " + valueString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		BigDecimal bikeValue = new BigDecimal(valueString);
 
 		String rentPriceString = requestParameters.get(RequestParameter.BIKE_RENT_PRICE.parameter());
 		rentPriceString = rentPriceString.replace(COMMA, DOT);
 		if (!BikeParameterValidator.amountValidate(rentPriceString)) {
-			logger.log(Level.ERROR, "Rent ptice has not been verified");
-			return null;
+			logger.log(Level.DEBUG, "Rent ptice has not been verified");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		BigDecimal rentPrice = new BigDecimal(rentPriceString);
 
 		String bikeIdString = requestParameters.get(RequestParameter.BIKE_ID.parameter());
 		if (!UserParameterValidator.idValidate(bikeIdString)) {
-			logger.log(Level.ERROR, "bikeIdString - " + bikeIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "bikeIdString - " + bikeIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long bikeId = Long.parseLong(bikeIdString);
 
 		String pakingIdString = requestParameters.get(RequestParameter.PARKING_ID.parameter());
 		if (!UserParameterValidator.idValidate(pakingIdString)) {
-			logger.log(Level.ERROR, "pakingIdString - " + pakingIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "pakingIdString - " + pakingIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long parkingId = Long.parseLong(pakingIdString);
 
+		List<BikeProduct> bikeProductList = new ArrayList<>();
+
 		try {
-			Bike bike = new Bike();
-			bikeDAO.takeBikeById(bikeId, bike);
+			Bike bike = bikeDAO.takeBikeById(bikeId);
 			parking = parkingDAO.findParkingById(parkingId);
 
 			BikeProduct bikeProduct = new BikeProduct();
@@ -307,85 +302,79 @@ public class BikeServiceImpl implements BikeService {
 				bikeProductList.add(cloneRentBikeObject.clone(bikeProduct));
 			}
 
-			bikeDAO.addBikeProduct(bikeProductList);
+			return bikeDAO.addBikeProduct(bikeProductList);
 
 		} catch (NumberFormatException | DAOException e) {
 			throw new ServiceException("Get bike by id error", e);
 		}
-
-		return "";
 	}
 
 	@Override
-	public String findBikeProduct(Map<String, String> requestParameters, List<BikeProduct> bikeProductList,
-			PageInfo pageInfo) throws ServiceException {
+	public List<BikeProduct> findBikeProduct(Map<String, String> requestParameters, PageInfo pageInfo)
+			throws ServiceException {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		BikeDAO bikeDAO = daoFactory.getBikeDAO();
 
 		String brandIdString = requestParameters.get(RequestParameter.BRAND_ID.parameter());
 		if (!ZERO_PARAM.equals(brandIdString) && !UserParameterValidator.idValidate(brandIdString)) {
-			logger.log(Level.ERROR, "brandId - " + brandIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "brandId - " + brandIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long brandId = Long.parseLong(brandIdString);
 
 		String bikeTypeIdString = requestParameters.get(RequestParameter.BIKE_TYPE_ID.parameter());
 		if (!ZERO_PARAM.equals(bikeTypeIdString) && !UserParameterValidator.idValidate(bikeTypeIdString)) {
-			logger.log(Level.ERROR, "bikeTypeId - " + bikeTypeIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "bikeTypeId - " + bikeTypeIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long bikeTypeId = Long.parseLong(bikeTypeIdString);
 
 		String model = requestParameters.get(RequestParameter.MODEL.parameter());
 		if (!model.isEmpty() && !BikeParameterValidator.modelValidate(model)) {
-			logger.log(Level.ERROR, "model - " + model + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "model - " + model + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 
 		String pakingIdString = requestParameters.get(RequestParameter.PARKING_ID.parameter());
 		if (!ZERO_PARAM.equals(pakingIdString) && !UserParameterValidator.idValidate(pakingIdString)) {
-			logger.log(Level.ERROR, "pakingIdString - " + pakingIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			logger.log(Level.DEBUG, "pakingIdString - " + pakingIdString + " is wrong");
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long parkingId = Long.parseLong(pakingIdString);
 
 		try {
-			bikeDAO.findBikeProduct(parkingId, brandId, bikeTypeId, model, BikeProductState.AVAILABLE, bikeProductList,
-					pageInfo);
+			return bikeDAO.findBikeProduct(parkingId, brandId, bikeTypeId, model, BikeProductState.AVAILABLE, pageInfo);
 		} catch (DAOException e) {
 			throw new ServiceException("Find bike product exception", e);
 		}
-
-		return "";
 	}
 
 	@Override
-	public String takeBikeProductById(String bikeProductIdString, BikeProduct bikeProduct) throws ServiceException {
+	public BikeProduct takeBikeProductById(String bikeProductIdString) throws ServiceException {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		BikeDAO bikeDAO = daoFactory.getBikeDAO();
 
 		try {
 			if (!UserParameterValidator.idValidate(bikeProductIdString)) {
-				logger.log(Level.ERROR, "bikeProductId - " + bikeProductIdString + " is wrong");
-				return MessagePage.VALIDATION_ERROR.message();
+				logger.log(Level.DEBUG, "bikeProductId - " + bikeProductIdString + " is wrong");
+				throw new DAOException(ExceptionMessage.VALIDATION_ERROR.message());
 			}
 			long bikeProductId = Long.parseLong(bikeProductIdString);
 
-			bikeDAO.takeBikeProductById(bikeProductId, bikeProduct);
+			return bikeDAO.takeBikeProductById(bikeProductId);
 		} catch (DAOException e) {
 			throw new ServiceException("Take bike product by id exception", e);
 		}
-
-		return "";
 	}
 
 	@Override
-	public String updateBike(Map<String, String> requestParameters, Bike bike) throws ServiceException {
+	public Bike updateBike(Map<String, String> requestParameters) throws ServiceException {
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		BikeDAO bikeDao = daoFactory.getBikeDAO();
 
+		Bike bike = new Bike();
 		bike.setId(Long.parseLong(requestParameters.get(RequestParameter.BIKE_ID.parameter())));
 
 		// validation
@@ -395,19 +384,19 @@ public class BikeServiceImpl implements BikeService {
 
 		String model = requestParameters.get(RequestParameter.MODEL.parameter());
 		if (!BikeParameterValidator.modelValidate(model)) {
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		bike.setModel(requestParameters.get(RequestParameter.MODEL.parameter()));
 
 		String wheelSizeString = (requestParameters.get(RequestParameter.WHEEL_SIZE.parameter()));
 		if (!BikeParameterValidator.wheelSizeValidate(wheelSizeString)) {
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		bike.setWheelSize(Integer.parseInt(wheelSizeString));
 
 		String speedCountString = requestParameters.get(RequestParameter.SPEED_COUNT.parameter());
 		if (!BikeParameterValidator.speedCountValidate(speedCountString)) {
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		bike.setSpeedCount(Integer.parseInt(speedCountString));
 

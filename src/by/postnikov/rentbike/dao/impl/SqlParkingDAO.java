@@ -13,13 +13,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
-import by.postnikov.rentbike.command.MessagePage;
 import by.postnikov.rentbike.connection.ConnectionPool;
 import by.postnikov.rentbike.connection.WrapperConnection;
 import by.postnikov.rentbike.dao.ParkingDAO;
 import by.postnikov.rentbike.entity.Parking;
 import by.postnikov.rentbike.exception.ConvertPrintStackTraceToString;
 import by.postnikov.rentbike.exception.DAOException;
+import by.postnikov.rentbike.exception.ExceptionMessage;
 
 public class SqlParkingDAO implements ParkingDAO {
 
@@ -48,7 +48,7 @@ public class SqlParkingDAO implements ParkingDAO {
 	}
 
 	@Override
-	public String addParking(Parking parking) throws DAOException {
+	public void addParking(Parking parking) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -60,19 +60,16 @@ public class SqlParkingDAO implements ParkingDAO {
 			preparedStatement.executeUpdate();
 			
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			logger.log(Level.ERROR, "this parking already exists, " + e);
-			return MessagePage.PARKING_DUBLICATE_ERROR.message();
+			throw new DAOException(ExceptionMessage.PARKING_DUBLICATE_ERROR.toString());
 		} catch (SQLException e) {
 			throw new DAOException("An error occurred while adding the parking", e);
 		} finally {
 			wrapperConnection.closeStatement(preparedStatement);
 			connectionPool.returnWrapperConnection(wrapperConnection);
 		}
-
-		return "";
 	}
 	
-	public String updateParking(Parking parking) throws DAOException{
+	public void updateParking(Parking parking) throws DAOException{
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
 		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(UPDATE_PARKING_UP);
@@ -84,16 +81,13 @@ public class SqlParkingDAO implements ParkingDAO {
 			preparedStatement.executeUpdate();
 			
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			logger.log(Level.ERROR, "Parking with same address already exists");
-			return MessagePage.PARKING_DUBLICATE_ERROR.message();
+			throw new DAOException(ExceptionMessage.PARKING_DUBLICATE_ERROR.toString());
 		} catch (SQLException e) {
 			throw new DAOException("An error occurred while updating the parking", e);
 		} finally {
 			wrapperConnection.closeStatement(preparedStatement);
 			connectionPool.returnWrapperConnection(wrapperConnection);
 		}
-
-		return "";
 	}
 
 	@Override

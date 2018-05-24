@@ -34,8 +34,7 @@ public class ChooseBikeCommand implements Command {
 		String bikeIdString = request.getParameter(RequestParameter.BIKE_ID.parameter());
 
 		try {
-			Bike bike = new Bike();
-			bikeService.takeBikeByID(bikeIdString, bike);
+			Bike bike = bikeService.takeBikeByID(bikeIdString);
 			if (bike != null) {
 				request.setAttribute(RequestParameter.BIKE.parameter(), bike);
 			}

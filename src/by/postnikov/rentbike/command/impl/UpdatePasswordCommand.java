@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
-import by.postnikov.rentbike.command.MessagePage;
+import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.SessionParameter;
@@ -55,7 +55,7 @@ public class UpdatePasswordCommand implements Command {
 			}
 
 			if (errorParameterName.isEmpty()) {
-				request.setAttribute(RequestParameter.MESSAGE.parameter(), MessagePage.PASSWORD_CHANGED.message());
+				request.setAttribute(RequestParameter.MESSAGE.parameter(), PageMessage.PASSWORD_CHANGED.message());
 			} else {
 				request.setAttribute(RequestParameter.ERROR.parameter(), errorParameterName);
 			}

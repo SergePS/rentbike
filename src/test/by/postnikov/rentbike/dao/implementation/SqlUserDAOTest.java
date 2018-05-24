@@ -45,8 +45,7 @@ public class SqlUserDAOTest {
 
 	@Test
 	public void getUser() throws ServiceException {
-		User userExpected = new User();
-		userService.login(requestParameters, TEST_USER_PASSWORD.toCharArray(), userExpected);
+		 User userExpected = userService.login(requestParameters, TEST_USER_PASSWORD.toCharArray());
 		assertEquals(userExpected.getName(), user.getName());
 
 	}

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import by.postnikov.rentbike.command.MessagePage;
+import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.dao.DAOFactory;
 import by.postnikov.rentbike.dao.ParkingDAO;
@@ -36,19 +36,19 @@ public class ParkingServiceImpl implements ParkingService {
 	}
 
 	@Override
-	public String addParking(Map<String, String> requestParameters) throws ServiceException {
+	public void addParking(Map<String, String> requestParameters) throws ServiceException {
 
 		Parking parking = new Parking();
 		
 		String address = requestParameters.get(RequestParameter.ADDRESS.parameter());
 		if(!ParkingParameterValidator.addressValidate(address)) {
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new  ServiceException(PageMessage.VALIDATION_ERROR.message());
 		}
 		parking.setAddress(address);
 		
 		String capacityString = requestParameters.get(RequestParameter.CAPACITY.parameter());
 		if(!ParkingParameterValidator.capacityValidate(capacityString)) {
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new  ServiceException(PageMessage.VALIDATION_ERROR.message());
 		}	
 		parking.setCapacity(Integer.parseInt(capacityString));
 
@@ -56,7 +56,7 @@ public class ParkingServiceImpl implements ParkingService {
 		ParkingDAO parkingDAO = daoFactory.getParkingDAO();
 
 		try {
-			return parkingDAO.addParking(parking);
+			parkingDAO.addParking(parking);
 		} catch (DAOException e) {
 			throw new ServiceException("An error occurred while adding the parking", e);
 		}
@@ -64,14 +64,14 @@ public class ParkingServiceImpl implements ParkingService {
 	}
 	
 	@Override
-	public String updateParking(Map<String, String> requestParameters) throws ServiceException {
+	public void updateParking(Map<String, String> requestParameters) throws ServiceException {
 		
 		Parking parking = new Parking();
 		
 		String parkingIdString = requestParameters.get(RequestParameter.PARKING_ID.parameter());
 		if(!UserParameterValidator.idValidate(parkingIdString)) {
 			logger.log(Level.ERROR, "pakingIdString - " + parkingIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new  ServiceException(PageMessage.VALIDATION_ERROR.message());
 		}
 		long parkingId = Long.parseLong(parkingIdString);
 		parking.setId(parkingId);
@@ -79,13 +79,13 @@ public class ParkingServiceImpl implements ParkingService {
 		
 		String address = requestParameters.get(RequestParameter.ADDRESS.parameter());
 		if(!ParkingParameterValidator.addressValidate(address)) {
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new  ServiceException(PageMessage.VALIDATION_ERROR.message());
 		}
 		parking.setAddress(address);
 		
 		String capacityString = requestParameters.get(RequestParameter.CAPACITY.parameter());
 		if(!ParkingParameterValidator.capacityValidate(capacityString)) {
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new  ServiceException(PageMessage.VALIDATION_ERROR.message());
 		}	
 		parking.setCapacity(Integer.parseInt(capacityString));
 
@@ -93,7 +93,7 @@ public class ParkingServiceImpl implements ParkingService {
 		ParkingDAO parkingDAO = daoFactory.getParkingDAO();
 
 		try {
-			return parkingDAO.updateParking(parking);
+			parkingDAO.updateParking(parking);
 		} catch (DAOException e) {
 			throw new ServiceException("An error occurred while updating the parking", e);
 		}
@@ -106,7 +106,7 @@ public class ParkingServiceImpl implements ParkingService {
 		
 		if(!UserParameterValidator.idValidate(pakingIdString)) {
 			logger.log(Level.ERROR, "pakingIdString - " + pakingIdString + " is wrong");
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 		long parkingId = Long.parseLong(pakingIdString);
 		

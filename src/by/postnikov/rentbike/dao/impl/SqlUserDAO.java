@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
-import by.postnikov.rentbike.command.MessagePage;
+import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.connection.ConnectionPool;
 import by.postnikov.rentbike.connection.WrapperConnection;
 import by.postnikov.rentbike.dao.DateFormatting;
@@ -29,6 +29,7 @@ import by.postnikov.rentbike.entity.UserOrder;
 import by.postnikov.rentbike.entity.UserRole;
 import by.postnikov.rentbike.entity.UserState;
 import by.postnikov.rentbike.exception.DAOException;
+import by.postnikov.rentbike.exception.ExceptionMessage;
 
 public class SqlUserDAO implements UserDAO {
 
@@ -115,18 +116,16 @@ public class SqlUserDAO implements UserDAO {
 	private final static String UPDATE_PASSWORD_UP = "UPDATE users SET password = MD5(?) where id = ?";
 	private final static int UP_PASSWORD = 1; // UP - Update Password
 	private final static int UP_ID = 2;
-	
+
 	private final static String TAKE_ALL_USER_ORDERS_TAUO = "SELECT o.id, br.brand, bk.model, o.startTime, sp.address as startParking, o.finishTime, fp.address as finishParking, o.rentPrice, TIMESTAMPDIFF(MINUTE, startTime, finishTime) as minute, payment FROM orders o LEFT JOIN parkings sp ON o.startParkingId = sp.id LEFT JOIN parkings fp ON o.finishParkingId = fp.id LEFT JOIN bikeproduct bp ON o.bikeProductId = bp.id LEFT JOIN bikes bk ON bp.bikeId = bk.id LEFT JOIN brands br ON bk.brandId = br.id WHERE userId = ? ORDER by ID desc";
 	private final static int TAUO_USER_ID = 1;
 	private final static String FINISH_TIME = "finishTime";
 	private final static String PAYMENT = "payment";
 	private final static String START_PARKING = "startParking";
 	private final static String FINISH_PARKING = "finishParking";
-	
-	
-	
+
 	@Override
-	public String register(User user, char[] password) throws DAOException {
+	public void register(User user, char[] password) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -145,21 +144,17 @@ public class SqlUserDAO implements UserDAO {
 			preparedStatement.executeUpdate();
 
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			logger.log(Level.ERROR, "user with such login or e-mail already exists", e);
-			return MessagePage.USER_DUBLICATE_ERROR.message();
+			throw new DAOException(ExceptionMessage.USER_DUBLICATE_ERROR.message());
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while user adding to the DB", e);
 		} finally {
 			wrapperConnection.closeStatement(preparedStatement);
 			connectionPool.returnWrapperConnection(wrapperConnection);
 		}
-
-		return "";
-
 	}
 
 	@Override
-	public void login(User user, char[] password) throws DAOException{
+	public User login(User user, char[] password) throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
@@ -183,6 +178,8 @@ public class SqlUserDAO implements UserDAO {
 				user.setState(UserState.valueOf(resultSet.getString(STATE).toUpperCase()));
 				user.setCreditCard(resultSet.getString(CREDIT_CARD));
 			}
+
+			return user;
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while reading user data from DB", e);
 		} finally {
@@ -212,7 +209,7 @@ public class SqlUserDAO implements UserDAO {
 
 		} catch (MySQLIntegrityConstraintViolationException e) {
 			logger.log(Level.ERROR, "user with such login or e-mail already exists" + e);
-			return MessagePage.USER_DUBLICATE_ERROR.message();
+			return PageMessage.USER_DUBLICATE_ERROR.message();
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while updating the user", e);
 		} finally {
@@ -478,26 +475,26 @@ public class SqlUserDAO implements UserDAO {
 
 	@Override
 	public List<BikeOrder> findAllOrderByUser(long userId) throws DAOException {
-		
+
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
 		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(TAKE_ALL_USER_ORDERS_TAUO);
-		
+
 		List<BikeOrder> bikeOrderList = new ArrayList<>();
-		
+
 		try {
 			preparedStatement.setLong(TAUO_USER_ID, userId);
 			ResultSet resultSet = preparedStatement.executeQuery();
-			
+
 			while (resultSet.next()) {
 				BikeOrder bikeOrder = new BikeOrder();
-				
+
 				bikeOrder.setId(resultSet.getLong(ID));
 				bikeOrder.setStartTime(resultSet.getString(START_TIME));
 				bikeOrder.setFinishTime(resultSet.getString(FINISH_TIME));
 				bikeOrder.setRentPrice(resultSet.getBigDecimal(RENT_PRICE));
 				bikeOrder.setPayment(resultSet.getBigDecimal(PAYMENT));
-				
+
 				Bike bike = new Bike();
 				Brand brand = new Brand();
 				brand.setBrand(resultSet.getString(BRAND));
@@ -512,17 +509,17 @@ public class SqlUserDAO implements UserDAO {
 				Parking finishParking = new Parking();
 				finishParking.setAddress(resultSet.getString(FINISH_PARKING));
 				bikeOrder.setFinishParking(finishParking);
-				
+
 				bikeOrderList.add(bikeOrder);
 			}
-			
+
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while finding all orders", e);
 		} finally {
 			wrapperConnection.closeStatement(preparedStatement);
 			connectionPool.returnWrapperConnection(wrapperConnection);
 		}
-		
+
 		return bikeOrderList;
 	}
 

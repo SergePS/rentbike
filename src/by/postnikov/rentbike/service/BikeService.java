@@ -20,44 +20,40 @@ public interface BikeService {
 	 * Validates incoming parameters and adds bike.
 	 * 
 	 * @param requestParameters - all parameters from request
-	 * @param bike - empty object of the Bike.
-	 * @return notice both if validation failed or if bike with such combination of the brand and model already exist.
+	 * @return bike.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String addBike(Map<String, String> requestParameters, Bike bike) throws ServiceException;
+	Bike addBike(Map<String, String> requestParameters) throws ServiceException;
 
 	/**
 	 * Validates incoming parameters and adds brand.
 	 * 
 	 * @param brandName - brand name.
-	 * @return notice both if validation failed or if same brand already exist.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String addBrand(String brandName) throws ServiceException;
+	void addBrand(String brandName) throws ServiceException;
 
 	/**
 	 * Validates incoming parameters and adds bike type.
 	 * 
-	 * @param brandName - bike type.
-	 * @return notice both if validation failed or if same type already exist.
+	 * @param bikeType - bike type.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String addBikeType(String bikeType) throws ServiceException;
+	void addBikeType(String bikeType) throws ServiceException;
 		
 	/**
 	 * Validates incoming parameters and adds bike products.
 	 * 
 	 * @param requestParameters - all parameters from request.
-	 * @param bikeProductList - empty list of bike products.
-	 * @return notice if validation failed.
+	 * @return bikeProductList
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String addBikeProduct(Map<String, String> requestParameters, List<BikeProduct> bikeProductList) throws ServiceException;
+	List<BikeProduct> addBikeProduct(Map<String, String> requestParameters) throws ServiceException;
 	
 	/**
 	 * Returns all bike types.
 	 * 
-	 * @return list with bike types if those were found and empty list if not.
+	 * @return list with bike types.
 	 * @throws ServiceException if any exception occurred.
 	 */
 	List<BikeType> takeAllBikeType() throws ServiceException;
@@ -65,61 +61,56 @@ public interface BikeService {
 	/**
 	 * Returns all brands.
 	 * 
-	 * @return list with brands if those were found and empty list if not.
+	 * @return list with brands.
 	 * @throws ServiceException if any exception occurred.
 	 */
 	List<Brand> takeAllBrand() throws ServiceException;
 	
 	/**
-	 * Validates incoming parameters and looks for a bike according to the received parameters. If bike were found, fills in the received empty bikeList with the found bikes.
+	 * Validates incoming parameters and looks for a bike according to the received parameters.
 	 * 
 	 * @param requestParameters - all parameters from request.
-	 * @param bikeList - empty list.
 	 * @param pageInfo - object with pagination parameters.
-	 * @return notice if validation was failed.
+	 * @return bikeList.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String findBike(Map<String, String> requestParameters, List<Bike> bikeList, PageInfo pageInfo) throws ServiceException;
+	List<Bike> findBike(Map<String, String> requestParameters, PageInfo pageInfo) throws ServiceException;
 	
 	/**
-	 * Validates incoming parameter and get bike by id.
+	 * Validates incoming parameter and takes bike by id.
 	 * 
 	 * @param bikeId - as a String.
-	 * @param bike - empty object of Bike.
-	 * @return notice if validation was failed.
+	 * @return bike object.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String takeBikeByID(String bikeId, Bike bike) throws ServiceException;
+	Bike takeBikeByID(String bikeId) throws ServiceException;
 	
 	/**
-	 * Validates incoming parameters and looks for a bike products according to the received parameters. If bike products were found, fills in the received empty bikeProductList with the found bikes products.
+	 * Validates incoming parameters and looks for a bike products according to the received parameters.
 	 * 
 	 * @param requestParameters - all parameters from request.
-	 * @param bikeProductList - empty list.
 	 * @param pageInfo - object with pagination parameters.
-	 * @return notice if validation was failed.
+	 * @return bike product list.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String findBikeProduct(Map<String, String> requestParameters, List<BikeProduct> bikeProductList, PageInfo pageInfo) throws ServiceException;
+	List<BikeProduct> findBikeProduct(Map<String, String> requestParameters, PageInfo pageInfo) throws ServiceException;
 
 	/**
-	 * Validates incoming parameter and gets bike product by id. If bike product was found fills in fields of received bikeProduct.
+	 * Validates incoming parameter and gets bike product by id.
 	 * 
 	 * @param bikeId as a String.
-	 * @param bikeProduct - empty object of the BikeProduct.
-	 * @return notice if validation was failed.
+	 * @return bikeProduct object.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String takeBikeProductById(String bikeId, BikeProduct bikeProduct) throws ServiceException;
+	BikeProduct takeBikeProductById(String bikeId) throws ServiceException;
 	
 	/**
-	 * Validates incoming parameters and updates bike. If updating was successful, fills in fields of received bike.
+	 * Validates incoming parameters and updates bike.
 	 * 
 	 * @param requestParameters - all parameters from request.
-	 * @param bike - empty object of Bike.
-	 * @return notice both if validation failed or if bike with such combination of the brand and model already exist.
+	 * @return bike object.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String updateBike(Map<String, String> requestParameters, Bike bike) throws ServiceException;
+	Bike updateBike(Map<String, String> requestParameters) throws ServiceException;
 	
 }

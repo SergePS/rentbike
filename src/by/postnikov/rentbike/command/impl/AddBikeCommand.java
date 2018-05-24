@@ -15,8 +15,9 @@ import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.ApplicationProperty;
 import by.postnikov.rentbike.command.Command;
-import by.postnikov.rentbike.command.MessagePage;
+import by.postnikov.rentbike.command.CommandExceptionHandler;
 import by.postnikov.rentbike.command.PageConstant;
+import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.util.RequestParameterHandler;
 import by.postnikov.rentbike.controller.Router;
@@ -31,37 +32,38 @@ import by.postnikov.rentbike.service.ServiceFactory;
 public class AddBikeCommand implements Command {
 
 	private static Logger logger = LogManager.getLogger();
-	
+
 	private static final String UPLOAD_DIR_PROP_KEY = "upload_dir";
 	private static final String UPLOAD_DIR = ApplicationProperty.takeProperty().getProperty(UPLOAD_DIR_PROP_KEY);
-	
+
 	private final static String DOT_SEPARATOR = "\\.";
-	
+
 	@Override
 	public Router execute(HttpServletRequest request) {
 
+		Router router = new Router();
+		router.setPagePath(PageConstant.ADD_BIKE_PAGE);
+
 		ServiceFactory serviceFactory = ServiceFactory.getInstance();
 		BikeService bikeService = serviceFactory.getBikeService();
-		
-		Router router = new Router();
-		
+
 		Map<String, String> requestParameters = RequestParameterHandler.requestParamToMap(request);
-		
-		//create picture's file name
+
+		// create picture's file name
 		String appPath = request.getServletContext().getRealPath("");
 		String savePath = appPath + File.separator + UPLOAD_DIR;
-		
+
 		Part filePart = null;
 		String filePath = "";
 		String filePictureName = "";
-		
+
 		try {
 			for (Part part : request.getParts()) {
 				String fileName = extractFileName(part);
 				fileName = new File(fileName).getName();
-	
+
 				if (!fileName.isEmpty()) {
-					String 	fileExtension = fileName.split(DOT_SEPARATOR)[1];
+					String fileExtension = fileName.split(DOT_SEPARATOR)[1];
 					fileExtension = "." + fileExtension;
 					filePictureName = File.createTempFile("bike", fileExtension, null).getName();
 					requestParameters.put(RequestParameter.PICTURE.parameter(), filePictureName);
@@ -72,40 +74,40 @@ public class AddBikeCommand implements Command {
 		} catch (IOException | ServletException e) {
 			logger.log(Level.ERROR, "Upload picture error, " + ConvertPrintStackTraceToString.convert(e));
 		}
-		
-		//add bike
-		Bike bike = new Bike();
+
+		// add bike
 		try {
-			String errorMessage = bikeService.addBike(requestParameters, bike);
-			
 			List<BikeType> bikeTypeList = bikeService.takeAllBikeType();
 			request.setAttribute(RequestParameter.BIKE_TYPE_LIST.parameter(), bikeTypeList);
-			
+
 			List<Brand> brandList = bikeService.takeAllBrand();
 			request.setAttribute(RequestParameter.BRAND_LIST.parameter(), brandList);
-			
-			router.setPagePath(PageConstant.ADD_BIKE_PAGE);
-			
-			if(errorMessage.isEmpty() && filePart!=null) {
+
+			Bike bike = bikeService.addBike(requestParameters);
+
+			request.setAttribute(RequestParameter.BIKE.parameter(), bike);
+			request.setAttribute(RequestParameter.MESSAGE.parameter(), PageMessage.BIKE_ADDED.message());
+
+			if (filePart != null) {
 				filePart.write(filePath);
-				request.setAttribute(RequestParameter.MESSAGE.parameter(), MessagePage.BIKE_ADDED.message());
-			}else {
-				request.setAttribute(RequestParameter.ERROR.parameter(), errorMessage);
 			}
-			
+
 		} catch (ServiceException e) {
-			logger.log(Level.ERROR, "Add bike exception, " + ConvertPrintStackTraceToString.convert(e));
-			router.setPagePath(PageConstant.ERROR_PAGE);
+			if (CommandExceptionHandler.takeLogicExceptionMessage(e).isEmpty()) {
+				logger.log(Level.ERROR, "Add bike exception, " + ConvertPrintStackTraceToString.convert(e));
+				router.setPagePath(PageConstant.ERROR_PAGE);
+			} else {
+				request.setAttribute(RequestParameter.ERROR.parameter(),
+						CommandExceptionHandler.takeLogicExceptionMessage(e));
+				RequestParameterHandler.addParamToReques(request);
+			}
 		} catch (IOException e) {
 			logger.log(Level.ERROR, "Write picture error, " + ConvertPrintStackTraceToString.convert(e));
-			router.setPagePath(PageConstant.ADD_BIKE_PAGE);
 		}
-				
-		request.setAttribute(RequestParameter.BIKE.parameter(), bike);
 
 		return router;
 	}
-	
+
 	private String extractFileName(Part part) {
 		String contentDisp = part.getHeader("content-disposition");
 		String[] items = contentDisp.split(";");
@@ -117,5 +119,4 @@ public class AddBikeCommand implements Command {
 		return "";
 
 	}
-
 }

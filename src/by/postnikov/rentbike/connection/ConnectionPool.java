@@ -19,6 +19,10 @@ import org.apache.logging.log4j.Logger;
 import by.postnikov.rentbike.exception.ConvertPrintStackTraceToString;
 import by.postnikov.rentbike.exception.DAOException;
 
+/**
+ * @author Sergey Postnikov
+ *
+ */
 public class ConnectionPool {
 
 	private static Logger logger = LogManager.getLogger();
@@ -105,8 +109,7 @@ public class ConnectionPool {
 	/**
 	 * Takes back wrapperConnection.
 	 * 
-	 * @param wrapperConnection
-	 *            - returned WrapperConnection
+	 * @param wrapperConnection - returned WrapperConnection
 	 */
 	public void returnWrapperConnection(WrapperConnection wrapperConnection) {
 		if (wrapperConnection != null) {
@@ -132,8 +135,8 @@ public class ConnectionPool {
 	public void closeAllWrapperConnection() {
 
 		isConnectionPoolWork = false;
-		
-		connectionPoolSlave.setStopWorkThread();
+
+		connectionPoolSlave.stopThread();
 
 		try {
 			int availableConnection = wrapperConnectionQueue.size();
@@ -158,7 +161,7 @@ public class ConnectionPool {
 			logger.log(Level.ERROR, "Close connection error, " + ConvertPrintStackTraceToString.convert(e));
 		}
 
-		//unloading drivers
+		// unloading drivers
 		Enumeration<Driver> drivers = DriverManager.getDrivers();
 		while (drivers.hasMoreElements()) {
 			Driver driver = drivers.nextElement();
@@ -194,7 +197,7 @@ public class ConnectionPool {
 			try {
 				WrapperConnection wrapperConnection = new WrapperConnection(properties);
 				wrapperConnectionQueue.put(wrapperConnection);
-				currentWrapperConnectionCount++; 
+				currentWrapperConnectionCount++;
 				logger.log(Level.DEBUG, "One wrapperConnection added");
 			} catch (InterruptedException e) {
 				logger.log(Level.ERROR,

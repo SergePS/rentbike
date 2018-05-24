@@ -1,10 +1,10 @@
-package by.postnikov.rentbike.command;
+package by.postnikov.rentbike.exception;
 
-public enum MessagePage {
+public enum ExceptionMessage {
 	
-	//error
-	BRAND_DUBLICATE_ERROR("brandDublicateError"),
+	BIKE_DUBLICATE_ERROR("bikeDublicateError"),
 	BIKE_TYPE_DUBLICATE_ERROR("bikeTypeDublicateError"),
+	BRAND_DUBLICATE_ERROR("brandDublicateError"),
 	
 	CURRENT_PASSW_WRONG("currentPasswordWrong"),
 		
@@ -17,27 +17,16 @@ public enum MessagePage {
 	USER_DUBLICATE_ERROR("userDublicateError"),
 	USER_IS_TOO_YOUNG("userTooYoung"),
 	
-	VALIDATION_ERROR("validationError"),
+	VALIDATION_ERROR("validationError");
 	
-	
-	//notice
-	PARKING_ADDED("parkingAdded"),
-	PARKING_CHANGED("parkingChanged"),
-	
-	BIKE_ADDED("bikeAdded"),
-	BIKE_CHANGED("bikeChanged"),
-	
-	PROFILE_CHANGED("profileChanged"),
-	PASSWORD_CHANGED("passwordChanged");
-
 	private String message;
 
-	private MessagePage(String message) {
+	private ExceptionMessage(String message) {
 		this.message = message;
 	}
 
 	public String message() {
 		return message;
 	}
-
+	
 }

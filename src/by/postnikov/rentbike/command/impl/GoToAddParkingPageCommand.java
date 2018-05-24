@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
-import by.postnikov.rentbike.command.MessagePage;
+import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.controller.Router;
@@ -35,7 +35,7 @@ public class GoToAddParkingPageCommand implements Command {
 		if (parkingId != null) {
 			try {
 				String errorParameterName = parkingService.findParkingById(parkingId, parking);
-				if (MessagePage.VALIDATION_ERROR.message().equals(errorParameterName)) {
+				if (PageMessage.VALIDATION_ERROR.message().equals(errorParameterName)) {
 					router.setPagePath(PageConstant.ERROR_PAGE);
 					return router;
 				}

@@ -18,27 +18,25 @@ public interface UserService {
 	
 	
 	/**
-	 * Validate incoming data and return the filled object of {@link User} if login and password are valid
+	 * Validates incoming data and return the filled object of {@link User} if login and password are valid.
 	 * 
-	 * @param requestParameters - all parameters from request (without password)
-	 * @param password - char array object
-	 * @param user - empty object of the {@link User}
-	 * @return empty String if the action succeeds or String message of the MessagePage if something wrong
-	 * @throws ServiceException
+	 * @param requestParameters - all parameters from request (without password).
+	 * @param password - char array object.
+	 * @return {@link User}.
+	 * @throws ServiceException if any exceptions occurred.
 	 */
-	String login(Map<String, String> requestParameters, char[] password, User user) throws ServiceException;
+	User login(Map<String, String> requestParameters, char[] password) throws ServiceException;
 	
 	
 	/**
-	 * Validate incoming data and register new User 
+	 * Validate incoming data and register new User.
 	 * 
-	 * @param requestParameters - all parameters from request (without password)
-	 * @param password - char array object
-	 * @param user - empty object of the {@link User}
-	 * @return empty String if the action succeeds or String message of the MessagePage if something wrong
-	 * @throws ServiceException
+	 * @param requestParameters - all parameters from request (without password).
+	 * @param password - char array object.
+	 * @return {@link User}.
+	 * @throws ServiceException if any exceptions occurred.
 	 */
-	String register(Map<String, String> requestParameters, char[] password, User user) throws ServiceException;
+	void register(Map<String, String> requestParameters, char[] password) throws ServiceException;
 	
 	
 	/**

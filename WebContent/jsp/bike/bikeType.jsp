@@ -32,6 +32,7 @@
 				<div class="col-md-4">
 						<input 	type="text"
 								name="bikeType"
+								value = "${bikeType}"
 								class="form-control"
 								placeholder="${bikeTypePlaceholderLabel}"
 								pattern="[\w\-\sа-яА-ЯёЁ]{1,30}"

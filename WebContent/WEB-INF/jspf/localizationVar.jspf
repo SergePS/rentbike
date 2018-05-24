@@ -42,6 +42,7 @@
 <fmt:message bundle="${loc}" key="bikeNubmerLabel" var="bikeNubmerLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="bikeHaveBeenAccruedLabel" var="bikeHaveBeenAccruedLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="blockAmountNotice" var="blockAmountNotice"></fmt:message>
+<fmt:message bundle="${loc}" key="bikeNotSelected" var="bikeNotSelected"></fmt:message>
 
 <fmt:message bundle="${loc}" key="changePasswLabel" var="changePasswLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="changeLabel" var="changeLabel"></fmt:message>

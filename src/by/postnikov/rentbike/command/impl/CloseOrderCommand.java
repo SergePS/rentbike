@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
-import by.postnikov.rentbike.command.MessagePage;
+import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.util.RequestParameterHandler;
@@ -41,14 +41,14 @@ public class CloseOrderCommand implements Command{
 		try {	
 			String paymentOrErrorMessage = userService.closeOrder(requestParameters);
 			
-			if(MessagePage.VALIDATION_ERROR.message().equals(paymentOrErrorMessage)) {
+			if(PageMessage.VALIDATION_ERROR.message().equals(paymentOrErrorMessage)) {
 				router.setPagePath(PageConstant.ERROR_PAGE);
-				session.setAttribute(RequestParameter.ERROR.parameter(), MessagePage.VALIDATION_ERROR.message());
+				session.setAttribute(RequestParameter.ERROR.parameter(), PageMessage.VALIDATION_ERROR.message());
 				return router;
 			}
 			
-			if(MessagePage.ORDER_NOT_EXIST.message().equals(paymentOrErrorMessage)) {
-				session.setAttribute(RequestParameter.ERROR.parameter(),  MessagePage.ORDER_NOT_EXIST.message());
+			if(PageMessage.ORDER_NOT_EXIST.message().equals(paymentOrErrorMessage)) {
+				session.setAttribute(RequestParameter.ERROR.parameter(),  PageMessage.ORDER_NOT_EXIST.message());
 			}else {
 				session.setAttribute(RequestParameter.PAYMENT.parameter(), paymentOrErrorMessage);
 			}

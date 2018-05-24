@@ -17,23 +17,23 @@ import by.postnikov.rentbike.exception.DAOException;
 public interface UserDAO {
 
 	/**
-	 * Search user in DB. If user is found, then all fields of the received object User are filled in. 
+	 * Search user in DB. 
 	 *
 	 * @param user - object User with only login field that should be extracted from database
 	 * @param password - password, which must be compared with the password from the database
+	 * @return {@link User}.
 	 * @throws DAOException if occurred SQL exception
 	 */
-	void login(User user, char[] password) throws DAOException;
+	User login(User user, char[] password) throws DAOException;
 
 	/**
 	 * Add User to DB
 	 *
 	 * @param user - User object that should be added in database
 	 * @param password as char[]
-	 * @return string notice if user with such login or e-mail already exists
 	 * @throws DAOException if occurred SQL exception
 	 */
-	String register(User user, char[] password) throws DAOException;
+	void register(User user, char[] password) throws DAOException;
 
 	/**
 	 * Create bike order in DB

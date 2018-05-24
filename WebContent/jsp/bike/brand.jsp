@@ -34,6 +34,7 @@
 							<input 	type="text"
 									name="brand"
 									class="form-control"
+									value = "${brand}"
 									placeholder="${brandPlaceholder}"
 									pattern="[\w\-\sа-яА-ЯёЁ]{1,30}"
 									oninvalid="setCustomValidity('${brandWarn}')"

@@ -1,6 +1,5 @@
 package by.postnikov.rentbike.command.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
+import by.postnikov.rentbike.command.CommandExceptionHandler;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.util.RequestParameterHandler;
@@ -36,31 +36,33 @@ public class AddBikeProductCommand implements Command {
 		BikeService bikeService = serviceFactory.getBikeService();
 
 		Router router = new Router();
-		
+
 		Map<String, String> requestParameters = RequestParameterHandler.requestParamToMap(request);
 
 		try {
-			List<BikeProduct> bikeProductList = new ArrayList<>();
-			String errorMessage = bikeService.addBikeProduct(requestParameters, bikeProductList);
-			if(errorMessage.isEmpty()) {
-				HttpSession session = request.getSession(false);
-				session.setAttribute(RequestParameter.BIKE_PRODUCT_LIST.parameter(), bikeProductList);
-				router.setRoute(RouteType.REDIRECT);
-				router.setPagePath(PageConstant.REDIRECT_TO_BIKE_PURCHASE_PAGE);
-			}else {
-				request.setAttribute(RequestParameter.ERROR.parameter(), errorMessage);
+			ParkingService parkingService = serviceFactory.getParkingService();
+			List<Parking> parkingList = parkingService.takeAllParking();
+			request.setAttribute(RequestParameter.PARKING_LIST.parameter(), parkingList);
+
+			List<BikeProduct> bikeProductList = bikeService.addBikeProduct(requestParameters);
+
+			HttpSession session = request.getSession(false);
+			session.setAttribute(RequestParameter.BIKE_PRODUCT_LIST.parameter(), bikeProductList);
+			router.setRoute(RouteType.REDIRECT);
+			router.setPagePath(PageConstant.REDIRECT_TO_BIKE_PURCHASE_PAGE);
+
+		} catch (ServiceException e) {
+			if (CommandExceptionHandler.takeLogicExceptionMessage(e).isEmpty()) {
+				logger.log(Level.ERROR, "Add bike product error" + ConvertPrintStackTraceToString.convert(e));
+				router.setPagePath(PageConstant.ERROR_PAGE);
+			} else {
+				request.setAttribute(RequestParameter.ERROR.parameter(),
+						CommandExceptionHandler.takeLogicExceptionMessage(e));
 				RequestParameterHandler.addParamToReques(request);
-				
-				ParkingService parkingService = serviceFactory.getParkingService();
-				List<Parking> parkingList = parkingService.takeAllParking();
-				request.setAttribute(RequestParameter.PARKING_LIST.parameter(), parkingList);
-				
+
 				router.setRoute(RouteType.FORWARD);
 				router.setPagePath(PageConstant.BIKE_PURCHASE_PAGE);
 			}
-		} catch (ServiceException e) {
-			logger.log(Level.ERROR, "Add bike product error" + ConvertPrintStackTraceToString.convert(e));
-			router.setPagePath(PageConstant.ERROR_PAGE);
 		}
 
 		return router;

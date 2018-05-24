@@ -41,9 +41,10 @@ public class GoToAddBikePageCommand implements Command {
 			String bikeIdString = request.getParameter(RequestParameter.BIKE_ID.parameter());
 			if (bikeIdString != null) {
 				String bikeId = request.getParameter(RequestParameter.BIKE_ID.parameter());
-				Bike bike = new Bike();
-				bikeService.takeBikeByID(bikeId, bike);
-				request.setAttribute(RequestParameter.BIKE.parameter(), bike);
+				Bike bike = bikeService.takeBikeByID(bikeId);
+				if(bike!=null) {
+					request.setAttribute(RequestParameter.BIKE.parameter(), bike);
+				}
 			}
 			router.setPagePath(PageConstant.ADD_BIKE_PAGE);
 		} catch (ServiceException e) {

@@ -23,7 +23,7 @@
 							</c:if>						
 						</c:if>
 						<c:if test="${bike==null}">
-							<option value="${item.id}"><c:out value="${item.brand}"></c:out></option>
+							<option <c:if test="${brandId==item.id}">selected</c:if> value="${item.id}"><c:out value="${item.brand}"></c:out></option>
 						</c:if>
 					</c:forEach> 
 				</select>
@@ -99,7 +99,7 @@
 							</c:if>						
 						</c:if>
 						<c:if test="${bike==null}">
-							<option value="${item.id}"><c:out value="${item.bikeType}"></c:out></option>
+							<option <c:if test="${bikeTypeId==item.id}">selected</c:if> value="${item.id}"><c:out value="${item.bikeType}"></c:out></option>
 						</c:if>		
 					</c:forEach> 
 				</select>

@@ -15,6 +15,9 @@ public class DBProperty {
 	private static Logger logger = LogManager.getLogger();
 
 	private static final String PROPERTIES = "dbconnect_properties";
+	
+	DBProperty() {
+	}
 
 	public static Properties takeProperty() {
 		

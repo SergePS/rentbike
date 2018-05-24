@@ -50,17 +50,18 @@ public class RequestParameterHandler {
 		}
 		return urlWithParam;
 	}
-	
 
 	public static void addParamToReques(HttpServletRequest request) {
 
 		Map<String, String[]> parametrs = request.getParameterMap();
 		Set<Map.Entry<String, String[]>> set = parametrs.entrySet();
 
-		for (Map.Entry<String, String[]> i : set) {
+		for (Map.Entry<String, String[]> mapEntry : set) {
 
-			for (String value : i.getValue()) {
-				request.setAttribute(i.getKey(), value);
+			if (!RequestParameter.PASSWORD.parameter().equals(mapEntry.getKey())) {
+				for (String value : mapEntry.getValue()) {
+					request.setAttribute(mapEntry.getKey(), value);
+				}
 			}
 
 		}

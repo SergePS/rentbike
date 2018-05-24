@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
-import by.postnikov.rentbike.command.MessagePage;
+import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.SessionParameter;
@@ -49,14 +49,14 @@ public class UpdateUserCommand implements Command {
 			errorParameterName = userService.userUpdate(requestParameters, user);
 			
 			if (errorParameterName.isEmpty()) {
-				request.setAttribute(RequestParameter.MESSAGE.parameter(), MessagePage.PROFILE_CHANGED.message());
+				request.setAttribute(RequestParameter.MESSAGE.parameter(), PageMessage.PROFILE_CHANGED.message());
 				session.setAttribute(SessionParameter.USER.parameter(), user);
 			}else {
-				if (MessagePage.VALIDATION_ERROR.message().equals(errorParameterName)) {
-					request.setAttribute(RequestParameter.ERROR.parameter(), MessagePage.VALIDATION_ERROR.message());
+				if (PageMessage.VALIDATION_ERROR.message().equals(errorParameterName)) {
+					request.setAttribute(RequestParameter.ERROR.parameter(), PageMessage.VALIDATION_ERROR.message());
 				}
-				if (MessagePage.USER_DUBLICATE_ERROR.message().equals(errorParameterName)) {
-					request.setAttribute(RequestParameter.ERROR.parameter(), MessagePage.USER_DUBLICATE_ERROR.message());
+				if (PageMessage.USER_DUBLICATE_ERROR.message().equals(errorParameterName)) {
+					request.setAttribute(RequestParameter.ERROR.parameter(), PageMessage.USER_DUBLICATE_ERROR.message());
 				}
 				request.setAttribute(RequestParameter.LOGIN_MENU.parameter(), false);
 			}

@@ -9,6 +9,9 @@ function checkPurchaseForm() {
 	if(isRentPriceNotCorrect()){
 		return false;
 	}	
+	if(isBikeNotSelected()){
+		return false;
+	}	
 		document.getElementById("addBikeProductForm").submit();
 }
 
@@ -33,6 +36,15 @@ function isValueNotCorrect(){
 function isRentPriceNotCorrect(){
 	if(document.getElementById("rentPrice").value==0){
 		errorMessageShow('<c:out value="${rentPriceZeroWarn}"></c:out>');
+		return true
+	}else{
+		return false
+	}
+}
+
+function isBikeNotSelected(){
+	if(document.getElementById("bikeId").value==0){
+		errorMessageShow('<c:out value="${bikeNotSelected}"></c:out>');
 		return true
 	}else{
 		return false

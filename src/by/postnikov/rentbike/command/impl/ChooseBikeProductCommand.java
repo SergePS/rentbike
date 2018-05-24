@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.Command;
+import by.postnikov.rentbike.command.CommandExceptionHandler;
 import by.postnikov.rentbike.command.PageConstant;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.SessionParameter;
@@ -26,22 +27,26 @@ public class ChooseBikeProductCommand implements Command {
 	public Router execute(HttpServletRequest request) {
 
 		Router router = new Router();
+		router.setPagePath(PageConstant.ORDER_PAGE);
 
 		ServiceFactory serviceFactory = ServiceFactory.getInstance();
 		BikeService bikeService = serviceFactory.getBikeService();
 
 		try {
-			BikeProduct bikeProduct = new BikeProduct();
 			String bikeProductIdString = request.getParameter(RequestParameter.BIKE_PRODUCT_ID.parameter());
-			bikeService.takeBikeProductById(bikeProductIdString, bikeProduct);
+			BikeProduct bikeProduct = bikeService.takeBikeProductById(bikeProductIdString);
 
 			HttpSession session = request.getSession(false);
 			session.setAttribute(SessionParameter.BIKE_PRODUCT.parameter(), bikeProduct);
-
-			router.setPagePath(PageConstant.ORDER_PAGE);
+	
 		} catch (NumberFormatException | ServiceException e) {
-			logger.log(Level.ERROR, "Get bike product by id error, " + ConvertPrintStackTraceToString.convert(e));
-			router.setPagePath(PageConstant.ERROR_PAGE);
+			if (CommandExceptionHandler.takeLogicExceptionMessage(e).isEmpty()) {
+				logger.log(Level.ERROR, "Get bike product by id error, " + ConvertPrintStackTraceToString.convert(e));
+				router.setPagePath(PageConstant.ERROR_PAGE);
+			} else {
+				request.setAttribute(RequestParameter.ERROR.parameter(),
+						CommandExceptionHandler.takeLogicExceptionMessage(e));
+			}
 		}
 
 		return router;

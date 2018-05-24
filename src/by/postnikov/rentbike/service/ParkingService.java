@@ -15,16 +15,15 @@ public interface ParkingService {
 	 * @return notice if validation failed or if parking with same address already exists.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String addParking(Map<String, String> requestParameters) throws ServiceException;
+	void addParking(Map<String, String> requestParameters) throws ServiceException;
 	
 	/**
 	 * Validates incoming parameters and updates parking.
 	 * 
 	 * @param requestParameters - all parameters from request.
-	 * @return notice if validation failed or if parking with same address already exists.
 	 * @throws ServiceException if any exception occurred.
 	 */
-	String updateParking(Map<String, String> requestParameters) throws ServiceException;
+	void updateParking(Map<String, String> requestParameters) throws ServiceException;
 	
 	/**
 	 * Returns all parking lots.

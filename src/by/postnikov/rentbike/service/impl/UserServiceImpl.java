@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.postnikov.rentbike.command.ApplicationProperty;
-import by.postnikov.rentbike.command.MessagePage;
+import by.postnikov.rentbike.command.PageMessage;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.dao.DAOFactory;
 import by.postnikov.rentbike.dao.DateFormatting;
@@ -21,6 +21,7 @@ import by.postnikov.rentbike.entity.Parking;
 import by.postnikov.rentbike.entity.User;
 import by.postnikov.rentbike.entity.UserOrder;
 import by.postnikov.rentbike.exception.DAOException;
+import by.postnikov.rentbike.exception.ExceptionMessage;
 import by.postnikov.rentbike.exception.ServiceException;
 import by.postnikov.rentbike.service.DateFormatter;
 import by.postnikov.rentbike.service.UserService;
@@ -40,7 +41,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String login(Map<String, String> requestParameters, char[] password, User user) throws ServiceException {
+	public User login(Map<String, String> requestParameters, char[] password) throws ServiceException {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		UserDAO userDAO = daoFactory.getUserDAO();
@@ -48,68 +49,67 @@ public class UserServiceImpl implements UserService {
 		String login = requestParameters.get(RequestParameter.LOGIN.parameter());
 		if (!UserParameterValidator.loginValidate(login)) {
 			logger.log(Level.DEBUG, "login validatation error, login = " + login);
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 
 		if (!UserParameterValidator.passwordValidate(password)) {
 			logger.log(Level.DEBUG, "password validatation error");
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
-
+		User user = new User();
 		user.setLogin(login);
 
 		try {
-			userDAO.login(user, password);
+			return userDAO.login(user, password);
 		} catch (DAOException e) {
 			throw new ServiceException("An exeption occured in the layer Service while getting user data", e);
 		}
-
-		return "";
 	}
 
 	@Override
-	public String register(Map<String, String> requestParameters, char[] password, User user) throws ServiceException {
+	public void register(Map<String, String> requestParameters, char[] password) throws ServiceException {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		UserDAO userDAO = daoFactory.getUserDAO();
 
+		User user = new User();
+		
 		String login = requestParameters.get(RequestParameter.LOGIN.parameter());
 		if (!UserParameterValidator.loginValidate(login)) {
 			logger.log(Level.DEBUG, "login validatation error, login = " + login);
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setLogin(login);
 
 		if (!UserParameterValidator.passwordValidate(password)) {
 			logger.log(Level.DEBUG, "password validatation error");
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 
 		String name = requestParameters.get(RequestParameter.NAME.parameter());
 		if (!UserParameterValidator.nameValidate(name)) {
 			logger.log(Level.DEBUG, "name validatation error, name = " + name);
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setName(name);
 
 		String surname = requestParameters.get(RequestParameter.SURNAME.parameter());
 		if (!UserParameterValidator.nameValidate(surname)) {
 			logger.log(Level.DEBUG, "surname validatation error, surname = " + surname);
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setSurname(surname);
 
 		String email = requestParameters.get(RequestParameter.EMAIL.parameter());
 		if (!UserParameterValidator.emailValidate(email)) {
 			logger.log(Level.DEBUG, "email validatation error, email = " + email);
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setEmail(email);
 
 		String birthday = requestParameters.get(RequestParameter.BIRTHDAY.parameter());
 		if (!UserParameterValidator.birthdayValidate(birthday)) {
-			logger.log(Level.DEBUG, "birthday validatation error, birthday = " + birthday);
-			return MessagePage.USER_IS_TOO_YOUNG.message();
+			throw new ServiceException(ExceptionMessage.USER_IS_TOO_YOUNG.toString());
 		}
 		user.setBirthday(DateFormatting.modifyDateToDB(birthday));
 
@@ -118,12 +118,12 @@ public class UserServiceImpl implements UserService {
 		String creditCard = requestParameters.get(RequestParameter.CRADIT_CARD.parameter());
 		if (!UserParameterValidator.craditcardValidate(creditCard)) {
 			logger.log(Level.DEBUG, "creditCard validatation error, creditCard = " + creditCard);
-			return MessagePage.VALIDATION_ERROR.message();
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		user.setCreditCard(creditCard);
 
 		try {
-			return userDAO.register(user, password);
+			userDAO.register(user, password);
 		} catch (DAOException e) {
 			throw new ServiceException("Add user to DB error", e);
 		}
@@ -174,7 +174,7 @@ public class UserServiceImpl implements UserService {
 
 		if (!UserParameterValidator.idValidate(orderIdString)) {
 			logger.log(Level.DEBUG, "Id validatation error, id = " + orderIdString);
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 		long orderId = Long.parseLong(orderIdString);
 
@@ -198,7 +198,7 @@ public class UserServiceImpl implements UserService {
 		String orderIdString = requestParameters.get(RequestParameter.ORDER_ID.parameter());
 		if (!UserParameterValidator.idValidate(orderIdString)) {
 			logger.log(Level.DEBUG, "orderId validatation error");
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 		long orderId = Long.parseLong(orderIdString);
 
@@ -208,7 +208,7 @@ public class UserServiceImpl implements UserService {
 			
 			if (bikeOrder.getId() == 0) {
 				logger.log(Level.DEBUG, "order not exist");
-				return MessagePage.ORDER_NOT_EXIST.message();
+				return PageMessage.ORDER_NOT_EXIST.message();
 			}
 		} catch (DAOException e) {
 			throw new ServiceException("Find open order by id error", e);
@@ -218,7 +218,7 @@ public class UserServiceImpl implements UserService {
 		String finishParkingIdString = requestParameters.get(RequestParameter.FINISH_PARKING_ID.parameter());
 		if (!UserParameterValidator.idValidate(finishParkingIdString)) {
 			logger.log(Level.DEBUG, "parkingId validatation error");
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 		long finishParkingId = Long.parseLong(finishParkingIdString);
 
@@ -226,7 +226,7 @@ public class UserServiceImpl implements UserService {
 			Parking parking = parkingDAO.findParkingById(finishParkingId);
 			if (parking == null) {
 				logger.log(Level.DEBUG, "parking validation error: parking not exist");
-				return MessagePage.VALIDATION_ERROR.message();
+				return PageMessage.VALIDATION_ERROR.message();
 			}
 		} catch (DAOException e) {
 			throw new ServiceException("Find parking by id error", e);
@@ -240,7 +240,7 @@ public class UserServiceImpl implements UserService {
 
 		if (rentMinutes < 0) {
 			logger.log(Level.DEBUG, "finish time validatation error");
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 
 		// calculate payment end close order
@@ -285,42 +285,42 @@ public class UserServiceImpl implements UserService {
 		String login = requestParameters.get(RequestParameter.LOGIN.parameter());
 		if (!UserParameterValidator.loginValidate(login)) {
 			logger.log(Level.DEBUG, "login validatation error, login = " + login);
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 		user.setLogin(login);
 
 		String name = requestParameters.get(RequestParameter.NAME.parameter());
 		if (!UserParameterValidator.nameValidate(name)) {
 			logger.log(Level.DEBUG, "name validatation error, name = " + name);
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 		user.setName(name);
 
 		String surname = requestParameters.get(RequestParameter.SURNAME.parameter());
 		if (!UserParameterValidator.nameValidate(surname)) {
 			logger.log(Level.DEBUG, "surname validatation error, surname = " + surname);
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 		user.setSurname(surname);
 
 		String email = requestParameters.get(RequestParameter.EMAIL.parameter());
 		if (!UserParameterValidator.emailValidate(email)) {
 			logger.log(Level.DEBUG, "email validatation error, email = " + email);
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 		user.setEmail(email);
 
 		String birthday = requestParameters.get(RequestParameter.BIRTHDAY.parameter());
 		if (!UserParameterValidator.birthdayValidate(birthday)) {
 			logger.log(Level.DEBUG, "birthday validatation error, birthday = " + birthday);
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 		user.setBirthday(birthday);
 
 		String creditCard = requestParameters.get(RequestParameter.CRADIT_CARD.parameter());
 		if (!UserParameterValidator.craditcardValidate(creditCard)) {
 			logger.log(Level.DEBUG, "creditCard validatation error, creditCard = " + creditCard);
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 		user.setCreditCard(creditCard);
 
@@ -339,7 +339,7 @@ public class UserServiceImpl implements UserService {
 		UserDAO userDAO = daoFactory.getUserDAO();
 
 		if (!UserParameterValidator.passwordValidate(password)) {
-			return MessagePage.VALIDATION_ERROR.message();
+			return PageMessage.VALIDATION_ERROR.message();
 		}
 
 		user.setId(EMPTY_Id);
@@ -349,11 +349,11 @@ public class UserServiceImpl implements UserService {
 			if (user.getId() == EMPTY_Id) {
 				logger.log(Level.DEBUG, "current password wrong for user - " + user.getLogin() + "passw - "
 						+ String.valueOf(currentPassword));
-				return MessagePage.CURRENT_PASSW_WRONG.message();
+				return PageMessage.CURRENT_PASSW_WRONG.message();
 			}
 
 			if (!UserParameterValidator.passwordValidate(password)) {
-				return MessagePage.VALIDATION_ERROR.message();
+				return PageMessage.VALIDATION_ERROR.message();
 			}
 
 			userDAO.updatePassword(password, user);

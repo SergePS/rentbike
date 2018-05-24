@@ -11,20 +11,18 @@ public interface ParkingDAO {
 	 * Adds parking to DB.
 	 * 
 	 * @param parking.
-	 * @return notice if parking with same address already exists.
 	 * @throws DAOException if occurred SQL exception.
 	 */
-	String addParking(Parking parking) throws DAOException;
+	void addParking(Parking parking) throws DAOException;
 	
 	
 	/**
 	 * Updates parking in DB.
 	 * 
 	 * @param parking.
-	 * @return notice if parking with same address already exists.
 	 * @throws DAOException if occurred SQL exception.
 	 */
-	public String updateParking(Parking parking) throws DAOException;
+	public void updateParking(Parking parking) throws DAOException;
 	
 	/**
 	 * Searches parking by id.

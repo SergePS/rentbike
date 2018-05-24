@@ -34,9 +34,10 @@
 				<div class="col-md-4">
 					<c:if test="${bike!=null}">
 						<label style="float: left"><a href="FrontController?command=bikeCatalog&bikeCatalogWithChoise=true"><c:out value="${bike.brand.brand}"></c:out> <c:out value="${bike.model}"></c:out></a></label>
-						<input type="hidden" name="bikeId" value="${bike.id}"/>
+						<input type="hidden" name="bikeId" id="bikeId" value="${bike.id}"/>
 					</c:if>
 					<c:if test="${bike==null}">
+						<input type="hidden" name="bikeId" id="bikeId" value="0"/>
 						<label style="float: left"><a href="FrontController?command=bikeCatalog&bikeCatalogWithChoise=true"><c:out value="${chooseLabel}"></c:out></a></label>
 					</c:if>
 				</div>
