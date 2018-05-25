@@ -35,7 +35,7 @@
 			<li><a href="FrontController?command=go_to_parking_page"><c:out value="${parkingsLabel}"></c:out></a></li>
 			
 			<li>
-				<a href="F1"><c:out value="${ordersLabel}"></c:out></a>
+				<a href="FrontController?command=go_to_order_report_page"><c:out value="${ordersLabel}"></c:out></a>
 			</li>
 	
 			<li style="float: right; margin-right: 50px"><a href="#"><c:out value="${user.name}"></c:out></a>

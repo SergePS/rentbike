@@ -7,6 +7,7 @@ public class PageConstant {
 	public static final String LOGIN_PAGE = "/jsp/user/login.jsp";
 	public static final String USER_PAGE = "/jsp/user/user.jsp";
 	public static final String ORDER_PAGE = "/jsp/user/order.jsp";
+	public static final String ORDER_REPORT = "/jsp/user/orderReport.jsp";
 	
 	//bike folder
 	public static final String ADD_BIKE_PAGE = "/jsp/bike/addBike.jsp";
