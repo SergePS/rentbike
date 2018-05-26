@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib prefix="ctg" uri="customtags" %>
 
 <!DOCTYPE html>
 <html>
@@ -80,25 +81,26 @@
 					<br>
 				
 					<div style="text-align: center">
-						<input type="hidden" name="command" value="find_bike" />	
+						<input type="hidden" name="command" value="find_order_by_parameters" />	
 						<input type="submit" class="btn btn-primary"   value="${findLabel}">		
 					</div>
 				</form>
 			</div>
 			
 			<!--  --------------------------------- founded orders ------------------------------------------ -->		
-			<div class="col-md-9">	
-				<c:forEach items="${bikeList}" var="item">
+			<div class="col-md-10">	
+				<c:if test="${!bikeOrderList.isEmpty() && bikeOrderList != null}">
 					<table class="table">
 						<thead>
 							<tr>
 								<th><c:out value="${orderNumberLabel}"></c:out></th>
-								<th style="width: 200px"><c:out value="${bikeLabel}"></c:out></th>
-								<th style="width: 300px"><c:out value="${startParkingLabel}"></c:out></th>
-								<th style="width: 300px"><c:out value="${finishParkingLabel}"></c:out></th>								
+								<th><c:out value="${nameLabel}"></c:out></th>
+								<th><c:out value="${surnameLabel}"></c:out></th>
+								<th><c:out value="${startParkingLabel}"></c:out></th>	
+								<th><c:out value="${finishParkingLabel}"></c:out></th>								
 								<th><c:out value="${startTimeLabel}"></c:out></th>
 								<th><c:out value="${finishTimeLabel}"></c:out></th>
-								<th style="width: 150px"><c:out value="${rentCostPerMinuteLabel}"></c:out></th>
+								<th><c:out value="${rentCostPerMinuteLabel}"></c:out></th>
 								<th><c:out value="${minutesLabel}"></c:out></th>
 								<th><c:out value="${amountLabel}"></c:out></th>
 							</tr>
@@ -106,22 +108,24 @@
 						<c:forEach items="${bikeOrderList}" var="item">
 							<tbody>
 								<tr>
-									<td><c:out value="${item.id}"></c:out></td>	
-									<td><c:out value="${item.bike.brand.brand}"></c:out>, <c:out value="${item.bike.model}"></c:out></td>
-									<td><c:out value="${item.startParking.address}"></c:out></td>
-									<td><c:out value="${item.finishParking.address}"></c:out></td>									
-									<td><c:out value="${item.startTime}"></c:out></td>
-									<td><c:out value="${item.finishTime}"></c:out></td>
-									<td><c:out value="${item.rentPrice}"></c:out></td>
-									<td></td>
+									<td style="width: 7%"><c:out value="${item.id}"></c:out></td>	
+									<td style="width: 11%"><c:out value="${item.user.name}"></c:out></td>
+									<td style="width: 12%"><c:out value="${item.user.surname}"></c:out></td>
+									<td style="width: 14%"><c:out value="${item.startParking.address}"></c:out></td>
+									<td style="width: 14%"><c:out value="${item.finishParking.address}"></c:out></td>									
+									<td style="width: 12%"><c:out value="${item.startTime}"></c:out></td>
+									<td style="width: 12%"><c:out value="${item.finishTime}"></c:out></td>
+									<td style="width: 8%"><c:out value="${item.rentPrice}"></c:out></td>
+									<td><ctg:calculateTime finishTime="${item.finishTime}" startTime="${item.startTime}"/></td>
 									<td><c:out value="${item.payment}"></c:out></td>												
 								</tr>									
 							</tbody>
 						</c:forEach>		
 					</table>
-				</c:forEach>
+					
+				</c:if>
 				
-				<%@ include file="../../WEB-INF/jspf/pagination.jspf" %>
+			<%@ include file="../../WEB-INF/jspf/pagination.jspf" %>
 				
 			</div>
 		</div>

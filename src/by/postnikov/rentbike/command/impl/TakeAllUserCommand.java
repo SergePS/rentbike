@@ -26,7 +26,7 @@ public class TakeAllUserCommand implements Command {
 		UserService userService = serviceFactory.getUserService();
 
 		try {
-			request.setAttribute(RequestParameter.USER_ORDER_LIST.parameter(), userService.takeAllUsers());
+			request.setAttribute(RequestParameter.ORDER_LIST.parameter(), userService.takeAllUsers());
 			router.setPagePath(PageConstant.ADMIN_PAGE);
 		} catch (ServiceException e) {
 			logger.log(Level.ERROR, "take all userd error, " + e);

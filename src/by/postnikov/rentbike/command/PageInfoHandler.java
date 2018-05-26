@@ -7,24 +7,29 @@ import javax.servlet.http.HttpSession;
 
 import by.postnikov.rentbike.command.util.RequestParameterHandler;
 import by.postnikov.rentbike.entity.AbstractEntity;
+import by.postnikov.rentbike.entity.PageInfo;
 
 /**
  * @author Sergey Postnikov
  *
  */
 public class PageInfoHandler {
+	
+	private final static int NEXT_PAGE = 1;
+	private final static int NO_ACTION = 0;
+	private final static int PREV_PAGE = -1;
 
 	/**
 	 * Creates and initializes or reinitializes PageInfo object.
 	 * 
 	 * @param request
-	 * @return new or changed pageInfo object 
+	 * @return new or changed pageInfo object
 	 */
 	public static PageInfo pageInfoInit(HttpServletRequest request) {
 
 		HttpSession session = request.getSession(false);
 		PageInfo pageInfo = (PageInfo) session.getAttribute(SessionParameter.PAGE_INFO.parameter());
-		
+
 		if (pageInfo == null || !pageInfo.isChangePageFlag()) {
 			pageInfo = new PageInfo();
 		} else {
@@ -36,10 +41,9 @@ public class PageInfoHandler {
 	}
 
 	/**
-	 * Modifies pageInfo object:
-	 * 	set lastPage flag,
-	 * 	if received itemList not empty adds the ID of the last item in the itemList.
-	 * Finally adds pageInfo object to session.
+	 * Modifies pageInfo object: set lastPage flag, if received itemList not empty
+	 * adds the ID of the last item in the itemList. Finally adds pageInfo object to
+	 * session.
 	 * 
 	 * @param pageInfo
 	 * @param request
@@ -49,10 +53,23 @@ public class PageInfoHandler {
 			List<? extends AbstractEntity> itemList) {
 
 		HttpSession session = request.getSession(false);
+		
+		
 
 		if (itemList.isEmpty()) {
+
+			if (!pageInfo.isLastPage()) { // if - protection against F5
+				System.out.println("3");
+				pageInfo.addPagePoint(pageInfo.getLastPagePoint());
+			}
+			
+			if(pageInfo.getPageAction() == NEXT_PAGE) {
+				if(!pageInfo.isLastPage()) {
+					pageInfo.setCurrentPage(pageInfo.getCurrentPage() + 1);
+				}
+			}
+			
 			pageInfo.setLastPage(true);
-			pageInfo.addPagePoint(pageInfo.getLastPagePoint());
 
 			// If current page number = 1 and incoming itemList is empty, then result of
 			// searching no contains items. So set emptyList flag - true.
@@ -63,15 +80,41 @@ public class PageInfoHandler {
 
 		} else {
 			long lastBikeId = itemList.get(itemList.size() - 1).getId();
-			pageInfo.addPagePoint(lastBikeId);
-			pageInfo.setEmptyList(false);
-			if (pageInfo.getDefaultElementOnPage() > itemList.size()) {
-				pageInfo.setLastPage(true);
-			} else {
+
+			if(pageInfo.getPageAction() == NO_ACTION) {
+				pageInfo.addPagePoint(lastBikeId);
+				
+				if (pageInfo.getDefaultElementOnPage() > itemList.size()) {
+					pageInfo.setLastPage(true);
+					System.out.println("setLastPage - true");
+				}
+			}
+			
+			if(pageInfo.getPageAction() == NEXT_PAGE) {
+				if(!pageInfo.isLastPage()) {
+					pageInfo.addPagePoint(lastBikeId);
+				}
+				
+				if (pageInfo.getDefaultElementOnPage() > itemList.size()) {
+					pageInfo.setLastPage(true);
+					System.out.println("setLastPage - true");
+				}
+				
+				pageInfo.setCurrentPage(pageInfo.getCurrentPage() + 1);
+			}
+			
+			if(pageInfo.getPageAction() == PREV_PAGE) {
+				if(pageInfo.getCurrentPage() > 1) {
+					pageInfo.setCurrentPage(pageInfo.getCurrentPage() - 1);
+				}
+				pageInfo.addPagePoint(lastBikeId);
+				
 				pageInfo.setLastPage(false);
 			}
+			
+			pageInfo.setEmptyList(false);
 		}
-
+		
 		session.setAttribute(SessionParameter.PAGE_INFO.parameter(), pageInfo);
 
 	}

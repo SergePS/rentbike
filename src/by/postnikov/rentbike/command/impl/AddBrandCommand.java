@@ -62,7 +62,7 @@ public class AddBrandCommand implements Command {
 				request.setAttribute(RequestParameter.ERROR.parameter(),
 						CommandExceptionHandler.takeLogicExceptionMessage(e));
 				router.setPagePath(PageConstant.BRAND_PAGE);
-				RequestParameterHandler.addParamToReques(request);
+				RequestParameterHandler.addParamToRequest(request);
 			}
 		}
 

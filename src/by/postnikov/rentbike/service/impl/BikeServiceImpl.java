@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import by.postnikov.rentbike.command.PageInfo;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.dao.BikeDAO;
 import by.postnikov.rentbike.dao.DAOFactory;
@@ -19,6 +18,7 @@ import by.postnikov.rentbike.entity.BikeProduct;
 import by.postnikov.rentbike.entity.BikeProductState;
 import by.postnikov.rentbike.entity.BikeType;
 import by.postnikov.rentbike.entity.Brand;
+import by.postnikov.rentbike.entity.PageInfo;
 import by.postnikov.rentbike.entity.Parking;
 import by.postnikov.rentbike.exception.DAOException;
 import by.postnikov.rentbike.exception.ExceptionMessage;

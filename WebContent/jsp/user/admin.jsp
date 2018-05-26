@@ -28,7 +28,7 @@
 				<ul>
 					<li><a href="FrontController?command=go_to_bike_purchase"><c:out value="${bikePurchaseLabel}"></c:out></a></li>
 				   	<li><a href="FrontController?command=bikeCatalog&bikeCatalogWithChoise=false"><c:out value="${bikeCatalogLabel}"></c:out></a></li>
-				   	<li><a href="FrontController?command=go_to_bike_product_catalog_page"><c:out value="${productsCatalog}"></c:out></a></li> 
+				   	<li><a href="FrontController?command=go_to_bike_product_catalog_page&bikeProductCatalogWithChoise=false"><c:out value="${productsCatalog}"></c:out></a></li> 
 				</ul>	
 			</li>
 			
@@ -53,52 +53,52 @@
 	<div id="calend" style="margin-top: 20px">
 		<%@ include file="../../WEB-INF/jspf/editUser.jspf" %>
 	</div>
-
-		
-	<c:if test="${userOrderList!=null}">
-		<div style="text-align:center; margin-bottom:10px; font-size: 28px">
-			<c:out value="${usersLabel}">:</c:out>
-		</div>
-		
-		<div style="margin-left: 20px">
-			<div class="row">
-				<div class="col-md-12">
-					<table class="table">
-						<thead>
-							<tr>
-								<th><c:out value="${loginLabel}"></c:out></th>
-								<th><c:out value="${nameLabel}"></c:out></th>
-								<th><c:out value="${surnameLabel}"></c:out></th>
-								<th><c:out value="${birthdayLabel}"></c:out></th>
-								<th><c:out value="${regDataLabel}"></c:out></th>
-								<th><c:out value="${roleLabel}"></c:out></th>
-								<th><c:out value="${stateLabel}"></c:out></th>
-								<th><c:out value="${openOrderLabel}"></c:out></th>
-							</tr>
-						</thead>
-						<c:forEach items="${userOrderList}" var="item">
-							<tbody>
-								<tr>
-									<td><c:out value="${item.user.login}"></c:out></td>	
-									<td><c:out value="${item.user.name}"></c:out></td>
-									<td><c:out value="${item.user.surname}"></c:out></td>
-									<td><c:out value="${item.user.birthday}"></c:out></td>
-									<td><c:out value="${item.user.registrationDate}"></c:out></td>
-									<td><c:out value="${item.user.role}"></c:out></td>
-									<td><c:out value="${item.user.state}"></c:out></td>
-									<td>
-										<c:if test="${item.bikeOrder.id!=0}">
-											<c:out value="${item.bikeOrder.id}"></c:out>
-										</c:if>
-									</td>													
-								</tr>									
-							</tbody>
-						</c:forEach>		
-					</table>
-				</div>		
+	<div style="margin: 20px">
+		<c:if test="${orderList!=null}">
+			<div style="text-align:center; margin-bottom:10px; font-size: 28px">
+				<c:out value="${usersLabel}">:</c:out>
 			</div>
-		</div>
-	</c:if>
+			
+			<div style="margin-left: 20px">
+				<div class="row">
+					<div class="col-md-12">
+						<table class="table">
+							<thead>
+								<tr>
+									<th><c:out value="${loginLabel}"></c:out></th>
+									<th><c:out value="${nameLabel}"></c:out></th>
+									<th><c:out value="${surnameLabel}"></c:out></th>
+									<th><c:out value="${birthdayLabel}"></c:out></th>
+									<th><c:out value="${regDataLabel}"></c:out></th>
+									<th><c:out value="${roleLabel}"></c:out></th>
+									<th><c:out value="${stateLabel}"></c:out></th>
+									<th><c:out value="${openOrderLabel}"></c:out></th>
+								</tr>
+							</thead>
+							<c:forEach items="${orderList}" var="item">
+								<tbody>
+									<tr>
+										<td><c:out value="${item.user.login}"></c:out></td>	
+										<td><c:out value="${item.user.name}"></c:out></td>
+										<td><c:out value="${item.user.surname}"></c:out></td>
+										<td><c:out value="${item.user.birthday}"></c:out></td>
+										<td><c:out value="${item.user.registrationDate}"></c:out></td>
+										<td><c:out value="${item.user.role}"></c:out></td>
+										<td><c:out value="${item.user.state}"></c:out></td>
+										<td>
+											<c:if test="${item.id!=0}">
+												<c:out value="${item.id}"></c:out>
+											</c:if>
+										</td>													
+									</tr>									
+								</tbody>
+							</c:forEach>		
+						</table>
+					</div>		
+				</div>
+			</div>
+		</c:if>
+	</div>
 	
 	<%@ include file="../../WEB-INF/jspf/message.jspf" %>
 	

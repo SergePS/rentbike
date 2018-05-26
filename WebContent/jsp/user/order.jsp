@@ -25,7 +25,7 @@
 	<%@ include file="../../WEB-INF/jspf/smallMenu.jspf" %>
 
 	<div style="text-align: center; margin: 20px; float: left">
-		<a href="FrontController?command=go_to_bike_product_catalog_page"><label class="downloadLabel"><c:out value="${chooseBikeLabel}"></c:out></label></a>
+		<a href="FrontController?command=go_to_bike_product_catalog_page&bikeProductCatalogWithChoise=true"><label class="downloadLabel"><c:out value="${chooseBikeLabel}"></c:out></label></a>
 	</div>
 
 	<c:if test="${bikeProduct!=null}">

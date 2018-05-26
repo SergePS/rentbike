@@ -3,11 +3,11 @@ package by.postnikov.rentbike.service;
 import java.util.List;
 import java.util.Map;
 
-import by.postnikov.rentbike.command.PageInfo;
 import by.postnikov.rentbike.entity.Bike;
 import by.postnikov.rentbike.entity.BikeProduct;
 import by.postnikov.rentbike.entity.BikeType;
 import by.postnikov.rentbike.entity.Brand;
+import by.postnikov.rentbike.entity.PageInfo;
 import by.postnikov.rentbike.exception.ServiceException;
 
 /**

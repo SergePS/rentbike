@@ -16,9 +16,9 @@ import by.postnikov.rentbike.dao.ParkingDAO;
 import by.postnikov.rentbike.dao.UserDAO;
 import by.postnikov.rentbike.entity.BikeOrder;
 import by.postnikov.rentbike.entity.BikeProduct;
+import by.postnikov.rentbike.entity.PageInfo;
 import by.postnikov.rentbike.entity.Parking;
 import by.postnikov.rentbike.entity.User;
-import by.postnikov.rentbike.entity.UserOrder;
 import by.postnikov.rentbike.exception.DAOException;
 import by.postnikov.rentbike.exception.ExceptionMessage;
 import by.postnikov.rentbike.exception.ServiceException;
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
 		UserDAO userDAO = daoFactory.getUserDAO();
 
 		User user = new User();
-		
+
 		String login = requestParameters.get(RequestParameter.LOGIN.parameter());
 		if (!UserParameterValidator.loginValidate(login)) {
 			logger.log(Level.DEBUG, "login validatation error, login = " + login);
@@ -194,11 +194,11 @@ public class UserServiceImpl implements UserService {
 			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
 		}
 		long orderId = Long.parseLong(orderIdString);
-		
-		//checking the existence of bikeOrder
+
+		// checking the existence of bikeOrder
 		BikeOrder bikeOrder = null;
 		try {
-			 bikeOrder = userDAO.findOpenOrderById(orderId);
+			bikeOrder = userDAO.findOpenOrderById(orderId);
 		} catch (DAOException e) {
 			throw new ServiceException("Find open order by id error", e);
 		}
@@ -258,7 +258,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<UserOrder> takeAllUsers() throws ServiceException {
+	public List<BikeOrder> takeAllUsers() throws ServiceException {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		UserDAO userDAO = daoFactory.getUserDAO();
@@ -275,7 +275,7 @@ public class UserServiceImpl implements UserService {
 
 		DAOFactory daoFactory = DAOFactory.getInstance();
 		UserDAO userDAO = daoFactory.getUserDAO();
-		
+
 		String login = requestParameters.get(RequestParameter.LOGIN.parameter());
 		if (!UserParameterValidator.loginValidate(login)) {
 			logger.log(Level.DEBUG, "login validatation error, login = " + login);
@@ -360,7 +360,7 @@ public class UserServiceImpl implements UserService {
 		UserDAO userDAO = daoFactory.getUserDAO();
 
 		try {
-			List<BikeOrder>  bikeOrderList = userDAO.findAllOrderByUser(user.getId());
+			List<BikeOrder> bikeOrderList = userDAO.findAllOrderByUser(user.getId());
 			for (BikeOrder bikeOrder : bikeOrderList) {
 				bikeOrder.setStartTime(DateFormatter.modifyDateTimeToView(bikeOrder.getStartTime()));
 				if (bikeOrder.getFinishTime() != null) {
@@ -373,5 +373,43 @@ public class UserServiceImpl implements UserService {
 			throw new ServiceException("An exception was thrown when searching for all users", e);
 		}
 	}
-	
+
+	@Override
+	public List<BikeOrder> findOrder(Map<String, String> requestParameters, PageInfo pageInfo) throws ServiceException {
+		
+		DAOFactory daoFactory = DAOFactory.getInstance();
+		UserDAO userDAO = daoFactory.getUserDAO();
+
+		String surname = requestParameters.get(RequestParameter.SURNAME.parameter());
+		if (!surname.isEmpty() && !UserParameterValidator.nameValidate(surname)) {
+			logger.log(Level.DEBUG, "surname validatation error, surname = " + surname);
+			throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
+		}
+
+		String fromDate = requestParameters.get(RequestParameter.FROM_DATE.parameter());
+		if(!fromDate.isEmpty()) {
+			if (!UserParameterValidator.dateValidate(fromDate)) {
+				logger.log(Level.DEBUG, "fromDate validatation error, fromDate = " + fromDate);
+				throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
+			}
+			fromDate = DateFormatter.modifyDateToDB(fromDate);
+		}
+
+		String toDate = requestParameters.get(RequestParameter.TO_DATE.parameter());
+		if(!toDate.isEmpty()) {
+			if (!UserParameterValidator.dateValidate(toDate)) {
+				logger.log(Level.DEBUG, "toDate validatation error, toDate = " + toDate);
+				throw new ServiceException(ExceptionMessage.VALIDATION_ERROR.toString());
+			}
+			toDate = DateFormatter.modifyDateToDB(toDate);
+		}
+		
+		try {
+			return userDAO.findOrder(surname, fromDate, toDate, pageInfo);
+		} catch (DAOException e) {
+			throw new ServiceException("An exception was thrown when searching for orders", e);
+		}
+
+	}
+
 }

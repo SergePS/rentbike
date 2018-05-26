@@ -56,7 +56,7 @@ public class LoginCommand implements Command {
 
 			if (user == null) {
 				request.setAttribute(RequestParameter.ERROR.parameter(), ExceptionMessage.LOGIN_PASSW.message());
-				RequestParameterHandler.addParamToReques(request);
+				RequestParameterHandler.addParamToRequest(request);
 				router.setPagePath(PageConstant.LOGIN_PAGE);
 				return router;
 			}

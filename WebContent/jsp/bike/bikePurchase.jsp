@@ -143,7 +143,7 @@
 						<c:forEach items="${bikeProductList}" var="item">
 							<tbody>
 								<tr>
-									<td style="width: 100px"><a href="FrontController?command=edit_parking&parkingId=${item.id}">${item.id}</a></td>
+									<td style="width: 100px"><c:out value="${item.id}"></c:out></td>
 									<td style="width: 500px"><c:out value="${item.bike.brand.brand}"></c:out> <c:out value="${item.bike.model}"></c:out></td>
 									<td style="width: 800px"><c:out value="${item.parking.address}"></c:out></td>
 									<td style="width: 200px"><c:out value="${item.value}"></c:out></td>

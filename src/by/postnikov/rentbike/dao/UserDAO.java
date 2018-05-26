@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import by.postnikov.rentbike.entity.BikeOrder;
+import by.postnikov.rentbike.entity.PageInfo;
 import by.postnikov.rentbike.entity.User;
-import by.postnikov.rentbike.entity.UserOrder;
 import by.postnikov.rentbike.exception.DAOException;
 
 /**
@@ -82,7 +82,7 @@ public interface UserDAO {
 	 * @return List<UserOrder> orderUserList
 	 * @throws DAOException if occurred SQL exception
 	 */
-	List<UserOrder> takeAllUsers() throws DAOException;
+	List<BikeOrder> takeAllUsers() throws DAOException;
 	
 	/**
 	 * Updates user personal data except password.
@@ -111,5 +111,18 @@ public interface UserDAO {
 	 * @throws DAOException if occurred SQL exception.
 	 */
 	List<BikeOrder> findAllOrderByUser(long userId) throws DAOException;
+	
+	
+	/**
+	 * Finds orders according received parameters.
+	 * 
+	 * @param surname
+	 * @param fromDate {@link String} format: yyyy-MM-dd
+	 * @param toDate {@link String} format: yyyy-MM-dd
+	 * @param pageInfo {@link PageInfo}
+	 * @return List<BikeOrder>
+	 * @throws DAOException if occurred SQL exception.
+	 */
+	List<BikeOrder> findOrder(String surname, String fromDate, String toDate, PageInfo pageInfo) throws DAOException;
 	
 }

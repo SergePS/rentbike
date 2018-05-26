@@ -51,7 +51,7 @@ public class RequestParameterHandler {
 		return urlWithParam;
 	}
 
-	public static void addParamToReques(HttpServletRequest request) {
+	public static void addParamToRequest(HttpServletRequest request) {
 
 		Map<String, String[]> parametrs = request.getParameterMap();
 		Set<Map.Entry<String, String[]>> set = parametrs.entrySet();

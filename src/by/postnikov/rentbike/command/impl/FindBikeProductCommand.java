@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import by.postnikov.rentbike.command.Command;
 import by.postnikov.rentbike.command.CommandExceptionHandler;
 import by.postnikov.rentbike.command.PageConstant;
-import by.postnikov.rentbike.command.PageInfo;
 import by.postnikov.rentbike.command.PageInfoHandler;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.SessionParameter;
@@ -22,6 +21,7 @@ import by.postnikov.rentbike.controller.Router;
 import by.postnikov.rentbike.entity.BikeProduct;
 import by.postnikov.rentbike.entity.BikeType;
 import by.postnikov.rentbike.entity.Brand;
+import by.postnikov.rentbike.entity.PageInfo;
 import by.postnikov.rentbike.entity.Parking;
 import by.postnikov.rentbike.exception.ServiceException;
 import by.postnikov.rentbike.service.BikeService;
@@ -53,7 +53,7 @@ public class FindBikeProductCommand implements Command {
 			request.setAttribute(RequestParameter.PARKING_LIST.parameter(), parkingList);
 			request.setAttribute(RequestParameter.BIKE_TYPE_LIST.parameter(), bikeTypeList);
 			request.setAttribute(RequestParameter.BRAND_LIST.parameter(), brandList);
-			RequestParameterHandler.addParamToReques(request);
+			RequestParameterHandler.addParamToRequest(request);
 			
 			List<BikeProduct> bikeProductList = bikeService.findBikeProduct(requestParameters, pageInfo);
 			request.setAttribute(RequestParameter.BIKE_PRODUCT_LIST.parameter(), bikeProductList);

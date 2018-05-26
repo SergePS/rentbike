@@ -21,6 +21,7 @@ public enum RequestParameter {
 	BIKE_LIST("bikeList"),
 	
 	BIKE_CATALOG_WITH_CHOICE("bikeCatalogWithChoise"),
+	BIKE_PRODUCT_CATALOG_WITH_CHOICE("bikeProductCatalogWithChoise"),
 	
 	BIKE_PRODUCT_ID("bikeProductId"),
 	BIKE_PRODUCT_LIST("bikeProductList"),
@@ -36,6 +37,9 @@ public enum RequestParameter {
 	CRADIT_CARD("creditCard"),
 	
 	CURRENT_PASSWORD("currentPassword"),
+	
+	FROM_DATE("fromDate"),
+	TO_DATE("toDate"),
 	
 	EMAIL("email"),
 	ERROR("error"),
@@ -55,6 +59,7 @@ public enum RequestParameter {
 	MODEL("model"),
 	
 	NAME("name"),
+	NEXT_PAGE("next"),
 	
 	ORDER_ID("orderId"),
 	
@@ -65,6 +70,7 @@ public enum RequestParameter {
 	PICTURE("picture"),
 	PASSWORD("password"),
 	PAGE_ACTION("pageAction"),
+	PREVIOUS_PAGE("previous"),
 	
 	RENT_PRICE("rentPrice"),
 	
@@ -79,7 +85,7 @@ public enum RequestParameter {
 	START_TIME("startTime"),
 	SURNAME("surname"),
 	
-	USER_ORDER_LIST("userOrderList"),
+	ORDER_LIST("orderList"),
 	USER_WRONG("userWrong"),
 	
 	WHEEL_SIZE("wheelSize");

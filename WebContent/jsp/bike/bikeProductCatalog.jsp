@@ -118,9 +118,11 @@
 						<div class="col-md-1" style="background: white">
 							<label style="font-size: 16px;"><c:out value="${rentCostPerMinuteLabel}"></c:out></label>
 						</div>
-						<div class="col-md-1" style="padding-top:10px; background: white">
-							<label style="font-size: 16px;"><c:out value="${makeCoiceLabel}"></c:out></label>
-						</div>				
+						<c:if test="${bikeProductCatalogWithChoise}">
+							<div class="col-md-1" style="padding-top:10px; background: white">
+								<label style="font-size: 16px;"><c:out value="${makeCoiceLabel}"></c:out></label>
+							</div>
+						</c:if>			
 					</div>	
 					
 					<c:forEach items="${bikeProductList}" var="item">
@@ -160,12 +162,14 @@
 								<div>
 									<c:out value="${item.rentPrice}"></c:out>
 								</div>
-							</div>										
-							<div class="col-md-1"  style="padding-top: 5px; background: white">
-								<div>
-									<label><a href="FrontController?command=choose_bike_product&bikeProductId=${item.id}">${chooseLabel}</a></label>
+							</div>
+							<c:if test="${bikeProductCatalogWithChoise}">										
+								<div class="col-md-1"  style="padding-top: 5px; background: white">
+									<div>
+										<label><a href="FrontController?command=choose_bike_product&bikeProductId=${item.id}">${chooseLabel}</a></label>
+									</div>
 								</div>
-							</div>					
+							</c:if>					
 						</div>
 					
 					</c:forEach> 

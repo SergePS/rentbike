@@ -68,7 +68,7 @@ public class UpdateUserCommand implements Command {
 			} else {
 				request.setAttribute(RequestParameter.ERROR.parameter(),
 						CommandExceptionHandler.takeLogicExceptionMessage(e));
-				RequestParameterHandler.addParamToReques(request);
+				RequestParameterHandler.addParamToRequest(request);
 				request.setAttribute(RequestParameter.LOGIN_MENU.parameter(), false);
 			}
 

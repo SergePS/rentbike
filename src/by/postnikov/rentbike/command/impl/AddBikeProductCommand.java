@@ -58,7 +58,7 @@ public class AddBikeProductCommand implements Command {
 			} else {
 				request.setAttribute(RequestParameter.ERROR.parameter(),
 						CommandExceptionHandler.takeLogicExceptionMessage(e));
-				RequestParameterHandler.addParamToReques(request);
+				RequestParameterHandler.addParamToRequest(request);
 
 				router.setRoute(RouteType.FORWARD);
 				router.setPagePath(PageConstant.BIKE_PURCHASE_PAGE);

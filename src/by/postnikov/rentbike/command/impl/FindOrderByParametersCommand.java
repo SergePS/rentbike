@@ -18,47 +18,40 @@ import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.command.SessionParameter;
 import by.postnikov.rentbike.command.util.RequestParameterHandler;
 import by.postnikov.rentbike.controller.Router;
-import by.postnikov.rentbike.entity.Bike;
-import by.postnikov.rentbike.entity.BikeType;
-import by.postnikov.rentbike.entity.Brand;
+import by.postnikov.rentbike.entity.BikeOrder;
 import by.postnikov.rentbike.entity.PageInfo;
+import by.postnikov.rentbike.exception.ConvertPrintStackTraceToString;
 import by.postnikov.rentbike.exception.ServiceException;
-import by.postnikov.rentbike.service.BikeService;
 import by.postnikov.rentbike.service.ServiceFactory;
+import by.postnikov.rentbike.service.UserService;
 
-public class FindBikeCommand implements Command {
-
+public class FindOrderByParametersCommand implements Command{
+	
 	private static Logger logger = LogManager.getLogger();
 
 	@Override
 	public Router execute(HttpServletRequest request) {
-
+		
 		Router router = new Router();
-		router.setPagePath(PageConstant.BIKE_CATALOG_PAGE);
-
+		router.setPagePath(PageConstant.ORDER_REPORT_PAGE);
+		
 		ServiceFactory serviceFactory = ServiceFactory.getInstance();
-		BikeService bikeService = serviceFactory.getBikeService();
-
+		UserService userService = serviceFactory.getUserService();
+		
 		Map<String, String> requestParameters = RequestParameterHandler.requestParamToMap(request);
-
+		
 		PageInfo pageInfo = PageInfoHandler.pageInfoInit(request);
-
+		RequestParameterHandler.addParamToRequest(request);
+		
 		try {
-			List<BikeType> bikeTypeList = bikeService.takeAllBikeType();
-			List<Brand> brandList = bikeService.takeAllBrand();
-			request.setAttribute(RequestParameter.BRAND_LIST.parameter(), brandList);
-			request.setAttribute(RequestParameter.BIKE_TYPE_LIST.parameter(), bikeTypeList);
-			RequestParameterHandler.addParamToRequest(request);
-						
-			List<Bike> bikeList = bikeService.findBike(requestParameters, pageInfo);
-			request.setAttribute(RequestParameter.BIKE_LIST.parameter(), bikeList);
-			
-			PageInfoHandler.handleAndAddToSession(pageInfo, request, bikeList);
+			List<BikeOrder> bikeOrderList = userService.findOrder(requestParameters, pageInfo);
+			request.setAttribute(RequestParameter.BIKE_ORDER_LIST.parameter(), bikeOrderList);
+			PageInfoHandler.handleAndAddToSession(pageInfo, request, bikeOrderList);
 		} catch (ServiceException e) {
 			if (CommandExceptionHandler.takeLogicExceptionMessage(e).isEmpty()) {
-				logger.log(Level.ERROR, "Find bike error, " + e.getMessage());
+				logger.log(Level.ERROR, "Exception occurred while find orders, " + ConvertPrintStackTraceToString.convert(e));
 				router.setPagePath(PageConstant.ERROR_PAGE);
-			} else {
+			}else {
 				request.setAttribute(RequestParameter.ERROR.parameter(),
 						CommandExceptionHandler.takeLogicExceptionMessage(e));
 				pageInfo = PageInfoHandler.pageInfoInit(request);
@@ -68,7 +61,7 @@ public class FindBikeCommand implements Command {
 				session.removeAttribute(SessionParameter.PAGE_INFO.parameter());
 			}
 		}
-
+		
 		return router;
 	}
 

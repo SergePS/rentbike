@@ -1,6 +1,7 @@
 package by.postnikov.rentbike.dao.impl;
 
 import java.math.BigDecimal;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,9 +19,9 @@ import by.postnikov.rentbike.entity.Bike;
 import by.postnikov.rentbike.entity.BikeOrder;
 import by.postnikov.rentbike.entity.BikeType;
 import by.postnikov.rentbike.entity.Brand;
+import by.postnikov.rentbike.entity.PageInfo;
 import by.postnikov.rentbike.entity.Parking;
 import by.postnikov.rentbike.entity.User;
-import by.postnikov.rentbike.entity.UserOrder;
 import by.postnikov.rentbike.entity.UserRole;
 import by.postnikov.rentbike.entity.UserState;
 import by.postnikov.rentbike.exception.DAOException;
@@ -31,25 +32,25 @@ public class SqlUserDAO implements UserDAO {
 	private final static String FIND_USER_BY_LOGIN_PASSW = "SELECT id, login, name, surname, email, birthday, registrationDate, role, state, creditCard FROM users WHERE login = ? and password = sha1(?)";
 
 	private final static String CREATE_USER_CU = "INSERT INTO users (login, password, name, surname, email, birthday, registrationDate, creditCard)  VALUES (?, sha1(?), ?, ?, ?, ?, ?, ?)";
-	private final static int CU_LOGIN = 1; // CU - Create User
-	private final static int CU_PASSWORD = 2;
-	private final static int CU_NAME = 3;
-	private final static int CU_SURNAME = 4;
-	private final static int CU_EMAIL = 5;
-	private final static int CU_BIRTHDAY = 6;
-	private final static int CU_REGISTRATION_DATE = 7;
-	private final static int CU_CREDIT_CARD = 8;
+	private final static int LOGIN_CU = 1; // CU - Create User
+	private final static int PASSWORD_CU = 2;
+	private final static int NAME_CU = 3;
+	private final static int SURNAME_CU = 4;
+	private final static int EMAIL_CU = 5;
+	private final static int BIRTHDAY_CU = 6;
+	private final static int REGISTRATION_DATE_CU = 7;
+	private final static int CREDIT_CARD_CU = 8;
 
 	private final static String CREATE_ORDER_CO = "INSERT INTO orders (userId, bikeProductId, startParkingId, startTime, bikeValue, rentPrice) VALUES (?, ?, ?, ?, ?, ?)";
-	private final static int CO_USER_ID = 1; // CO - Create Order
-	private final static int CO_BIKE_PRODUCT_ID = 2;
-	private final static int CO_START_PARKING_ID = 3;
-	private final static int CO_START_TIME = 4;
-	private final static int CO_BIKE_VALUE = 5;
-	private final static int CO_RENT_PRICE = 6;
+	private final static int USER_ID_CO = 1; // CO - Create Order
+	private final static int BIKE_PRODUCT_ID_CO = 2;
+	private final static int START_PARKING_ID_CO = 3;
+	private final static int START_TIME_CO = 4;
+	private final static int BIKE_VALUE_CO = 5;
+	private final static int RENT_PRICE_CO = 6;
 
 	private final static String FIND_OPEN_ORDER_FOO = "SELECT o.id, o.bikeProductId, bk.id AS bikeId, bk.brandId, br.brand, bk.model, bk.wheelSize, bk.speedCount, bk.picture, bk.bikeTypeId, bt.type, pk.id AS parkingId, pk.address, o.startTime, o.bikeValue, o.rentPrice FROM orders o LEFT JOIN bikes bk ON (SELECT bikeId FROM bikeproduct WHERE bikeproduct.id=o.bikeProductId)=bk.id LEFT JOIN brands br ON bk.brandId = br.id LEFT JOIN biketype bt ON bk.bikeTypeId = bt.id LEFT JOIN parkings pk ON o.startParkingId=pk.id WHERE userId = ? AND finishTime IS NULL";
-	private final static int FOO_USER_ID = 1;
+	private final static int USER_ID_FOO = 1;
 
 	private final static String FIND_OPEN_ORDER_BY_ID_FOOBI = "SELECT o.id, o.bikeProductId, o.userId, bk.id AS bikeId, bk.brandId, br.brand, bk.model, bk.wheelSize, bk.speedCount, bk.picture, bk.bikeTypeId, bt.type, pk.id AS parkingId, pk.address, o.startTime, o.bikeValue, o.rentPrice FROM orders o LEFT JOIN bikes bk ON (SELECT bikeId FROM bikeproduct WHERE bikeproduct.id=o.bikeProductId)=bk.id LEFT JOIN brands br ON bk.brandId = br.id LEFT JOIN biketype bt ON bk.bikeTypeId = bt.id LEFT JOIN parkings pk ON o.startParkingId=pk.id WHERE o.id = ? AND finishTime IS NULL";
 	private final static int FOOBI_ORDER_ID = 1; // FOOBI = Find Open Order By Id
@@ -73,17 +74,17 @@ public class SqlUserDAO implements UserDAO {
 	private final static String START_TIME = "startTime";
 
 	private final static String CLOSE_ORDER_CLO = "UPDATE orders SET finishParkingId = ?, finishTime = ?, payment = ? WHERE id = ?";
-	private final static int CLO_FINISH_PARKING = 1; // CLO - CLose Order
-	private final static int CLO_FINISH_TIME = 2;
-	private final static int CLO_PAYMENT = 3;
-	private final static int CLO_ID = 4;
+	private final static int FINISH_PARKING_CLO = 1; // CLO - CLose Order
+	private final static int FINISH_TIME_CLO = 2;
+	private final static int PAYMENT_CLO = 3;
+	private final static int ID_CLO = 4;
 
 	private final static String CHANGE_BIKE_STATE_TO_RESERVED_CBSTR = "UPDATE bikeproduct SET state = 'reserved' WHERE id = (SELECT bikeProductId FROM orders WHERE orders.id = ?)";
-	private final static int CBSTR_BIKE_ORDER_ID = 1; // CBSTR - Change Bike State To Reserved
+	private final static int BIKE_ORDER_ID_CBSTR = 1; // CBSTR - Change Bike State To Reserved
 
 	private final static String CHANGE_BIKE_STATE_TO_AVAILABLE_CBSTA = "UPDATE bikeproduct SET state = 'available', parkingId = ? WHERE id = (SELECT bikeProductId FROM orders WHERE orders.id = ?)";
-	private final static int CBSTA_PARKING_ID = 1; // CBSTA - Change Bike State To Available
-	private final static int CBSTA_BIKE_ORDER_ID = 2;
+	private final static int PARKING_ID_CBSTA = 1; // CBSTA - Change Bike State To Available
+	private final static int BIKE_ORDER_ID_CBSTA = 2;
 
 	private final static String SELECT_ALL_USERS = "SELECT u.id, u.login, u.name, u.surname, u.email, u.birthday, u.registrationDate, u.role, u.state, u.creditCard, o.id AS orderId FROM users u LEFT JOIN (SELECT id, userId FROM orders WHERE finishTime IS NULL) o ON u.id= o.userId";
 	private final static String LOGIN = "login";
@@ -98,17 +99,17 @@ public class SqlUserDAO implements UserDAO {
 	private final static String ORDER_ID = "orderId";
 
 	private final static String UPDATE_USER_UU = "UPDATE users SET login = ?, name = ?, surname = ?, email = ?, birthday = ?, creditCard = ? WHERE id = ?";
-	private final static int UU_LOGIN = 1; // UU - Update User
-	private final static int UU_NAME = 2;
-	private final static int UU_SURNAME = 3;
-	private final static int UU_EMAIL = 4;
-	private final static int UU_BIRTHDAY = 5;
-	private final static int UU_CREDIT_CARD = 6;
-	private final static int UU_ID = 7;
+	private final static int LOGIN_UU = 1; // UU - Update User
+	private final static int NAME_UU = 2;
+	private final static int SURNAME_UU = 3;
+	private final static int EMAIL_UU = 4;
+	private final static int BIRTHDAY_UU = 5;
+	private final static int CREDIT_CARD_UU = 6;
+	private final static int ID_UU = 7;
 
 	private final static String UPDATE_PASSWORD_UP = "UPDATE users SET password = sha1(?) where id = ?";
-	private final static int UP_PASSWORD = 1; // UP - Update Password
-	private final static int UP_ID = 2;
+	private final static int PASSWORD_UP = 1; // UP - Update Password
+	private final static int ID_UP = 2;
 
 	private final static String TAKE_ALL_USER_ORDERS_TAUO = "SELECT o.id, br.brand, bk.model, o.startTime, sp.address as startParking, o.finishTime, fp.address as finishParking, o.rentPrice, TIMESTAMPDIFF(MINUTE, startTime, finishTime) as minute, payment FROM orders o LEFT JOIN parkings sp ON o.startParkingId = sp.id LEFT JOIN parkings fp ON o.finishParkingId = fp.id LEFT JOIN bikeproduct bp ON o.bikeProductId = bp.id LEFT JOIN bikes bk ON bp.bikeId = bk.id LEFT JOIN brands br ON bk.brandId = br.id WHERE userId = ? ORDER by ID desc";
 	private final static int TAUO_USER_ID = 1;
@@ -116,7 +117,17 @@ public class SqlUserDAO implements UserDAO {
 	private final static String PAYMENT = "payment";
 	private final static String START_PARKING = "startParking";
 	private final static String FINISH_PARKING = "finishParking";
-
+	
+	private static final String FIND_ORDER_FO = "{call findOrdersProcedure(?,?,?,?,?)}";
+	private static final int SURNAME_FO = 1;  //FO - Find Order 
+	private static final int FROM_DATE_FO = 2;
+	private static final int TO_DATE_FO = 3;
+	private static final int FROM_ORDER_ID_FO = 4;
+	private static final int ELEMENT_COUNT_FO = 5;
+	
+	private final static String START_PARKING_ID = "startParkingId";
+	private final static String FINISH_PARKING_ID = "finishParkingId";
+	
 	@Override
 	public void register(User user, char[] password) throws DAOException {
 
@@ -125,14 +136,14 @@ public class SqlUserDAO implements UserDAO {
 		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(CREATE_USER_CU);
 
 		try {
-			preparedStatement.setString(CU_LOGIN, user.getLogin());
-			preparedStatement.setString(CU_PASSWORD, String.valueOf(password));
-			preparedStatement.setString(CU_NAME, user.getName());
-			preparedStatement.setString(CU_SURNAME, user.getSurname());
-			preparedStatement.setString(CU_EMAIL, user.getEmail());
-			preparedStatement.setString(CU_BIRTHDAY, user.getBirthday());
-			preparedStatement.setString(CU_REGISTRATION_DATE, user.getRegistrationDate());
-			preparedStatement.setString(CU_CREDIT_CARD, user.getCreditCard());
+			preparedStatement.setString(LOGIN_CU, user.getLogin());
+			preparedStatement.setString(PASSWORD_CU, String.valueOf(password));
+			preparedStatement.setString(NAME_CU, user.getName());
+			preparedStatement.setString(SURNAME_CU, user.getSurname());
+			preparedStatement.setString(EMAIL_CU, user.getEmail());
+			preparedStatement.setString(BIRTHDAY_CU, user.getBirthday());
+			preparedStatement.setString(REGISTRATION_DATE_CU, user.getRegistrationDate());
+			preparedStatement.setString(CREDIT_CARD_CU, user.getCreditCard());
 
 			preparedStatement.executeUpdate();
 
@@ -154,8 +165,8 @@ public class SqlUserDAO implements UserDAO {
 		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(FIND_USER_BY_LOGIN_PASSW);
 
 		try {
-			preparedStatement.setString(CU_LOGIN, login);
-			preparedStatement.setString(CU_PASSWORD, String.valueOf(password));
+			preparedStatement.setString(LOGIN_CU, login);
+			preparedStatement.setString(PASSWORD_CU, String.valueOf(password));
 
 			ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -192,13 +203,13 @@ public class SqlUserDAO implements UserDAO {
 		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(UPDATE_USER_UU);
 
 		try {
-			preparedStatement.setString(UU_LOGIN, user.getLogin());
-			preparedStatement.setString(UU_NAME, user.getName());
-			preparedStatement.setString(UU_SURNAME, user.getSurname());
-			preparedStatement.setString(UU_EMAIL, user.getEmail());
-			preparedStatement.setString(UU_BIRTHDAY, DateFormatting.modifyDateToDB(user.getBirthday()));
-			preparedStatement.setString(UU_CREDIT_CARD, user.getCreditCard());
-			preparedStatement.setLong(UU_ID, user.getId());
+			preparedStatement.setString(LOGIN_UU, user.getLogin());
+			preparedStatement.setString(NAME_UU, user.getName());
+			preparedStatement.setString(SURNAME_UU, user.getSurname());
+			preparedStatement.setString(EMAIL_UU, user.getEmail());
+			preparedStatement.setString(BIRTHDAY_UU, DateFormatting.modifyDateToDB(user.getBirthday()));
+			preparedStatement.setString(CREDIT_CARD_UU, user.getCreditCard());
+			preparedStatement.setLong(ID_UU, user.getId());
 
 			preparedStatement.executeUpdate();
 			
@@ -222,12 +233,12 @@ public class SqlUserDAO implements UserDAO {
 
 		try {
 			wrapperConnection.setAutoCommit(false);
-			preparedStatement.setLong(CO_USER_ID, order.getUser().getId());
-			preparedStatement.setLong(CO_BIKE_PRODUCT_ID, order.getBikeProductId());
-			preparedStatement.setLong(CO_START_PARKING_ID, order.getStartParking().getId());
-			preparedStatement.setString(CO_START_TIME, order.getStartTime());
-			preparedStatement.setBigDecimal(CO_BIKE_VALUE, order.getBikeValue());
-			preparedStatement.setBigDecimal(CO_RENT_PRICE, order.getRentPrice());
+			preparedStatement.setLong(USER_ID_CO, order.getUser().getId());
+			preparedStatement.setLong(BIKE_PRODUCT_ID_CO, order.getBikeProductId());
+			preparedStatement.setLong(START_PARKING_ID_CO, order.getStartParking().getId());
+			preparedStatement.setString(START_TIME_CO, order.getStartTime());
+			preparedStatement.setBigDecimal(BIKE_VALUE_CO, order.getBikeValue());
+			preparedStatement.setBigDecimal(RENT_PRICE_CO, order.getRentPrice());
 			preparedStatement.executeUpdate();
 
 			long orderId = ((com.mysql.jdbc.PreparedStatement) preparedStatement).getLastInsertID();
@@ -236,7 +247,7 @@ public class SqlUserDAO implements UserDAO {
 			wrapperConnection.closeStatement(preparedStatement);
 
 			preparedStatement = wrapperConnection.getPreparedStatement(CHANGE_BIKE_STATE_TO_RESERVED_CBSTR);
-			preparedStatement.setLong(CBSTR_BIKE_ORDER_ID, orderId);
+			preparedStatement.setLong(BIKE_ORDER_ID_CBSTR, orderId);
 			preparedStatement.executeUpdate();
 
 			wrapperConnection.commit();
@@ -263,7 +274,7 @@ public class SqlUserDAO implements UserDAO {
 		BikeOrder bikeOrder = null;
 
 		try {
-			preparedStatement.setLong(FOO_USER_ID, user.getId());
+			preparedStatement.setLong(USER_ID_FOO, user.getId());
 			ResultSet resultSet = preparedStatement.executeQuery();
 
 			if (resultSet.next()) {
@@ -378,17 +389,17 @@ public class SqlUserDAO implements UserDAO {
 
 		try {
 			wrapperConnection.setAutoCommit(false);
-			preparedStatement.setLong(CLO_FINISH_PARKING, finishParkingId);
-			preparedStatement.setString(CLO_FINISH_TIME, finishTime);
-			preparedStatement.setBigDecimal(CLO_PAYMENT, payment);
-			preparedStatement.setLong(CLO_ID, orderId);
+			preparedStatement.setLong(FINISH_PARKING_CLO, finishParkingId);
+			preparedStatement.setString(FINISH_TIME_CLO, finishTime);
+			preparedStatement.setBigDecimal(PAYMENT_CLO, payment);
+			preparedStatement.setLong(ID_CLO, orderId);
 			preparedStatement.executeUpdate();
 
 			wrapperConnection.closeStatement(preparedStatement);
 
 			preparedStatement = wrapperConnection.getPreparedStatement(CHANGE_BIKE_STATE_TO_AVAILABLE_CBSTA);
-			preparedStatement.setLong(CBSTA_PARKING_ID, finishParkingId);
-			preparedStatement.setLong(CBSTA_BIKE_ORDER_ID, orderId);
+			preparedStatement.setLong(PARKING_ID_CBSTA, finishParkingId);
+			preparedStatement.setLong(BIKE_ORDER_ID_CBSTA, orderId);
 			preparedStatement.executeUpdate();
 
 			wrapperConnection.commit();
@@ -404,22 +415,22 @@ public class SqlUserDAO implements UserDAO {
 	}
 
 	@Override
-	public List<UserOrder> takeAllUsers() throws DAOException {
+	public List<BikeOrder> takeAllUsers() throws DAOException {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
 		Statement statement = wrapperConnection.getStatement();
 
-		List<UserOrder> userOrderList = null;
+		List<BikeOrder> orderList = null;
 
 		try {
 			ResultSet resultSet = statement.executeQuery(SELECT_ALL_USERS);
 
 			while (resultSet.next()) {
-				if (userOrderList == null) {
-					userOrderList = new ArrayList<>();
+				if (orderList == null) {
+					orderList = new ArrayList<>();
 				}
-				UserOrder userOrder = new UserOrder();
+				BikeOrder bikeOrder = new BikeOrder();
 				User user = new User();
 				user.setId(resultSet.getLong(ID));
 				user.setLogin(resultSet.getString(LOGIN));
@@ -431,16 +442,14 @@ public class SqlUserDAO implements UserDAO {
 				user.setRole(UserRole.valueOf(resultSet.getString(ROLE).toUpperCase()));
 				user.setCreditCard(resultSet.getString(CREDIT_CARD));
 				user.setState(UserState.valueOf(resultSet.getString(STATE).toUpperCase()));
-				userOrder.setUser(user);
+				bikeOrder.setUser(user);
 
-				BikeOrder bikeOrder = new BikeOrder();
 				bikeOrder.setId(resultSet.getLong(ORDER_ID));
-				userOrder.setBikeOrder(bikeOrder);
 
-				userOrderList.add(userOrder);
+				orderList.add(bikeOrder);
 			}
 
-			return userOrderList;
+			return orderList;
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while getting all users", e);
 		} finally {
@@ -457,8 +466,8 @@ public class SqlUserDAO implements UserDAO {
 		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(UPDATE_PASSWORD_UP);
 
 		try {
-			preparedStatement.setString(UP_PASSWORD, String.valueOf(password));
-			preparedStatement.setLong(UP_ID, user.getId());
+			preparedStatement.setString(PASSWORD_UP, String.valueOf(password));
+			preparedStatement.setLong(ID_UP, user.getId());
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			throw new DAOException("An exeption occured in the layer DAO while updating password", e);
@@ -516,6 +525,62 @@ public class SqlUserDAO implements UserDAO {
 			connectionPool.returnWrapperConnection(wrapperConnection);
 		}
 
+		return bikeOrderList;
+	}
+
+	@Override
+	public List<BikeOrder> findOrder(String surname, String fromDate, String toDate, PageInfo pageInfo)
+			throws DAOException {
+		ConnectionPool connectionPool = ConnectionPool.getInstance();
+		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
+		CallableStatement callableStatement =  wrapperConnection.getCallableStatement(FIND_ORDER_FO);
+		
+		List<BikeOrder> bikeOrderList = new ArrayList<>();
+		
+		try {
+			callableStatement.setString(SURNAME_FO, surname);
+			callableStatement.setString(FROM_DATE_FO, fromDate);
+			callableStatement.setString(TO_DATE_FO, toDate);
+			callableStatement.setLong(FROM_ORDER_ID_FO, pageInfo.getLastPagePoint());
+			callableStatement.setInt(ELEMENT_COUNT_FO, pageInfo.getDefaultElementOnPage());
+			
+			ResultSet resultSet = callableStatement.executeQuery();
+			
+			while(resultSet.next()) {
+				BikeOrder bikeOrder = new BikeOrder();
+				bikeOrder.setId(resultSet.getLong(ID));
+				bikeOrder.setStartTime(resultSet.getString(START_TIME));
+				bikeOrder.setFinishTime(resultSet.getString(FINISH_TIME));
+				bikeOrder.setRentPrice(resultSet.getBigDecimal(RENT_PRICE));
+				bikeOrder.setPayment(resultSet.getBigDecimal(PAYMENT));
+				
+				User user = new User();
+				user.setId(resultSet.getLong(ID));
+				user.setName(resultSet.getString(NAME));
+				user.setSurname(resultSet.getString(SURNAME));
+				bikeOrder.setUser(user);
+				
+				Parking startParking = new Parking();
+				startParking.setId(resultSet.getLong(START_PARKING_ID));
+				startParking.setAddress(resultSet.getString(START_PARKING));
+				bikeOrder.setStartParking(startParking);
+
+				Parking finishParking = new Parking();
+				finishParking.setId(resultSet.getLong(FINISH_PARKING_ID));
+				finishParking.setAddress(resultSet.getString(FINISH_PARKING));
+				bikeOrder.setFinishParking(finishParking);
+				
+				bikeOrderList.add(bikeOrder);
+			}
+System.out.println("bikeOrderList - " + bikeOrderList.size());
+			
+		} catch (SQLException e) {
+			throw new DAOException("Exception was threw during find order in DB", e);
+		}finally {
+			wrapperConnection.closeStatement(callableStatement);
+			connectionPool.returnWrapperConnection(wrapperConnection);
+		}
+		
 		return bikeOrderList;
 	}
 

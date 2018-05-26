@@ -139,6 +139,33 @@ public class UserParameterValidator {
 
 		return true;
 	}
+	
+	public static boolean dateValidate(String date) {
+
+		if (date == null || date.isEmpty()) {
+			return false;
+		}
+
+		Pattern p = Pattern.compile(BIRTHDAY_PATTERN);
+		Matcher m = p.matcher(date);
+		if (!m.matches()) {
+			return false;
+		}
+
+		String[] DateArrey = date.split(DOT_SEPARATOR);
+		int year = Integer.parseInt(DateArrey[YEAR_ARREY_ADDRESS]);
+		int month = Integer.parseInt(DateArrey[MONTH_ARREY_ADDRESS]);
+		int day = Integer.parseInt(DateArrey[DAY_ARREY_ADDRESS]);
+
+		try {
+			LocalDate.of(year, month, day);
+		} catch (DateTimeException e) {
+			logger.log(Level.ERROR, "Date " + date + "is not valid, " + e);
+			return false;
+		}
+
+		return true;
+	}
 
 	public static boolean craditcardValidate(String creditCard) {
 

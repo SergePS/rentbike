@@ -9,10 +9,12 @@ public enum SessionParameter {
 
 	BIKE_PRODUCT("bikeProduct"), 
 	LANGUAGE("lang"), 
-	LOCAL("local"), 
+	LOCAL("local"),
+	MESSAGE("message"),
 	USER("user"), 
 	PAGE_INFO("pageInfo"), 
-	BIKE_CATALOG_WITH_CHOICE("bikeCatalogWithChoise");
+	BIKE_CATALOG_WITH_CHOICE("bikeCatalogWithChoise"),
+	BIKE_PRODUCT_CATALOG_WITH_CHOICE("bikeProductCatalogWithChoise");
 
 	private String parameter;
 

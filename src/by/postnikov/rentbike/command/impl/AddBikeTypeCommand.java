@@ -60,7 +60,7 @@ public class AddBikeTypeCommand implements Command {
 				request.setAttribute(RequestParameter.ERROR.parameter(),
 						CommandExceptionHandler.takeLogicExceptionMessage(e));
 				router.setPagePath(PageConstant.BIKE_TYPE_PAGE);
-				RequestParameterHandler.addParamToReques(request);
+				RequestParameterHandler.addParamToRequest(request);
 			}
 		}
 

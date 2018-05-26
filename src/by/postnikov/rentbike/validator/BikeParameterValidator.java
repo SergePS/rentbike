@@ -9,9 +9,9 @@ public class BikeParameterValidator {
 	private final static String COUNT_PATTERN = "[1-9]";
 	private final static String AMOUNT_PATTERN = "(\\d{1}|[1-9]{1}\\d{1,5})((\\.|,){1}[\\d]{1,2})?";
 	private final static String MODEL_PATTERN = "[\\w\\-\\s\\.\\dа-яА-ЯёЁ]{1,50}";
-	private final static String WHEEL_SIZE_PATTERN = "[0-9]{1,2}";
-	private final static String SPEED_COUNT_PATTERN = "[0-9]{1,2}";
-	private final static String BIKE_TYPE_PATTERN = "[\\w\\-\\sа-яА-ЯёЁ]{1,30}";
+	private final static String WHEEL_SIZE_PATTERN = "[1-9]{1}\\d{0,1}";
+	private final static String SPEED_COUNT_PATTERN = "[1-9]{1}\\d{0,1}";
+	private final static String BIKE_TYPE_PATTERN = "[a-zA-Zа-яА-ЯёЁ\\s]{1,30}";
 	private final static String BRAND_PATTERN = "[\\w\\-\\sа-яА-ЯёЁ]{1,30}";
 	
 

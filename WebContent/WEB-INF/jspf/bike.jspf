@@ -60,7 +60,7 @@
 							<c:if test="${bike!=null}">value="${bike.wheelSize}"</c:if>
 							<c:if test="${model!=null}">value="${wheelSize}"</c:if>
 							placeholder="${wheelSizePlaceholder}"
-							pattern="[0-9]{1,2}"
+							pattern="[1-9]{1}\d{0,1}"
 							oninvalid="setCustomValidity('${wheelSizeWarn}')"
 							oninput="setCustomValidity('')">
 			</div>
@@ -77,7 +77,7 @@
 							<c:if test="${bike!=null}">value="${bike.speedCount}"</c:if>
 							<c:if test="${model!=null}">value="${speedCount}"</c:if>
 							placeholder="${speedCountPlaceholder}"
-							pattern="[0-9]{1,2}"
+							pattern="[1-9]{1}\d{0,1}"
 							oninvalid="setCustomValidity('${speedCountWarn}')"
 							oninput="setCustomValidity('')">	
 			</div>

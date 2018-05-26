@@ -35,7 +35,7 @@
 								value = "${bikeType}"
 								class="form-control"
 								placeholder="${bikeTypePlaceholderLabel}"
-								pattern="[\w\-\sа-яА-ЯёЁ]{1,30}"
+								pattern="[a-zA-Zа-яА-ЯёЁ\s]{1,30}"
 								oninvalid="setCustomValidity('${bikeTypeWarnLabel}')"
 								oninput="setCustomValidity('')">
 				</div>

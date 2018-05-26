@@ -37,6 +37,7 @@ public class GoToBikeProductCatalogPageCommand implements Command {
 		
 		HttpSession session = request.getSession(true);
 		session.removeAttribute(SessionParameter.PAGE_INFO.parameter());
+		session.setAttribute(SessionParameter.BIKE_PRODUCT_CATALOG_WITH_CHOICE.parameter(), request.getParameter(RequestParameter.BIKE_PRODUCT_CATALOG_WITH_CHOICE.parameter()));
 
 		try {
 			List<Parking> parkingList = parkingService.takeAllParking();

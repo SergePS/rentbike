@@ -100,7 +100,7 @@ public class UpdateBikeCommand implements Command {
 			} else {
 				request.setAttribute(RequestParameter.ERROR.parameter(),
 						CommandExceptionHandler.takeLogicExceptionMessage(e));
-				RequestParameterHandler.addParamToReques(request);
+				RequestParameterHandler.addParamToRequest(request);
 			}
 
 		} catch (IOException e) {

@@ -31,6 +31,7 @@ import by.postnikov.rentbike.command.impl.UpdateUserCommand;
 import by.postnikov.rentbike.command.impl.RegisterUserCommand;
 import by.postnikov.rentbike.command.impl.FindUserOrdersCommand;
 import by.postnikov.rentbike.command.impl.GoToOrderReportPage;
+import by.postnikov.rentbike.command.impl.FindOrderByParametersCommand;
 
 /**
  * @author Sergey Postnikov
@@ -77,6 +78,7 @@ public enum CommandType {
 	CLOSE_ORDER(new CloseOrderCommand(), AccessLevel.USER),
 	FIND_USER_ORDERS(new FindUserOrdersCommand(), AccessLevel.USER),
 	GO_TO_ORDER_REPORT_PAGE(new GoToOrderReportPage(), AccessLevel.ADMIN),
+	FIND_ORDER_BY_PARAMETERS(new FindOrderByParametersCommand(), AccessLevel.ADMIN),
 	
 	PAGINATION(new PagingCommand(), AccessLevel.USER);
 	

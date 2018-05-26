@@ -10,7 +10,9 @@ public enum PageMessage {
 	BIKE_CHANGED("bikeChanged"),
 	
 	PROFILE_CHANGED("profileChanged"),
-	PASSWORD_CHANGED("passwordChanged");
+	PASSWORD_CHANGED("passwordChanged"),
+	
+	USER_ADDED("userAdded");
 
 	private String message;
 
