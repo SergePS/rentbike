@@ -69,7 +69,7 @@
 							pattern="[a-zA-Z]{1}[a-zA-Z0-9]{1,14}"
 							value="${login}"
 							required
-							oninvalid="setCustomValidity('${login_warn}')"
+							oninvalid="setCustomValidity('${loginWarn}')"
 							oninput="setCustomValidity('')">
 				</div>
 			</div>
