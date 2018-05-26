@@ -1,16 +1,17 @@
-DELIMITER |
+DELIMITER |	
 CREATE PROCEDURE findOrdersProcedure(surname varchar(40), dateFrom varchar(40), dateTo varchar(40), orderId long, lim int)
 BEGIN
 	SELECT 
 		o.id, 
         u.id as userId, 
-        u.name, u.surname, 
-        o.startTime, 
-        o.finishTime, 
+        u.name, 
+        u.surname, 
+        DATE_FORMAT(o.startTime, '%d.%m.%Y %H:%i:%s') as startTime, 
+        DATE_FORMAT(o.finishTime, '%d.%m.%Y %H:%i:%s') as finishTime, 
         sp.id as startParkingId, 
-        sp.address, 
+        sp.address as startParking, 
         fp.id as finishParkingId, 
-        fp.address, 
+        fp.address as finishParking, 
         o.rentPrice, 
         o.payment 
         FROM orders o 
@@ -20,7 +21,7 @@ BEGIN
         WHERE
 			o.id > orderId
 			AND ((surname is null) or (u.surname LIKE CONCAT('%', surname, '%')))
-            AND o.finishTime between dateFrom AND if(dateTo = "", now(), dateTo)
+            AND o.startTime between dateFrom AND if(dateTo = "", now(), dateTo)
 		LIMIT lim
     ;
 END;
