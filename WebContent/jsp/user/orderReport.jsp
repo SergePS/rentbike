@@ -48,7 +48,7 @@
 					
 					<!--  ------------------------------- from date --------------------------------------- -->
 					<div>
-						<label style="margin-left:10px"><c:out value="с даты">:</c:out></label>
+						<label style="margin-left:10px"><c:out value="${fromDataLabel}">:</c:out></label>
 						<input 	type="text"
 								id="fromDate"
 								name="fromDate" 
@@ -64,7 +64,7 @@
 					
 					<!--  -------------------------------- to date  --------------------------------------- -->
 					<div>
-						<label style="margin-left:10px"><c:out value="до даты">:</c:out></label>
+						<label style="margin-left:10px"><c:out value="${toDataLabel}">:</c:out></label>
 						<input 	type="text"
 								id="toDate"
 								name="toDate" 

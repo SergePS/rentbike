@@ -27,7 +27,7 @@
 			<li><a href="#">${bikesLabel}</a>
 				<ul>
 					<li><a href="FrontController?command=go_to_bike_purchase"><c:out value="${bikePurchaseLabel}"></c:out></a></li>
-				   	<li><a href="FrontController?command=bikeCatalog&ampbikeCatalogWithChoise=false"><c:out value="${bikeCatalogLabel}"></c:out></a></li>
+				   	<li><a href="FrontController?command=bikeCatalog&bikeCatalogWithChoise=false"><c:out value="${bikeCatalogLabel}"></c:out></a></li>
 				   	<li><a href="FrontController?command=go_to_bike_product_catalog_page&bikeProductCatalogWithChoise=false"><c:out value="${productsCatalog}"></c:out></a></li> 
 				</ul>	
 			</li>

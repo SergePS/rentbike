@@ -93,7 +93,7 @@
 							</div>
 							<div class="row" style="margin-top: 10px">
 								<div class="col-md-12">
-									<c:out value=""></c:out>Первые 20 минут бесплатно!	
+									<c:out value="${freeLabel}"></c:out>	
 								</div>						
 							</div>							
 							<div class="row" style="margin-top: 10px; padding-bottom: 10px">

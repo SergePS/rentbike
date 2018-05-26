@@ -80,6 +80,9 @@
 <fmt:message bundle="${loc}" key="freeOrderNotice" var="freeOrderNotice"></fmt:message>
 <fmt:message bundle="${loc}" key="finishTimeLabel" var="finishTimeLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="finishParkingLabel" var="finishParkingLabel"></fmt:message>
+<fmt:message bundle="${loc}" key="fromDataLabel" var="fromDataLabel"></fmt:message>
+<fmt:message bundle="${loc}" key="toDataLabel" var="toDataLabel"></fmt:message>
+<fmt:message bundle="${loc}" key="freeLabel" var="freeLabel"></fmt:message>
 
 <fmt:message bundle="${loc}" key="goLabel" var="goLabel"></fmt:message>
 
