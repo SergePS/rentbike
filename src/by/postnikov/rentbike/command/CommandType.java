@@ -42,9 +42,9 @@ import by.postnikov.rentbike.command.impl.FindOrderByParametersCommand;
  *
  */
 public enum CommandType {
-	
+
 	LOGIN(new LoginCommand(), AccessLevel.USER),
-	LOGOUT(new LogoutCommand(), AccessLevel.USER), 
+	LOGOUT(new LogoutCommand(), AccessLevel.USER),
 	REGISTER(new RegisterUserCommand(), AccessLevel.USER),
 	HOME(new GoToHomePageCommand(), AccessLevel.USER),
 	TAKE_ALL_USER(new TakeAllUserCommand(), AccessLevel.ADMIN),

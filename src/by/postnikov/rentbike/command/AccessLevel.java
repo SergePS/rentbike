@@ -7,7 +7,15 @@ package by.postnikov.rentbike.command;
  */
 public enum AccessLevel {
 	
-	USER(1), ADMIN(2);
+	/**
+	 * Access level - User and higher. 
+	 */
+	USER(1), 
+	
+	/**
+	 * Access level - Administrator and higher. 
+	 */
+	ADMIN(2);
 	
 	private int level;
 	
