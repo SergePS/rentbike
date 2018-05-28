@@ -66,7 +66,7 @@
 							name="login" 
 							class="form-control"
 							placeholder="${loginPlaceholder}"
-							pattern="[a-zA-Z]{1}[a-zA-Z0-9]{1,14}"
+							pattern="[a-zA-Z]{1}[a-zA-Z0-9]{2,20}"
 							value="${login}"
 							required
 							oninvalid="setCustomValidity('${loginWarn}')"

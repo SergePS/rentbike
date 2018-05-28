@@ -89,7 +89,7 @@ public enum CommandType {
 	/** Access level for page */
 	private AccessLevel accessLevel;
 	
-	CommandType(Command command, AccessLevel accessLevel){
+	private CommandType(Command command, AccessLevel accessLevel){
 		this.command = command;
 		this.accessLevel = accessLevel;
 	}

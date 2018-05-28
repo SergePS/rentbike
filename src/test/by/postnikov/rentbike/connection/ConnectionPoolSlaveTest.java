@@ -27,34 +27,21 @@ public class ConnectionPoolSlaveTest {
 	}
 
 	@Test
-	public void run() { // load test
+	public void run() throws InterruptedException { // load test
 
-		ThreadTest threadTestOne = new ThreadTest();
-		threadTestOne.setName("threadTestOne");
-		threadTestOne.start();
+		Thread[] threads = new Thread[4];
 
-		ThreadTest threadTestTwo = new ThreadTest();
-		threadTestTwo.setName("threadTestTwo");
-		threadTestTwo.start();
-
-		ThreadTest threadTestThree = new ThreadTest();
-		threadTestThree.setName("threadTestThree");
-		threadTestThree.start();
-
-		ThreadTest threadTestFour = new ThreadTest();
-		threadTestFour.setName("threadTestFour");
-		threadTestFour.start();
-
-		try {
-			threadTestOne.join();
-			threadTestTwo.join();
-			threadTestThree.join();
-			threadTestFour.join();
-
-			TimeUnit.SECONDS.sleep(3);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		for (int i = 0; i < threads.length; i++) {
+			threads[i] = new ThreadTest();
+			threads[i].setName("Thread_" + (i + 1));
+			threads[i].start();
 		}
+
+		for (int i = 0; i < threads.length; i++) {
+			threads[i].join();
+		}
+
+		TimeUnit.SECONDS.sleep(3);
 
 	}
 }

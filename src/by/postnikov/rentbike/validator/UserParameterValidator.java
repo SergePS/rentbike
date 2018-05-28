@@ -14,7 +14,7 @@ import by.postnikov.rentbike.command.ApplicationProperty;
 public class UserParameterValidator {
 	private final static Logger logger = LogManager.getLogger();
 
-	private final static String LOGIN_PATTERN = "[a-zA-Z]{1}[a-zA-Z0-9]{1,20}";
+	private final static String LOGIN_PATTERN = "[a-zA-Z]{1}[a-zA-Z0-9]{2,20}";
 	private final static String NAME_PATTERN = "[a-zA-Zа-яА-ЯЁё]{3,15}";
 	private final static String EMAIL_PATTERN = "[a-zA-Z]{1}\\w{1,15}@[a-zA-Z]{1,10}\\.[a-z]{2,3}";
 	private final static String BIRTHDAY_PATTERN = "(0{1}[1-9]|[1-2]{1}[0-9]{1}|3{1}[0-1]{1})\\.(0{1}[1-9]|1{1}[0-2]{1})\\.(1{1}9{1}[0-9]{2}|2{1}0{1}[0-9]{2})";
