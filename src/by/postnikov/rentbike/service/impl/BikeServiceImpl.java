@@ -1,6 +1,7 @@
 package by.postnikov.rentbike.service.impl;
 
 import java.math.BigDecimal;
+import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -304,7 +305,7 @@ public class BikeServiceImpl implements BikeService {
 
 			return bikeDAO.addBikeProduct(bikeProductList);
 
-		} catch (NumberFormatException | DAOException e) {
+		} catch (NumberFormatException | DAOException | ServerException e) {
 			throw new ServiceException("Get bike by id error", e);
 		}
 	}
