@@ -23,7 +23,7 @@ public class BikeParameterValidatorTest {
   @DataProvider
   public Object[][] dpCountNegative() {
     return new Object[][] {
-      new Object[] {"<2"},
+      new Object[] {"v2"},
       new Object[] {"0"},
       new Object[] {"10"},
     };
@@ -61,7 +61,7 @@ public class BikeParameterValidatorTest {
   @DataProvider
   public Object[][] dpModelNegative() {
     return new Object[][] {
-      new Object[] {"<model"},
+      new Object[] {"!model"},
       new Object[] {"модель!*"},
       new Object[] {"модель>"},
     };
@@ -80,7 +80,7 @@ public class BikeParameterValidatorTest {
   @DataProvider
   public Object[][] dpWheelSizeNegative() {
     return new Object[][] {
-      new Object[] {"<10"},
+      new Object[] {"!10"},
       new Object[] {"0"},
       new Object[] {"100"},
       new Object[] {""},
@@ -100,7 +100,7 @@ public class BikeParameterValidatorTest {
   @DataProvider
   public Object[][] dpSpeedCountNegative() {
     return new Object[][] {
-      new Object[] {"<10"},
+      new Object[] {"!10"},
       new Object[] {"0"},
       new Object[] {"100"},
       new Object[] {""},
@@ -120,7 +120,7 @@ public class BikeParameterValidatorTest {
   @DataProvider
   public Object[][] dpBikeTypeNegative() {
     return new Object[][] {
-      new Object[] {"<type"},
+      new Object[] {"*type"},
       new Object[] {"!type"},
       new Object[] {"11"},
     };
@@ -139,7 +139,7 @@ public class BikeParameterValidatorTest {
   @DataProvider
   public Object[][] dpBrandNegative() {
     return new Object[][] {
-      new Object[] {"<brand"},
+      new Object[] {"!brand"},
       new Object[] {"!brand"},
       new Object[] {"*.брэнд"},
     };

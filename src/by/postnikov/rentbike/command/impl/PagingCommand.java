@@ -50,8 +50,6 @@ public class PagingCommand implements Command {
 
 			if (RequestParameter.NEXT_PAGE.parameter().equals(pageAction)) {
 				if (!pageInfo.isLastPage()) {
-					System.out.println();
-					System.out.println("NEXT_PAGE and pageInfo.isLastPage() = " + pageInfo.isLastPage());
 					pageInfo.setPageAction(NEXT_PAGE);
 				}
 			}

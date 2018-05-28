@@ -75,11 +75,9 @@ public class PageInfo {
 
 	public void addPagePoint(Long itemId) {
 		this.pagePoint.addLast(itemId);
-System.out.println("Point was added,  size paginfo = " + (pagePoint.size()));
 	}
 
 	public long removeLastPagePoint() {
-System.out.println("Point was deleted, size paginfo = " + (pagePoint.size() - 1));
 		return this.pagePoint.removeLast();
 	}
 

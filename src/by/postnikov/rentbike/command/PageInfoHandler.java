@@ -58,8 +58,7 @@ public class PageInfoHandler {
 
 		if (itemList.isEmpty()) {
 
-			if (!pageInfo.isLastPage()) { // if - protection against F5
-				System.out.println("3");
+			if (!pageInfo.isLastPage()) {
 				pageInfo.addPagePoint(pageInfo.getLastPagePoint());
 			}
 			
@@ -86,7 +85,6 @@ public class PageInfoHandler {
 				
 				if (pageInfo.getDefaultElementOnPage() > itemList.size()) {
 					pageInfo.setLastPage(true);
-					System.out.println("setLastPage - true");
 				}
 			}
 			
@@ -97,7 +95,6 @@ public class PageInfoHandler {
 				
 				if (pageInfo.getDefaultElementOnPage() > itemList.size()) {
 					pageInfo.setLastPage(true);
-					System.out.println("setLastPage - true");
 				}
 				
 				pageInfo.setCurrentPage(pageInfo.getCurrentPage() + 1);

@@ -572,7 +572,6 @@ public class SqlUserDAO implements UserDAO {
 				
 				bikeOrderList.add(bikeOrder);
 			}
-System.out.println("bikeOrderList - " + bikeOrderList.size());
 			
 		} catch (SQLException e) {
 			throw new DAOException("Exception was threw during find order in DB", e);
