@@ -424,6 +424,7 @@ public class SqlUserDAO implements UserDAO {
 		List<BikeOrder> orderList = null;
 
 		try {
+			
 			ResultSet resultSet = statement.executeQuery(SELECT_ALL_USERS);
 
 			while (resultSet.next()) {

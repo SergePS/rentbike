@@ -32,54 +32,51 @@ public class SqlBikeDAO implements BikeDAO {
 
 	private final static String TAKE_ALL_BRAND = "SELECT id, brand FROM brands";
 
-	private final static String ADD_BIKE = "INSERT INTO bikes (brandId, model, wheelSize, speedCount, bikeTypeId, picture) VALUES (?, ?, ?, ?, ?, ?)";
-	private final static int BIKE_BRAND_ID_PARAM = 1;
-	private final static int BIKE_MODEL_PARAM = 2;
-	private final static int BIKE_WHEEL_SIZE_PARAM = 3;
-	private final static int BIKE_SPEED_COUNT_PARAM = 4;
-	private final static int BIKE_BIKE_TYPE_ID_PARAM = 5;
-	private final static int BIKE_PICTURE_PARAM = 6;
+	private final static String ADD_BIKE_AB = "INSERT INTO bikes (brandId, model, wheelSize, speedCount, bikeTypeId, picture) VALUES (?, ?, ?, ?, ?, ?)";
+	private final static int BRAND_ID_AB = 1; //AB - Add Bike
+	private final static int MODEL_AB = 2;
+	private final static int WHEEL_SIZE_AB = 3;
+	private final static int SPEED_COUNT_AB = 4;
+	private final static int BIKE_TYPE_ID_AB = 5;
+	private final static int PICTURE_AB = 6;
 
 	private final static String ADD_BRAND = "INSERT INTO brands (brand) VALUES (?)";
 
-	private final static String ADD_BIKE_TYPE = "INSERT INTO biketype (type) VALUES (?)";
-	private final static int BIKE_TYPE_RS_ADDRESS_BIKE_TYPE_TABLE = 1;
+	private final static String ADD_BIKE_TYPE_ABT = "INSERT INTO biketype (type) VALUES (?)";
+	private final static int BIKE_TYPE_ABT = 1;  //ABT - Add Bike Type
 
 	private static final String FIND_BIKE_FB = "{call findBikeProcedure(?,?,?,?,?,?,?)}";
-	private static final int FB_BRAND_ID = 1; // FB - Find Bike
-	private static final int FB_MODEL = 2;
-	private static final int FB_BIKE_TYPE_ID = 3;
-	private static final int FB_SPEED_COUNT_MIN = 4;
-	private static final int FB_SPEED_COUNT_MAX = 5;
-	private static final int FB_START_ID = 6;
-	private static final int FB_COUNT_ELEMENT_ON_PAGE = 7;
+	private static final int BRAND_ID_FB = 1; // FB - Find Bike
+	private static final int MODEL_FB = 2;
+	private static final int BIKE_TYPE_ID_FB = 3;
+	private static final int SPEED_COUNT_MIN_FB = 4;
+	private static final int SPEED_COUNT_MAX_FB = 5;
+	private static final int START_ID_FB = 6;
+	private static final int COUNT_ELEMENT_ON_PAGE_FB = 7;
 
 	private final static String FIND_BIKE_BY_ID = "SELECT bk.id, bk.brandId, br.brand, bk.model, bk.wheelSize, bk.speedCount, bk.picture, bk.bikeTypeId, bt.type FROM bikes bk LEFT JOIN brands br ON bk.brandId = br.id LEFT JOIN biketype bt ON bk.bikeTypeId = bt.id WHERE bk.id = ?";
 	private final static int ID_PARAM = 1;
 
-	private final static String ADD_BIKE_PRODUCT = "INSERT INTO bikeproduct (bikeId, purchaseDate, value, rentPrice, parkingId) VALUES (?, ?, ?, ?, ?)";
-	private final static int ADD_BIKE_PRODUCT_ID_BIKE_ADDRESS = 1;
-	private final static int ADD_BIKE_PRODUCT_PURCHASE_DATE_ADDRESS = 2;
-	private final static int ADD_BIKE_PRODUCT_VLUE_ADDRESS = 3;
-	private final static int ADD_BIKE_PRODUCT_RENT_PRICE_ADDRESS = 4;
-	private final static int ADD_BIKE_PRODUCT_PARKING_ID_ADDRESS = 5;
+	private final static String ADD_BIKE_PRODUCT_ABP = "INSERT INTO bikeproduct (bikeId, purchaseDate, value, rentPrice, parkingId) VALUES (?, ?, ?, ?, ?)";
+	private final static int BIKE_ID_ABP = 1;  //ABP - Add Bike Product
+	private final static int PURCHASE_DATE_ABP = 2;
+	private final static int VALUE_ABP = 3;
+	private final static int RENT_PRICE_ABP = 4;
+	private final static int PARKING_ID_ABP = 5;
 
 	private final static String FIND_BIKE_PRODUCT_FBP = "{call findBikeProductProcedure(?,?,?,?,?,?,?)}";
-	private static final int FBP_PRODUCT_STATE = 1; // FBP - Find Bike Product
-	private static final int FBP_PARKING_ID = 2;
-	private static final int FBP_BRAND_ID = 3;
-	private static final int FBP_BIKE_TYPE_ID = 4;
-	private static final int FBP_MODEL = 5;
-	private static final int FBP_START_ID = 6;
-	private static final int FBP_COUNT_ELEMENT_ON_PAGE = 7;
+	private static final int PRODUCT_STATE_FBP = 1; // FBP - Find Bike Product
+	private static final int PARKING_ID_FBP = 2;
+	private static final int BRAND_ID_FBP = 3;
+	private static final int BIKE_TYPE_ID_FBP = 4;
+	private static final int MODEL_FBP = 5;
+	private static final int START_ID_FBP = 6;
+	private static final int COUNT_ELEMENT_ON_PAGE_FBP = 7;
 
 	private final static String FIND_BIKE_PRODUCT_BY_ID = "SELECT bp.id, bk.id AS bikeId, bk.brandId, br.brand, bk.model, bk.wheelSize, bk.speedCount, bk.picture, bk.bikeTypeId, bt.type, pk.id AS parkingId, pk.address, bp.value, bp.rentPrice, bp.state FROM bikeproduct bp LEFT JOIN bikes bk ON bp.bikeId=bk.id LEFT JOIN brands br ON bk.brandId = br.id LEFT JOIN bikeType bt ON bk.bikeTypeId = bt.id LEFT JOIN parkings pk ON bp.parkingId=pk.id WHERE bp.id = ?";
 
-	private final static String SQL_QUERY_UPDATE_BIKE = "UPDATE bikes SET brandId = ?, model = ?, wheelSize = ?, speedCount = ?, bikeTypeId = ?, picture = ? WHERE id = ?";
-	private final static int BIKE_UPDATED_ID_PARAM = 7;
-
-	public final static String WHERE = " where ";
-	public final static String AND = " and ";
+	private final static String UPDATE_BIKE_UB = "UPDATE bikes SET brandId = ?, model = ?, wheelSize = ?, speedCount = ?, bikeTypeId = ?, picture = ? WHERE id = ?";
+	private final static int BIKE_ID_UB = 7; //UB - Update Bike
 
 	private final static String ID = "id";
 	private final static String TYPE = "type";
@@ -161,15 +158,15 @@ public class SqlBikeDAO implements BikeDAO {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
-		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(ADD_BIKE);
+		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(ADD_BIKE_AB);
 
 		try {
-			preparedStatement.setLong(BIKE_BRAND_ID_PARAM, bike.getBrand().getId());
-			preparedStatement.setString(BIKE_MODEL_PARAM, bike.getModel());
-			preparedStatement.setInt(BIKE_WHEEL_SIZE_PARAM, bike.getWheelSize());
-			preparedStatement.setInt(BIKE_SPEED_COUNT_PARAM, bike.getSpeedCount());
-			preparedStatement.setLong(BIKE_BIKE_TYPE_ID_PARAM, bike.getBikeType().getId());
-			preparedStatement.setString(BIKE_PICTURE_PARAM, bike.getPicturePath());
+			preparedStatement.setLong(BRAND_ID_AB, bike.getBrand().getId());
+			preparedStatement.setString(MODEL_AB, bike.getModel());
+			preparedStatement.setInt(WHEEL_SIZE_AB, bike.getWheelSize());
+			preparedStatement.setInt(SPEED_COUNT_AB, bike.getSpeedCount());
+			preparedStatement.setLong(BIKE_TYPE_ID_AB, bike.getBikeType().getId());
+			preparedStatement.setString(PICTURE_AB, bike.getPicturePath());
 
 			preparedStatement.executeUpdate();
 
@@ -197,7 +194,7 @@ public class SqlBikeDAO implements BikeDAO {
 		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(ADD_BRAND);
 
 		try {
-			preparedStatement.setString(BIKE_BRAND_ID_PARAM, brand.getBrand());
+			preparedStatement.setString(BRAND_ID_AB, brand.getBrand());
 			preparedStatement.executeUpdate();
 
 		} catch (MySQLIntegrityConstraintViolationException e) {
@@ -215,10 +212,10 @@ public class SqlBikeDAO implements BikeDAO {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
-		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(ADD_BIKE_TYPE);
+		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(ADD_BIKE_TYPE_ABT);
 
 		try {
-			preparedStatement.setString(BIKE_TYPE_RS_ADDRESS_BIKE_TYPE_TABLE, bikeType.getBikeType());
+			preparedStatement.setString(BIKE_TYPE_ABT, bikeType.getBikeType());
 			preparedStatement.executeUpdate();
 		} catch (MySQLIntegrityConstraintViolationException e) {
 			throw new DAOException(ExceptionMessage.BIKE_TYPE_DUBLICATE_ERROR.toString());
@@ -239,13 +236,13 @@ public class SqlBikeDAO implements BikeDAO {
 		CallableStatement callableStatement = wrapperConnection.getCallableStatement(FIND_BIKE_FB);
 
 		try {
-			callableStatement.setLong(FB_BRAND_ID, brandId);
-			callableStatement.setString(FB_MODEL, model);
-			callableStatement.setLong(FB_BIKE_TYPE_ID, bikeTypeId);
-			callableStatement.setInt(FB_SPEED_COUNT_MIN, minSpeedCount);
-			callableStatement.setInt(FB_SPEED_COUNT_MAX, maxSpeedCount);
-			callableStatement.setLong(FB_START_ID, pageInfo.getLastPagePoint());
-			callableStatement.setInt(FB_COUNT_ELEMENT_ON_PAGE, pageInfo.getDefaultElementOnPage());
+			callableStatement.setLong(BRAND_ID_FB, brandId);
+			callableStatement.setString(MODEL_FB, model);
+			callableStatement.setLong(BIKE_TYPE_ID_FB, bikeTypeId);
+			callableStatement.setInt(SPEED_COUNT_MIN_FB, minSpeedCount);
+			callableStatement.setInt(SPEED_COUNT_MAX_FB, maxSpeedCount);
+			callableStatement.setLong(START_ID_FB, pageInfo.getLastPagePoint());
+			callableStatement.setInt(COUNT_ELEMENT_ON_PAGE_FB, pageInfo.getDefaultElementOnPage());
 
 			ResultSet resultSet = callableStatement.executeQuery();
 
@@ -332,15 +329,15 @@ public class SqlBikeDAO implements BikeDAO {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
-		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(ADD_BIKE_PRODUCT);
+		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(ADD_BIKE_PRODUCT_ABP);
 
 		try {
 			for (BikeProduct bikeProduct : bikeProductList) {
-				preparedStatement.setLong(ADD_BIKE_PRODUCT_ID_BIKE_ADDRESS, bikeProduct.getBike().getId());
-				preparedStatement.setString(ADD_BIKE_PRODUCT_PURCHASE_DATE_ADDRESS, DateFormatting.getCurrentDate());
-				preparedStatement.setBigDecimal(ADD_BIKE_PRODUCT_VLUE_ADDRESS, bikeProduct.getValue());
-				preparedStatement.setBigDecimal(ADD_BIKE_PRODUCT_RENT_PRICE_ADDRESS, bikeProduct.getRentPrice());
-				preparedStatement.setLong(ADD_BIKE_PRODUCT_PARKING_ID_ADDRESS, bikeProduct.getParking().getId());
+				preparedStatement.setLong(BIKE_ID_ABP, bikeProduct.getBike().getId());
+				preparedStatement.setString(PURCHASE_DATE_ABP, DateFormatting.getCurrentDate());
+				preparedStatement.setBigDecimal(VALUE_ABP, bikeProduct.getValue());
+				preparedStatement.setBigDecimal(RENT_PRICE_ABP, bikeProduct.getRentPrice());
+				preparedStatement.setLong(PARKING_ID_ABP, bikeProduct.getParking().getId());
 				preparedStatement.executeUpdate();
 
 				long lastId = ((com.mysql.jdbc.PreparedStatement) preparedStatement).getLastInsertID();
@@ -365,13 +362,13 @@ public class SqlBikeDAO implements BikeDAO {
 		CallableStatement callableStatement = wrapperConnection.getCallableStatement(FIND_BIKE_PRODUCT_FBP);
 
 		try {
-			callableStatement.setString(FBP_PRODUCT_STATE, state.toString());
-			callableStatement.setLong(FBP_PARKING_ID, parkingId);
-			callableStatement.setLong(FBP_BRAND_ID, brandId);
-			callableStatement.setLong(FBP_BIKE_TYPE_ID, bikeTypeId);
-			callableStatement.setString(FBP_MODEL, model);
-			callableStatement.setLong(FBP_START_ID, pageInfo.getLastPagePoint());
-			callableStatement.setInt(FBP_COUNT_ELEMENT_ON_PAGE, pageInfo.getDefaultElementOnPage());
+			callableStatement.setString(PRODUCT_STATE_FBP, state.toString());
+			callableStatement.setLong(PARKING_ID_FBP, parkingId);
+			callableStatement.setLong(BRAND_ID_FBP, brandId);
+			callableStatement.setLong(BIKE_TYPE_ID_FBP, bikeTypeId);
+			callableStatement.setString(MODEL_FBP, model);
+			callableStatement.setLong(START_ID_FBP, pageInfo.getLastPagePoint());
+			callableStatement.setInt(COUNT_ELEMENT_ON_PAGE_FBP, pageInfo.getDefaultElementOnPage());
 
 			ResultSet resultSet = callableStatement.executeQuery();
 
@@ -486,16 +483,16 @@ public class SqlBikeDAO implements BikeDAO {
 
 		ConnectionPool connectionPool = ConnectionPool.getInstance();
 		WrapperConnection wrapperConnection = connectionPool.getWrapperConnection();
-		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(SQL_QUERY_UPDATE_BIKE);
+		PreparedStatement preparedStatement = wrapperConnection.getPreparedStatement(UPDATE_BIKE_UB);
 
 		try {
-			preparedStatement.setLong(BIKE_BRAND_ID_PARAM, bike.getBrand().getId());
-			preparedStatement.setString(BIKE_MODEL_PARAM, bike.getModel());
-			preparedStatement.setInt(BIKE_WHEEL_SIZE_PARAM, bike.getWheelSize());
-			preparedStatement.setInt(BIKE_SPEED_COUNT_PARAM, bike.getSpeedCount());
-			preparedStatement.setLong(BIKE_BIKE_TYPE_ID_PARAM, bike.getBikeType().getId());
-			preparedStatement.setString(BIKE_PICTURE_PARAM, bike.getPicturePath());
-			preparedStatement.setLong(BIKE_UPDATED_ID_PARAM, bike.getId());
+			preparedStatement.setLong(BRAND_ID_AB, bike.getBrand().getId());
+			preparedStatement.setString(MODEL_AB, bike.getModel());
+			preparedStatement.setInt(WHEEL_SIZE_AB, bike.getWheelSize());
+			preparedStatement.setInt(SPEED_COUNT_AB, bike.getSpeedCount());
+			preparedStatement.setLong(BIKE_TYPE_ID_AB, bike.getBikeType().getId());
+			preparedStatement.setString(PICTURE_AB, bike.getPicturePath());
+			preparedStatement.setLong(BIKE_ID_UB, bike.getId());
 
 			preparedStatement.executeUpdate();
 

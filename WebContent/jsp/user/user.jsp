@@ -52,166 +52,168 @@
 	<!-- ------------------------ end of edit user ---------------------------- -->
 	
 	
-	<!-- --------------------------- user order ------------------------------- -->
-	<c:if test="${bikeOrder!=null}">
-		<form action="FrontController" method="post" id="bikeOrder" onsubmit="checkParkingChoice(); return false">
-			<div class="container" style="margin-top: 15px">
-				<div align="center" style="border-bottom: 1px solid blue; font-size: 25px; padding-bottom: 5px">
-					<c:out value="${currentOrderLabel}"></c:out>:				
-				</div>
-				<div class="row" style="padding-top: 5px; padding-left: 5px">
-					<div class="col-md-6"  style="padding-top: 5px; margin-left: 10px; background: white">
-						<div class="row" style="margin-top: 10px; padding-bottom: 10px; border-bottom: 1px solid gray;">
-							<div class="col-md-6">
-								<c:out value="${bikeNubmerLabel}"></c:out>:
-							</div>
-							<div class="col-md-6">
-								<c:out value="${bikeOrder.bikeProductId}"></c:out>
-							</div>							
-						</div>
-						
-						<div class="row" style="margin-top: 10px; padding-bottom: 10px; border-bottom: 1px solid gray;">
-							<div class="col-md-6">
-								<c:out value="${brandLabel}"></c:out> <c:out value="${modelLabel}"></c:out>:
-							</div>
-							<div class="col-md-6">
-								<c:out value="${bikeOrder.bike.brand.brand}"></c:out> <c:out value="${bikeOrder.bike.model}"></c:out>
-							</div>							
-						</div>	
-		
-						<div class="row" style="margin-top: 10px; padding-bottom: 10px; border-bottom: 1px solid gray;">
-							<div class="col-md-6">
-								<c:out value="${characteristicsLabel}"></c:out>:
-							</div>
-							<div class="col-md-6">
-								<c:out value="${bikeOrder.bike.bikeType.bikeType}"></c:out>, 
-								<c:out value="${wheelSizeLabel}"></c:out>: <c:out value="${bikeOrder.bike.wheelSize}"></c:out>, 
-								<c:out value="${speedCountLabel}"></c:out>:  <c:out value="${bikeOrder.bike.speedCount}"></c:out>
-							</div>							
-						</div>
-		
-						<div class="row" style="margin-top: 10px; padding-bottom: 10px; border-bottom: 1px solid gray;">
-							<div class="col-md-6">
-								<c:out value="${startParkingLabel}"></c:out>:
-							</div>
-							<div class="col-md-6">
-									<c:out value="${bikeOrder.startParking.address}"></c:out>							
-							</div>							
-						</div>
-		
+	<div id="body">
+		<!-- --------------------------- user order ------------------------------- -->
+		<c:if test="${bikeOrder!=null}">
+			<form action="FrontController" method="post" id="bikeOrder" onsubmit="checkParkingChoice(); return false">
+				<div class="container" style="margin-top: 15px">
+					<div align="center" style="border-bottom: 1px solid blue; font-size: 25px; padding-bottom: 5px">
+						<c:out value="${currentOrderLabel}"></c:out>:				
 					</div>
-		
-					<div class="col-md-3" style="background: white; padding-left: 100px">
-						<c:if test="${bikeOrder.bike.picturePath!=null}">
-							<img src="${pageContext.request.contextPath}/images/bikes/${bikeOrder.bike.picturePath}" alt="${bikeOrder.bike.model}" style= "width: 375px; height: 228px; border: none">
-						</c:if>
-					</div>				
-				</div>
-				
-				
-				<div align="center" style="border-bottom: 1px solid gray; font-size: 20px; margin-top:20px">
-					<c:out value="${timeOfOrderLabel}"></c:out>:					
-				</div>	
+					<div class="row" style="padding-top: 5px; padding-left: 5px">
+						<div class="col-md-6"  style="padding-top: 5px; margin-left: 10px; background: white">
+							<div class="row" style="margin-top: 10px; padding-bottom: 10px; border-bottom: 1px solid gray;">
+								<div class="col-md-6">
+									<c:out value="${bikeNubmerLabel}"></c:out>:
+								</div>
+								<div class="col-md-6">
+									<c:out value="${bikeOrder.bikeProductId}"></c:out>
+								</div>							
+							</div>
 							
-				<div class="row" style="margin-top:10px">
-				
-				
-					<div class="col-md-2"></div>	
-						<div class="col-md-2" style="font-size: 20px">
-							<label style="float:left"><c:out value="${daysLabel}"></c:out>: </label>
-							<label style="float:left;" id="days">0</label>
-						</div>
-						
-						<div class="col-md-2" style="font-size: 20px">
-							<label style="float:left;"><c:out value="${hoursLabel}"></c:out>: </label>
-							<label style="float:left;" id="hours">0</label>
-						</div>
-						
-						<div class="col-md-2" style="font-size: 20px">
-							<label style="float:left;"><c:out value="${minutesLabel}"></c:out>: </label>
-							<label style="float:left;" id="minutes">0</label>
-						</div>
-						
-						<div class="col-md-2" style="font-size: 20px">
-							<label style="float:left;"><c:out value="${secondsLabel}"></c:out>: </label>
-							<label style="float:left;" id="seconds">0</label>
-						</div>			
-				</div>	
-				
-				<div align="center" style="border-bottom: 1px solid gray; font-size: 20px; margin-top:20px">
-					<c:out value="${closeOrderLabel}"></c:out>:					
-				</div>	
+							<div class="row" style="margin-top: 10px; padding-bottom: 10px; border-bottom: 1px solid gray;">
+								<div class="col-md-6">
+									<c:out value="${brandLabel}"></c:out> <c:out value="${modelLabel}"></c:out>:
+								</div>
+								<div class="col-md-6">
+									<c:out value="${bikeOrder.bike.brand.brand}"></c:out> <c:out value="${bikeOrder.bike.model}"></c:out>
+								</div>							
+							</div>	
 			
-				<div class="row" style="margin-top:10px">
-					<div class="col-md-1"></div>
-					<div class="col-md-3"><label style="margin-left:10px"><c:out value="${returnParkingLabel}"></c:out>:</label></div>
-					<div class="col-md-4">
-						<select	name="finishParkingId"  class="form-control" id="finishParkingId">
-							<option value="0"><c:out value="${chooseParkingLabel}"></c:out></option>
-							<c:forEach items="${parkingList}" var="item">
-								<option value="${item.id}"><c:out value="${item.address}"></c:out></option>
-							</c:forEach> 
-						</select>				
+							<div class="row" style="margin-top: 10px; padding-bottom: 10px; border-bottom: 1px solid gray;">
+								<div class="col-md-6">
+									<c:out value="${characteristicsLabel}"></c:out>:
+								</div>
+								<div class="col-md-6">
+									<c:out value="${bikeOrder.bike.bikeType.bikeType}"></c:out>, 
+									<c:out value="${wheelSizeLabel}"></c:out>: <c:out value="${bikeOrder.bike.wheelSize}"></c:out>, 
+									<c:out value="${speedCountLabel}"></c:out>:  <c:out value="${bikeOrder.bike.speedCount}"></c:out>
+								</div>							
+							</div>
+			
+							<div class="row" style="margin-top: 10px; padding-bottom: 10px; border-bottom: 1px solid gray;">
+								<div class="col-md-6">
+									<c:out value="${startParkingLabel}"></c:out>:
+								</div>
+								<div class="col-md-6">
+										<c:out value="${bikeOrder.startParking.address}"></c:out>							
+								</div>							
+							</div>
+			
+						</div>
+			
+						<div class="col-md-3" style="background: white; padding-left: 100px">
+							<c:if test="${bikeOrder.bike.picturePath!=null}">
+								<img src="${pageContext.request.contextPath}/images/bikes/${bikeOrder.bike.picturePath}" alt="${bikeOrder.bike.model}" style= "width: 375px; height: 228px; border: none">
+							</c:if>
+						</div>				
 					</div>
-				</div>	
+					
+					
+					<div align="center" style="border-bottom: 1px solid gray; font-size: 20px; margin-top:20px">
+						<c:out value="${timeOfOrderLabel}"></c:out>:					
+					</div>	
+								
+					<div class="row" style="margin-top:10px">
+					
+					
+						<div class="col-md-2"></div>	
+							<div class="col-md-2" style="font-size: 20px">
+								<label style="float:left"><c:out value="${daysLabel}"></c:out>: </label>
+								<label style="float:left;" id="days">0</label>
+							</div>
+							
+							<div class="col-md-2" style="font-size: 20px">
+								<label style="float:left;"><c:out value="${hoursLabel}"></c:out>: </label>
+								<label style="float:left;" id="hours">0</label>
+							</div>
+							
+							<div class="col-md-2" style="font-size: 20px">
+								<label style="float:left;"><c:out value="${minutesLabel}"></c:out>: </label>
+								<label style="float:left;" id="minutes">0</label>
+							</div>
+							
+							<div class="col-md-2" style="font-size: 20px">
+								<label style="float:left;"><c:out value="${secondsLabel}"></c:out>: </label>
+								<label style="float:left;" id="seconds">0</label>
+							</div>			
+					</div>	
+					
+					<div align="center" style="border-bottom: 1px solid gray; font-size: 20px; margin-top:20px">
+						<c:out value="${closeOrderLabel}"></c:out>:					
+					</div>	
 				
-			</div>
-	
-			<div align="center" style="margin-top:20px">	
-				<input type="hidden" name="command" value="close_order"/>
-				<input type="hidden" name="orderId" value="${bikeOrder.id}"/>	
-				<input type="hidden" name="startTime" value="${bikeOrder.startTime}"/>
-				<input type="hidden" name="rentPrice" value="${bikeOrder.rentPrice}"/>					
-				<input type="submit" class="btn btn-primary" style="background-color: green" value="${returnBikeLabel}">
-			</div>
-		</form>
-	</c:if>
-	<!-- ------------------------- end of user order ------------------------------- -->
-	
-	
-	<!-- -------------------------- bike order list -------------------------------- -->
-	<c:if test="${bikeOrderList!=null}">
-		<div style="text-align:center; margin-bottom:10px; font-size: 28px">
-			<c:out value="${ordersLabel}">:</c:out>
-		</div>
+					<div class="row" style="margin-top:10px">
+						<div class="col-md-1"></div>
+						<div class="col-md-3"><label style="margin-left:10px"><c:out value="${returnParkingLabel}"></c:out>:</label></div>
+						<div class="col-md-4">
+							<select	name="finishParkingId"  class="form-control" id="finishParkingId">
+								<option value="0"><c:out value="${chooseParkingLabel}"></c:out></option>
+								<c:forEach items="${parkingList}" var="item">
+									<option value="${item.id}"><c:out value="${item.address}"></c:out></option>
+								</c:forEach> 
+							</select>				
+						</div>
+					</div>	
+					
+				</div>
 		
-		<div style="margin-left: 20px">
-			<div class="row">
-				<div class="col-md-12">
-					<table class="table">
-						<thead>
-							<tr>
-								<th><c:out value="${orderNumberLabel}"></c:out></th>
-								<th style="width: 200px"><c:out value="${bikeLabel}"></c:out></th>
-								<th style="width: 300px"><c:out value="${startParkingLabel}"></c:out></th>
-								<th style="width: 300px"><c:out value="${finishParkingLabel}"></c:out></th>								
-								<th><c:out value="${startTimeLabel}"></c:out></th>
-								<th><c:out value="${finishTimeLabel}"></c:out></th>
-								<th style="width: 150px"><c:out value="${rentCostPerMinuteLabel}"></c:out></th>
-								<th><c:out value="${minutesLabel}"></c:out></th>
-								<th><c:out value="${amountLabel}"></c:out></th>
-							</tr>
-						</thead>
-						<c:forEach items="${bikeOrderList}" var="item">
-							<tbody>
-								<tr>
-									<td><c:out value="${item.id}"></c:out></td>	
-									<td><c:out value="${item.bike.brand.brand}"></c:out>, <c:out value="${item.bike.model}"></c:out></td>
-									<td><c:out value="${item.startParking.address}"></c:out></td>
-									<td><c:out value="${item.finishParking.address}"></c:out></td>									
-									<td><c:out value="${item.startTime}"></c:out></td>
-									<td><c:out value="${item.finishTime}"></c:out></td>
-									<td><c:out value="${item.rentPrice}"></c:out></td>
-									<td><ctg:calculateTime finishTime="${item.finishTime}" startTime="${item.startTime}"/></td>
-									<td><c:out value="${item.payment}"></c:out></td>												
-								</tr>									
-							</tbody>
-						</c:forEach>		
-					</table>
-				</div>		
+				<div align="center" style="margin-top:20px">	
+					<input type="hidden" name="command" value="close_order"/>
+					<input type="hidden" name="orderId" value="${bikeOrder.id}"/>	
+					<input type="hidden" name="startTime" value="${bikeOrder.startTime}"/>
+					<input type="hidden" name="rentPrice" value="${bikeOrder.rentPrice}"/>					
+					<input type="submit" class="btn btn-primary" style="background-color: green" value="${returnBikeLabel}">
+				</div>
+			</form>
+		</c:if>
+		<!-- ------------------------- end of user order ------------------------------- -->
+		
+		
+		<!-- -------------------------- bike order list -------------------------------- -->
+		<c:if test="${bikeOrderList!=null}">
+			<div style="text-align:center; margin-bottom:10px; font-size: 28px">
+				<c:out value="${ordersLabel}">:</c:out>
 			</div>
-		</div>
-	</c:if>
+			
+			<div style="margin-left: 20px">
+				<div class="row">
+					<div class="col-md-12">
+						<table class="table">
+							<thead>
+								<tr>
+									<th><c:out value="${orderNumberLabel}"></c:out></th>
+									<th style="width: 200px"><c:out value="${bikeLabel}"></c:out></th>
+									<th style="width: 300px"><c:out value="${startParkingLabel}"></c:out></th>
+									<th style="width: 300px"><c:out value="${finishParkingLabel}"></c:out></th>								
+									<th><c:out value="${startTimeLabel}"></c:out></th>
+									<th><c:out value="${finishTimeLabel}"></c:out></th>
+									<th style="width: 150px"><c:out value="${rentCostPerMinuteLabel}"></c:out></th>
+									<th><c:out value="${minutesLabel}"></c:out></th>
+									<th><c:out value="${amountLabel}"></c:out></th>
+								</tr>
+							</thead>
+							<c:forEach items="${bikeOrderList}" var="item">
+								<tbody>
+									<tr>
+										<td><c:out value="${item.id}"></c:out></td>	
+										<td><c:out value="${item.bike.brand.brand}"></c:out>, <c:out value="${item.bike.model}"></c:out></td>
+										<td><c:out value="${item.startParking.address}"></c:out></td>
+										<td><c:out value="${item.finishParking.address}"></c:out></td>									
+										<td><c:out value="${item.startTime}"></c:out></td>
+										<td><c:out value="${item.finishTime}"></c:out></td>
+										<td><c:out value="${item.rentPrice}"></c:out></td>
+										<td><ctg:calculateTime finishTime="${item.finishTime}" startTime="${item.startTime}"/></td>
+										<td><c:out value="${item.payment}"></c:out></td>												
+									</tr>									
+								</tbody>
+							</c:forEach>		
+						</table>
+					</div>		
+				</div>
+			</div>
+		</c:if>
+	</div>
 	<!-- ------------------------ end of bike order list ------------------------------ -->
 	
 	
