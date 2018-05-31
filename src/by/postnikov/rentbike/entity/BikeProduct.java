@@ -12,6 +12,7 @@ public class BikeProduct extends AbstractEntity {
 	private BigDecimal rentPrice;
 	private BikeProductState state;
 	private String stateDescription;
+	private String registrationDate;
 
 	public Bike getBike() {
 		return bike;
@@ -61,12 +62,21 @@ public class BikeProduct extends AbstractEntity {
 		this.stateDescription = stateDescription;
 	}
 
+	public String getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(String registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((bike == null) ? 0 : bike.hashCode());
 		result = prime * result + ((parking == null) ? 0 : parking.hashCode());
+		result = prime * result + ((registrationDate == null) ? 0 : registrationDate.hashCode());
 		result = prime * result + ((rentPrice == null) ? 0 : rentPrice.hashCode());
 		result = prime * result + ((state == null) ? 0 : state.hashCode());
 		result = prime * result + ((stateDescription == null) ? 0 : stateDescription.hashCode());
@@ -93,6 +103,11 @@ public class BikeProduct extends AbstractEntity {
 				return false;
 		} else if (!parking.equals(other.parking))
 			return false;
+		if (registrationDate == null) {
+			if (other.registrationDate != null)
+				return false;
+		} else if (!registrationDate.equals(other.registrationDate))
+			return false;
 		if (rentPrice == null) {
 			if (other.rentPrice != null)
 				return false;
@@ -116,7 +131,8 @@ public class BikeProduct extends AbstractEntity {
 	@Override
 	public String toString() {
 		return "BikeProduct [bike=" + bike + ", parking=" + parking + ", value=" + value + ", rentPrice=" + rentPrice
-				+ ", state=" + state + ", stateDescription=" + stateDescription + "]";
+				+ ", state=" + state + ", stateDescription=" + stateDescription + ", registrationDate="
+				+ registrationDate + "]";
 	}
 
 }

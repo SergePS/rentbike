@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import by.postnikov.rentbike.command.ApplicationProperty;
 import by.postnikov.rentbike.command.RequestParameter;
 import by.postnikov.rentbike.dao.DAOFactory;
-import by.postnikov.rentbike.dao.DateFormatting;
 import by.postnikov.rentbike.dao.ParkingDAO;
 import by.postnikov.rentbike.dao.UserDAO;
 import by.postnikov.rentbike.entity.BikeOrder;
@@ -106,9 +105,9 @@ public class UserServiceImpl implements UserService {
 		if (!UserParameterValidator.birthdayValidate(birthday)) {
 			throw new ServiceException(ExceptionMessage.USER_IS_TOO_YOUNG.toString());
 		}
-		user.setBirthday(DateFormatting.modifyDateToDB(birthday));
+		user.setBirthday(DateFormatter.modifyDateToDB(birthday));
 
-		user.setRegistrationDate(DateFormatting.getCurrentDate());
+		user.setRegistrationDate(DateFormatter.takeCurrentDateTimeToDB());
 
 		String creditCard = requestParameters.get(RequestParameter.CRADIT_CARD.parameter());
 		if (!UserParameterValidator.craditcardValidate(creditCard)) {

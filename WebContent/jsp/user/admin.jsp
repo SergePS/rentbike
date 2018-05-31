@@ -71,7 +71,7 @@
 										<th><c:out value="${nameLabel}"></c:out></th>
 										<th><c:out value="${surnameLabel}"></c:out></th>
 										<th><c:out value="${birthdayLabel}"></c:out></th>
-										<th><c:out value="${regDataLabel}"></c:out></th>
+										<th><c:out value="${regDateLabel}"></c:out></th>
 										<th><c:out value="${roleLabel}"></c:out></th>
 										<th><c:out value="${stateLabel}"></c:out></th>
 										<th><c:out value="${openOrderLabel}"></c:out></th>

@@ -13,7 +13,6 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationExceptio
 import by.postnikov.rentbike.connection.ConnectionPool;
 import by.postnikov.rentbike.connection.WrapperConnection;
 import by.postnikov.rentbike.dao.BikeDAO;
-import by.postnikov.rentbike.dao.DateFormatting;
 import by.postnikov.rentbike.entity.Bike;
 import by.postnikov.rentbike.entity.BikeProduct;
 import by.postnikov.rentbike.entity.BikeProductState;
@@ -334,7 +333,7 @@ public class SqlBikeDAO implements BikeDAO {
 		try {
 			for (BikeProduct bikeProduct : bikeProductList) {
 				preparedStatement.setLong(BIKE_ID_ABP, bikeProduct.getBike().getId());
-				preparedStatement.setString(PURCHASE_DATE_ABP, DateFormatting.getCurrentDate());
+				preparedStatement.setString(PURCHASE_DATE_ABP, bikeProduct.getRegistrationDate());
 				preparedStatement.setBigDecimal(VALUE_ABP, bikeProduct.getValue());
 				preparedStatement.setBigDecimal(RENT_PRICE_ABP, bikeProduct.getRentPrice());
 				preparedStatement.setLong(PARKING_ID_ABP, bikeProduct.getParking().getId());

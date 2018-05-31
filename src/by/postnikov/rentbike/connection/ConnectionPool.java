@@ -179,6 +179,8 @@ public class ConnectionPool {
 	}
 
 	/**
+	 * Returns the number of available WrapperConnections.
+	 * 
 	 * @return available connection count
 	 */
 	int getAvailableConnectionCount() {
@@ -186,6 +188,8 @@ public class ConnectionPool {
 	}
 
 	/**
+	 * Returns the number of all WrapperConnections.
+	 * 
 	 * @return all wrapperConnection count
 	 */
 	int getCurrentWrapperConnectionCount() {
@@ -211,9 +215,9 @@ public class ConnectionPool {
 			try {
 				wrapperConnectionQueue.poll(WAIT_TIME_CONNECTTION, TimeUnit.MILLISECONDS).closeConnection();
 				currentWrapperConnectionCount--;
-				logger.log(Level.DEBUG, "One wrapperConnection closed");
+				logger.log(Level.DEBUG, "WrapperConnection is closed");
 			} catch (InterruptedException e) {
-				logger.log(Level.ERROR, "WrapperConnection didn't close" + ConvertPrintStackTraceToString.convert(e));
+				logger.log(Level.ERROR, "WrapperConnection is not closed" + ConvertPrintStackTraceToString.convert(e));
 			}
 		}
 	}
@@ -232,11 +236,11 @@ public class ConnectionPool {
 			}
 			logger.log(Level.DEBUG, DEFAULT_WRAPPER_CONNECTION_COUNT + " connection were create");
 		} catch (ClassNotFoundException e) {
-			logger.log(Level.FATAL, "JDBC Drive didn't found, " + e.getMessage());
+			logger.log(Level.FATAL, "JDBC Driver not found, " + e.getMessage());
 			throw new RuntimeException();
 		} catch (InterruptedException e) {
 			logger.log(Level.ERROR,
-					"Cannot add wraperConnection in Pool, " + ConvertPrintStackTraceToString.convert(e));
+					"Connection are not added to the Pool, " + ConvertPrintStackTraceToString.convert(e));
 		}
 
 		isConnectionPoolWork = true;

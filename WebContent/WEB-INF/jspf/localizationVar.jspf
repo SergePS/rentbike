@@ -139,6 +139,8 @@
 <fmt:message bundle="${loc}" key="returnParkingLabel" var="returnParkingLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="returnBikeLabel" var="returnBikeLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="rentPriceZeroWarn" var="rentPriceZeroWarn"></fmt:message>
+<fmt:message bundle="${loc}" key="regDateLabel" var="regDateLabel"></fmt:message>
+
 	
 <fmt:message bundle="${loc}" key="surnameLabel" var="surnameLabel"></fmt:message>
 <fmt:message bundle="${loc}" key="surnamePlaceholder" var="surnamePlaceholder"></fmt:message>

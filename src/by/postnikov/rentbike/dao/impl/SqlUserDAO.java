@@ -13,7 +13,6 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationExceptio
 
 import by.postnikov.rentbike.connection.ConnectionPool;
 import by.postnikov.rentbike.connection.WrapperConnection;
-import by.postnikov.rentbike.dao.DateFormatting;
 import by.postnikov.rentbike.dao.UserDAO;
 import by.postnikov.rentbike.entity.Bike;
 import by.postnikov.rentbike.entity.BikeOrder;
@@ -29,7 +28,7 @@ import by.postnikov.rentbike.exception.ExceptionMessage;
 
 public class SqlUserDAO implements UserDAO {
 
-	private final static String FIND_USER_BY_LOGIN_PASSW = "SELECT id, login, name, surname, email, birthday, registrationDate, role, state, creditCard FROM users WHERE login = ? and password = sha1(?)";
+	private final static String FIND_USER_BY_LOGIN_PASSW = "SELECT id, login, name, surname, email, DATE_FORMAT(birthday, '%d.%m.%Y') as birthday, DATE_FORMAT(registrationDate, '%d.%m.%Y') as registrationDate, role, state, creditCard FROM users WHERE login = ? and password = sha1(?)";
 
 	private final static String CREATE_USER_CU = "INSERT INTO users (login, password, name, surname, email, birthday, registrationDate, creditCard)  VALUES (?, sha1(?), ?, ?, ?, ?, ?, ?)";
 	private final static int LOGIN_CU = 1; // CU - Create User
@@ -98,7 +97,7 @@ public class SqlUserDAO implements UserDAO {
 	private final static String CREDIT_CARD = "creditCard";
 	private final static String ORDER_ID = "orderId";
 
-	private final static String UPDATE_USER_UU = "UPDATE users SET login = ?, name = ?, surname = ?, email = ?, birthday = ?, creditCard = ? WHERE id = ?";
+	private final static String UPDATE_USER_UU = "UPDATE users SET login = ?, name = ?, surname = ?, email = ?, birthday = str_to_date(?, '%d.%m.%Y'), creditCard = ? WHERE id = ?";
 	private final static int LOGIN_UU = 1; // UU - Update User
 	private final static int NAME_UU = 2;
 	private final static int SURNAME_UU = 3;
@@ -178,8 +177,8 @@ public class SqlUserDAO implements UserDAO {
 				user.setName(resultSet.getString(NAME));
 				user.setSurname(resultSet.getString(SURNAME));
 				user.setEmail(resultSet.getString(EMAIL));
-				user.setBirthday(DateFormatting.modifyDateToView(resultSet.getString(BIRTHDAY)));
-				user.setRegistrationDate(DateFormatting.modifyDateToView(resultSet.getString(REGISTRATION_DATE)));
+				user.setBirthday(resultSet.getString(BIRTHDAY));
+				user.setRegistrationDate(resultSet.getString(REGISTRATION_DATE));
 				user.setRole(UserRole.valueOf(resultSet.getString(ROLE).toUpperCase()));
 				user.setState(UserState.valueOf(resultSet.getString(STATE).toUpperCase()));
 				user.setCreditCard(resultSet.getString(CREDIT_CARD));
@@ -207,7 +206,7 @@ public class SqlUserDAO implements UserDAO {
 			preparedStatement.setString(NAME_UU, user.getName());
 			preparedStatement.setString(SURNAME_UU, user.getSurname());
 			preparedStatement.setString(EMAIL_UU, user.getEmail());
-			preparedStatement.setString(BIRTHDAY_UU, DateFormatting.modifyDateToDB(user.getBirthday()));
+			preparedStatement.setString(BIRTHDAY_UU, user.getBirthday());
 			preparedStatement.setString(CREDIT_CARD_UU, user.getCreditCard());
 			preparedStatement.setLong(ID_UU, user.getId());
 

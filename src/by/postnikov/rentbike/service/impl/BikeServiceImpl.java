@@ -26,6 +26,7 @@ import by.postnikov.rentbike.exception.ExceptionMessage;
 import by.postnikov.rentbike.exception.ServiceException;
 import by.postnikov.rentbike.service.BikeService;
 import by.postnikov.rentbike.service.CloneRentBikeObject;
+import by.postnikov.rentbike.service.DateFormatter;
 import by.postnikov.rentbike.validator.BikeParameterValidator;
 import by.postnikov.rentbike.validator.UserParameterValidator;
 
@@ -298,6 +299,7 @@ public class BikeServiceImpl implements BikeService {
 			bikeProduct.setParking(parking);
 			bikeProduct.setValue(bikeValue);
 			bikeProduct.setRentPrice(rentPrice);
+			bikeProduct.setRegistrationDate(DateFormatter.takeCurrentDateTimeToDB());
 
 			for (int i = 0; i < bikeCount; i++) {
 				bikeProductList.add(cloneRentBikeObject.clone(bikeProduct));
